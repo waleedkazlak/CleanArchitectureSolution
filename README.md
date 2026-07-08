@@ -23,6 +23,9 @@ password: admin123
 
 npm install
 
-2- Enter credentials:
+2- Optional if needed Modify API Base URL "apiBaseUrl" in  
+public/config/app.config.json
+
+3- Enter credentials:
 username: admin
 password: admin123
