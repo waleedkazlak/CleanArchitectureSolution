@@ -21,6 +21,47 @@ public class GetPickRequestByIdQueryHandler : IRequestHandler<GetPickRequestById
             return null;
         }
 
+        var lines = p.PickRequestLines?.Select(l => new PickRequestLineDto
+        {
+            Id = l.Id,
+            PickRequestId = l.PickRequestId,
+            RequestNumber = p.RequestNumber,
+            ProductVariantId = l.ProductVariantId,
+            ProductVariantCode = l.ProductVariant?.Code,
+            Quantity = l.Quantity,
+            CreatedAt = l.CreatedAt,
+            UpdatedAt = l.UpdatedAt,
+            PickRequestParts = l.PickRequestParts?.Select(prp => new PickRequestPartDto
+            {
+                Id = prp.Id,
+                PickRequestId = prp.PickRequestId,
+                PickRequestLineId = prp.PickRequestLineId,
+                PartId = prp.PartId,
+                PartCode = prp.Part?.Code,
+                PartName = prp.Part?.Name,
+                RequiredQuantity = prp.RequiredQuantity,
+                PickedQuantity = prp.PickedQuantity,
+                Status = prp.Status,
+                CreatedAt = prp.CreatedAt,
+                UpdatedAt = prp.UpdatedAt
+            }).ToList() ?? new List<PickRequestPartDto>()
+        }).ToList() ?? new List<PickRequestLineDto>();
+
+        var allParts = p.PickRequestParts?.Select(prp => new PickRequestPartDto
+        {
+            Id = prp.Id,
+            PickRequestId = prp.PickRequestId,
+            PickRequestLineId = prp.PickRequestLineId,
+            PartId = prp.PartId,
+            PartCode = prp.Part?.Code,
+            PartName = prp.Part?.Name,
+            RequiredQuantity = prp.RequiredQuantity,
+            PickedQuantity = prp.PickedQuantity,
+            Status = prp.Status,
+            CreatedAt = prp.CreatedAt,
+            UpdatedAt = prp.UpdatedAt
+        }).ToList() ?? new List<PickRequestPartDto>();
+
         return new PickRequestDto
         {
             Id = p.Id,
@@ -47,17 +88,8 @@ public class GetPickRequestByIdQueryHandler : IRequestHandler<GetPickRequestById
             Verified = p.Verified,
             CreatedAt = p.CreatedAt,
             UpdatedAt = p.UpdatedAt,
-            PickRequestLines = p.PickRequestLines?.Select(l => new PickRequestLineDto
-            {
-                Id = l.Id,
-                PickRequestId = l.PickRequestId,
-                RequestNumber = p.RequestNumber,
-                ProductVariantId = l.ProductVariantId,
-                ProductVariantCode = l.ProductVariant?.Code,
-                Quantity = l.Quantity,
-                CreatedAt = l.CreatedAt,
-                UpdatedAt = l.UpdatedAt
-            }).ToList() ?? new List<PickRequestLineDto>()
+            PickRequestLines = lines,
+            PickRequestParts = allParts
         };
     }
 }

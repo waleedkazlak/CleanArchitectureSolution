@@ -35,4 +35,5 @@ public class PickRequest : BaseEntity<long>
     public bool Verified { get; set; } = false;
 
     public ICollection<PickRequestLine> PickRequestLines { get; set; } = new List<PickRequestLine>();
+    public ICollection<PickRequestPart> PickRequestParts { get; set; } = new List<PickRequestPart>();
 }

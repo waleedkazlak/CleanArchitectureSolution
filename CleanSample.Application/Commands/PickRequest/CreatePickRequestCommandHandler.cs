@@ -30,14 +30,34 @@ public class CreatePickRequestCommandHandler : IRequestHandler<CreatePickRequest
             Description = request.Description,
             DriverId = request.DriverId,
             VehicleId = request.VehicleId,
-            Verified = request.Verified,
-            PickRequestLines = request.PickRequestLines.Select(l => new PickRequestLine
-            {
-                ProductVariantId = l.ProductVariantId,
-                Quantity = l.Quantity,
-                CreatedAt = DateTime.UtcNow
-            }).ToList()
+            Verified = request.Verified
         };
+
+        foreach (var line in request.PickRequestLines)
+        {
+            var lineEntity = new PickRequestLine
+            {
+                ProductVariantId = line.ProductVariantId,
+                Quantity = line.Quantity,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // Fetch ProductBOM for this ProductVariant to automatically generate PickRequestParts
+            var boms = await _unitOfWork.ProductBOMs.GetByProductVariantIdAsync(line.ProductVariantId);
+            foreach (var bom in boms)
+            {
+                lineEntity.PickRequestParts.Add(new PickRequestPart
+                {
+                    PartId = bom.PartId,
+                    RequiredQuantity = line.Quantity * bom.Quantity,
+                    PickedQuantity = 0,
+                    Status = "Pending",
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+
+            pickRequest.PickRequestLines.Add(lineEntity);
+        }
 
         var pickRequestId = await _unitOfWork.PickRequests.AddAsync(pickRequest);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

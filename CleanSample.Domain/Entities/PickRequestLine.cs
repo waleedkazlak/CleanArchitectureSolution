@@ -9,4 +9,6 @@ public class PickRequestLine : BaseEntity<long>
     public ProductVariant ProductVariant { get; set; } = null!;
 
     public int Quantity { get; set; }
+
+    public ICollection<PickRequestPart> PickRequestParts { get; set; } = new List<PickRequestPart>();
 }

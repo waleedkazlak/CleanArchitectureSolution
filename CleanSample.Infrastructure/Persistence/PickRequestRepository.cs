@@ -24,6 +24,11 @@ public class PickRequestRepository : IPickRequestRepository
             .Include(p => p.Vehicle)
             .Include(p => p.PickRequestLines)
                 .ThenInclude(l => l.ProductVariant)
+            .Include(p => p.PickRequestLines)
+                .ThenInclude(l => l.PickRequestParts)
+                    .ThenInclude(prp => prp.Part)
+            .Include(p => p.PickRequestParts)
+                .ThenInclude(prp => prp.Part)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -38,6 +43,11 @@ public class PickRequestRepository : IPickRequestRepository
             .Include(p => p.Vehicle)
             .Include(p => p.PickRequestLines)
                 .ThenInclude(l => l.ProductVariant)
+            .Include(p => p.PickRequestLines)
+                .ThenInclude(l => l.PickRequestParts)
+                    .ThenInclude(prp => prp.Part)
+            .Include(p => p.PickRequestParts)
+                .ThenInclude(prp => prp.Part)
             .ToListAsync();
     }
 
@@ -52,6 +62,11 @@ public class PickRequestRepository : IPickRequestRepository
             .Include(p => p.Vehicle)
             .Include(p => p.PickRequestLines)
                 .ThenInclude(l => l.ProductVariant)
+            .Include(p => p.PickRequestLines)
+                .ThenInclude(l => l.PickRequestParts)
+                    .ThenInclude(prp => prp.Part)
+            .Include(p => p.PickRequestParts)
+                .ThenInclude(prp => prp.Part)
             .FirstOrDefaultAsync(p => p.RequestNumber == requestNumber);
     }
 
@@ -66,6 +81,11 @@ public class PickRequestRepository : IPickRequestRepository
             .Include(p => p.Vehicle)
             .Include(p => p.PickRequestLines)
                 .ThenInclude(l => l.ProductVariant)
+            .Include(p => p.PickRequestLines)
+                .ThenInclude(l => l.PickRequestParts)
+                    .ThenInclude(prp => prp.Part)
+            .Include(p => p.PickRequestParts)
+                .ThenInclude(prp => prp.Part)
             .Where(p => p.OrderId == orderId)
             .ToListAsync();
     }
@@ -81,6 +101,11 @@ public class PickRequestRepository : IPickRequestRepository
             .Include(p => p.Vehicle)
             .Include(p => p.PickRequestLines)
                 .ThenInclude(l => l.ProductVariant)
+            .Include(p => p.PickRequestLines)
+                .ThenInclude(l => l.PickRequestParts)
+                    .ThenInclude(prp => prp.Part)
+            .Include(p => p.PickRequestParts)
+                .ThenInclude(prp => prp.Part)
             .Where(p => p.ClientId == clientId)
             .ToListAsync();
     }
@@ -96,6 +121,7 @@ public class PickRequestRepository : IPickRequestRepository
     {
         var existingPickRequest = await _context.PickRequests
             .Include(p => p.PickRequestLines)
+                .ThenInclude(l => l.PickRequestParts)
             .FirstOrDefaultAsync(p => p.Id == pickRequest.Id);
 
         if (existingPickRequest != null)
@@ -116,13 +142,13 @@ public class PickRequestRepository : IPickRequestRepository
             existingPickRequest.Verified = pickRequest.Verified;
             existingPickRequest.UpdatedAt = DateTime.UtcNow;
 
-            // Synchronize PickRequestLines
+            // Synchronize PickRequestLines and their PickRequestParts
             var incomingLineIds = pickRequest.PickRequestLines
                 .Where(l => l.Id > 0)
                 .Select(l => l.Id)
                 .ToHashSet();
 
-            // Remove lines not in incoming list
+            // Remove lines not in incoming list (cascade removes their PickRequestParts)
             var linesToRemove = existingPickRequest.PickRequestLines
                 .Where(l => !incomingLineIds.Contains(l.Id))
                 .ToList();
@@ -142,20 +168,88 @@ public class PickRequestRepository : IPickRequestRepository
 
                     if (existingLine != null)
                     {
+                        var variantChanged = existingLine.ProductVariantId != incomingLine.ProductVariantId;
+                        var quantityChanged = existingLine.Quantity != incomingLine.Quantity;
+
                         existingLine.ProductVariantId = incomingLine.ProductVariantId;
                         existingLine.Quantity = incomingLine.Quantity;
                         existingLine.UpdatedAt = DateTime.UtcNow;
+
+                        if (variantChanged)
+                        {
+                            // Remove old parts and regenerate
+                            var oldParts = existingLine.PickRequestParts.ToList();
+                            foreach (var oldPart in oldParts)
+                            {
+                                _context.PickRequestParts.Remove(oldPart);
+                            }
+
+                            var boms = await _context.ProductBOMs
+                                .Where(b => b.ProductVariantId == incomingLine.ProductVariantId)
+                                .ToListAsync();
+
+                            foreach (var bom in boms)
+                            {
+                                existingLine.PickRequestParts.Add(new PickRequestPart
+                                {
+                                    PickRequestId = existingPickRequest.Id,
+                                    PickRequestLineId = existingLine.Id,
+                                    PartId = bom.PartId,
+                                    RequiredQuantity = incomingLine.Quantity * bom.Quantity,
+                                    PickedQuantity = 0,
+                                    Status = "Pending",
+                                    CreatedAt = DateTime.UtcNow
+                                });
+                            }
+                        }
+                        else if (quantityChanged)
+                        {
+                            // Recalculate required quantity based on BOM
+                            var boms = await _context.ProductBOMs
+                                .Where(b => b.ProductVariantId == incomingLine.ProductVariantId)
+                                .ToListAsync();
+
+                            var bomDict = boms.ToDictionary(b => b.PartId, b => b.Quantity);
+
+                            foreach (var part in existingLine.PickRequestParts)
+                            {
+                                if (bomDict.TryGetValue(part.PartId, out var bomQty))
+                                {
+                                    part.RequiredQuantity = incomingLine.Quantity * bomQty;
+                                    part.UpdatedAt = DateTime.UtcNow;
+                                }
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    existingPickRequest.PickRequestLines.Add(new PickRequestLine
+                    var newLine = new PickRequestLine
                     {
                         PickRequestId = existingPickRequest.Id,
                         ProductVariantId = incomingLine.ProductVariantId,
                         Quantity = incomingLine.Quantity,
                         CreatedAt = DateTime.UtcNow
-                    });
+                    };
+
+                    var boms = await _context.ProductBOMs
+                        .Where(b => b.ProductVariantId == incomingLine.ProductVariantId)
+                        .ToListAsync();
+
+                    foreach (var bom in boms)
+                    {
+                        newLine.PickRequestParts.Add(new PickRequestPart
+                        {
+                            PickRequestId = existingPickRequest.Id,
+                            PartId = bom.PartId,
+                            RequiredQuantity = incomingLine.Quantity * bom.Quantity,
+                            PickedQuantity = 0,
+                            Status = "Pending",
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+
+                    existingPickRequest.PickRequestLines.Add(newLine);
                 }
             }
 

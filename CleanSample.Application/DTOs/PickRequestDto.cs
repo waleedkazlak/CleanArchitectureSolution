@@ -40,4 +40,5 @@ public class PickRequestDto
     public DateTime? UpdatedAt { get; set; }
 
     public List<PickRequestLineDto> PickRequestLines { get; set; } = new();
+    public List<PickRequestPartDto> PickRequestParts { get; set; } = new();
 }

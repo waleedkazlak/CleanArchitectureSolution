@@ -10,4 +10,6 @@ public class PickRequestLineDto
     public int Quantity { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+
+    public List<PickRequestPartDto> PickRequestParts { get; set; } = new();
 }

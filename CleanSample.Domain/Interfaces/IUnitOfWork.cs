@@ -81,6 +81,11 @@ public interface IUnitOfWork : IDisposable
     IPickRequestLineRepository PickRequestLines { get; }
 
     /// <summary>
+    /// PickRequestPart repository instance
+    /// </summary>
+    IPickRequestPartRepository PickRequestParts { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

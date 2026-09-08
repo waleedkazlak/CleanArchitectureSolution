@@ -148,8 +148,36 @@ public class GetPickRequestsWithFilterQueryHandler : IRequestHandler<GetPickRequ
                 ProductVariantCode = l.ProductVariant?.Code,
                 Quantity = l.Quantity,
                 CreatedAt = l.CreatedAt,
-                UpdatedAt = l.UpdatedAt
-            }).ToList() ?? new List<PickRequestLineDto>()
+                UpdatedAt = l.UpdatedAt,
+                PickRequestParts = l.PickRequestParts?.Select(prp => new PickRequestPartDto
+                {
+                    Id = prp.Id,
+                    PickRequestId = prp.PickRequestId,
+                    PickRequestLineId = prp.PickRequestLineId,
+                    PartId = prp.PartId,
+                    PartCode = prp.Part?.Code,
+                    PartName = prp.Part?.Name,
+                    RequiredQuantity = prp.RequiredQuantity,
+                    PickedQuantity = prp.PickedQuantity,
+                    Status = prp.Status,
+                    CreatedAt = prp.CreatedAt,
+                    UpdatedAt = prp.UpdatedAt
+                }).ToList() ?? new List<PickRequestPartDto>()
+            }).ToList() ?? new List<PickRequestLineDto>(),
+            PickRequestParts = p.PickRequestParts?.Select(prp => new PickRequestPartDto
+            {
+                Id = prp.Id,
+                PickRequestId = prp.PickRequestId,
+                PickRequestLineId = prp.PickRequestLineId,
+                PartId = prp.PartId,
+                PartCode = prp.Part?.Code,
+                PartName = prp.Part?.Name,
+                RequiredQuantity = prp.RequiredQuantity,
+                PickedQuantity = prp.PickedQuantity,
+                Status = prp.Status,
+                CreatedAt = prp.CreatedAt,
+                UpdatedAt = prp.UpdatedAt
+            }).ToList() ?? new List<PickRequestPartDto>()
         }).ToList();
 
         return new PaginatedResultDto<PickRequestDto>

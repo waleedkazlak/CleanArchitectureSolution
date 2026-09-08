@@ -92,6 +92,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<PickRequestLine> PickRequestLines { get; set; }
 
+    /// <summary>
+    /// PickRequestParts DbSet
+    /// </summary>
+    public DbSet<PickRequestPart> PickRequestParts { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -769,6 +774,64 @@ public class CleanSampleDbContext : DbContext
                 .IsRequired();
 
             entity.ToTable("PickRequestLines", t => t.HasCheckConstraint("CK_PickRequestLines_Quantity", "[Quantity] > 0"));
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure PickRequestPart entity
+        modelBuilder.Entity<PickRequestPart>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("PickRequestPartId");
+
+            entity.Property(e => e.PickRequestId)
+                .IsRequired();
+
+            entity.HasOne(e => e.PickRequest)
+                .WithMany(p => p.PickRequestParts)
+                .HasForeignKey(e => e.PickRequestId)
+                .HasConstraintName("FK_PickRequestParts_PickRequests")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.PickRequestLineId)
+                .IsRequired();
+
+            entity.HasOne(e => e.PickRequestLine)
+                .WithMany(l => l.PickRequestParts)
+                .HasForeignKey(e => e.PickRequestLineId)
+                .HasConstraintName("FK_PickRequestParts_PickRequestLines")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.PartId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Part)
+                .WithMany()
+                .HasForeignKey(e => e.PartId)
+                .HasConstraintName("FK_PickRequestParts_Parts")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.RequiredQuantity)
+                .HasPrecision(18, 4)
+                .IsRequired();
+
+            entity.Property(e => e.PickedQuantity)
+                .HasPrecision(18, 4)
+                .HasDefaultValue(0m);
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Pending");
+
+            entity.ToTable("PickRequestParts", t =>
+            {
+                t.HasCheckConstraint("CK_PickRequestParts_RequiredQuantity", "[RequiredQuantity] > 0");
+                t.HasCheckConstraint("CK_PickRequestParts_PickedQuantity", "[PickedQuantity] >= 0");
+            });
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");

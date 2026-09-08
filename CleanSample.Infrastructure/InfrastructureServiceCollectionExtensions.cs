@@ -38,6 +38,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IOrderLineRepository, OrderLineRepository>();
         services.AddScoped<IPickRequestRepository, PickRequestRepository>();
         services.AddScoped<IPickRequestLineRepository, PickRequestLineRepository>();
+        services.AddScoped<IPickRequestPartRepository, PickRequestPartRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
