@@ -9,16 +9,19 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly CleanSampleDbContext _context;
     private readonly IProductRepository _productRepository;
+    private readonly IVehicleRepository _vehicleRepository;
     private readonly ILogger<UnitOfWork> _logger;
     private IDbContextTransaction? _transaction;
 
     public UnitOfWork(
         CleanSampleDbContext context,
         IProductRepository productRepository,
+        IVehicleRepository vehicleRepository,
         ILogger<UnitOfWork> logger)
     {
         _context = context;
         _productRepository = productRepository;
+        _vehicleRepository = vehicleRepository;
         _logger = logger;
     }
 
@@ -26,6 +29,11 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the product repository instance
     /// </summary>
     public IProductRepository Products => _productRepository;
+
+    /// <summary>
+    /// Gets the vehicle repository instance
+    /// </summary>
+    public IVehicleRepository Vehicles => _vehicleRepository;
 
     /// <summary>
     /// Saves all changes made to the database asynchronously

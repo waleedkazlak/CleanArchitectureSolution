@@ -11,6 +11,11 @@ public interface IUnitOfWork : IDisposable
     IProductRepository Products { get; }
 
     /// <summary>
+    /// Vehicle repository instance
+    /// </summary>
+    IVehicleRepository Vehicles { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

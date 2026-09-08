@@ -22,6 +22,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<User> Users { get; set; }
 
+    /// <summary>
+    /// Vehicles DbSet
+    /// </summary>
+    public DbSet<Vehicle> Vehicles { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -94,6 +99,46 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Users");
+        });
+
+        // Configure Vehicle entity
+        modelBuilder.Entity<Vehicle>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("VehicleId");
+
+            entity.Property(e => e.VehicleNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.HasIndex(e => e.VehicleNumber)
+                .IsUnique()
+                .HasDatabaseName("UQ_Vehicles_VehicleNumber");
+
+            entity.Property(e => e.PlateNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.HasIndex(e => e.PlateNumber)
+                .IsUnique()
+                .HasDatabaseName("UQ_Vehicles_PlateNumber");
+
+            entity.Property(e => e.VehicleType)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.CapacityKg)
+                .HasPrecision(18, 2);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("Vehicles");
         });
     }
 }
