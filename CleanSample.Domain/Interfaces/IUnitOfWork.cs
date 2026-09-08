@@ -56,6 +56,11 @@ public interface IUnitOfWork : IDisposable
     IClientRepository Clients { get; }
 
     /// <summary>
+    /// ClientLocation repository instance
+    /// </summary>
+    IClientLocationRepository ClientLocations { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

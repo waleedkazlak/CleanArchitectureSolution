@@ -67,6 +67,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Client> Clients { get; set; }
 
+    /// <summary>
+    /// ClientLocations DbSet
+    /// </summary>
+    public DbSet<ClientLocation> ClientLocations { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -481,6 +486,59 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Clients");
+        });
+
+        // Configure ClientLocation entity
+        modelBuilder.Entity<ClientLocation>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("ClientLocationId");
+
+            entity.Property(e => e.ClientId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Client)
+                .WithMany()
+                .HasForeignKey(e => e.ClientId)
+                .HasConstraintName("FK_ClientLocations_Clients")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.Address)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.Property(e => e.City)
+                .HasMaxLength(150);
+
+            entity.Property(e => e.ContactName)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.ContactPhone)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Latitude)
+                .HasPrecision(10, 7);
+
+            entity.Property(e => e.Longitude)
+                .HasPrecision(10, 7);
+
+            entity.Property(e => e.IsDefault)
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("ClientLocations");
         });
     }
 }
