@@ -41,6 +41,7 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, P
                 Description = product.Description,
                 Price = product.Price,
                 Stock = product.Stock,
+                CategoryId = product.CategoryId,
                 IsActive = product.IsActive,
                 CreatedAt = product.CreatedAt,
                 UpdatedAt = product.UpdatedAt

@@ -41,6 +41,11 @@ public class ProductSearchFilterDto
     public int? MinStock { get; set; }
 
     /// <summary>
+    /// Filter by Category ID
+    /// </summary>
+    public int? CategoryId { get; set; }
+
+    /// <summary>
     /// Sort by field (Name, Price, Stock, CreatedAt), defaults to CreatedAt
     /// </summary>
     public string? SortBy { get; set; } = "CreatedAt";

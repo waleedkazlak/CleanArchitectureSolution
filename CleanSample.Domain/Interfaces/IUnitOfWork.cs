@@ -16,6 +16,11 @@ public interface IUnitOfWork : IDisposable
     IVehicleRepository Vehicles { get; }
 
     /// <summary>
+    /// Category repository instance
+    /// </summary>
+    ICategoryRepository Categories { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

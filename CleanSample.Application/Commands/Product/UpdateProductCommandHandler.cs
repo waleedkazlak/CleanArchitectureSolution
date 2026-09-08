@@ -21,6 +21,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
         product.Description = request.Description;
         product.Price = request.Price;
         product.Stock = request.Stock;
+        product.CategoryId = request.CategoryId;
         product.IsActive = request.IsActive;
         product.UpdatedAt = DateTime.UtcNow;
 

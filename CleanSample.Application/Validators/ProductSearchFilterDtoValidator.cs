@@ -52,6 +52,11 @@ public class ProductSearchFilterDtoValidator : AbstractValidator<ProductSearchFi
             .WithMessage("Minimum stock cannot be negative")
             .When(x => x.MinStock.HasValue);
 
+        RuleFor(x => x.CategoryId)
+            .GreaterThan(0)
+            .WithMessage("Category ID must be greater than 0")
+            .When(x => x.CategoryId.HasValue);
+
         RuleFor(x => x.SortBy)
             .Must(sortBy => _validSortFields.Contains(sortBy, StringComparer.OrdinalIgnoreCase))
             .WithMessage($"Sort field must be one of: {string.Join(", ", _validSortFields)}")

@@ -27,6 +27,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Vehicle> Vehicles { get; set; }
 
+    /// <summary>
+    /// Categories DbSet
+    /// </summary>
+    public DbSet<Category> Categories { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -45,6 +50,14 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Price)
                 .HasPrecision(18, 2);
+
+            entity.Property(e => e.CategoryId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Category)
+                .WithMany()
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false);
@@ -139,6 +152,32 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Vehicles");
+        });
+
+        // Configure Category entity
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("CategoryId");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(150);
+
+            entity.HasIndex(e => e.Name)
+                .IsUnique()
+                .HasDatabaseName("UQ_Categories_Name");
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("Categories");
         });
     }
 }

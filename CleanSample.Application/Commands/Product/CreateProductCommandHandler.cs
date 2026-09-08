@@ -19,6 +19,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             Description = request.Description,
             Price = request.Price,
             Stock = request.Stock,
+            CategoryId = request.CategoryId,
             IsActive = true
         };
 

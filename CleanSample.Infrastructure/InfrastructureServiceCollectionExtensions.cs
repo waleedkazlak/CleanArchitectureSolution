@@ -25,6 +25,7 @@ public static class InfrastructureServiceCollectionExtensions
         // Register repositories
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();

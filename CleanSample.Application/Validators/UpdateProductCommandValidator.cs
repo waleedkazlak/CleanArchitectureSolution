@@ -48,6 +48,12 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
             .LessThanOrEqualTo(1000000)
             .WithMessage("Product stock cannot exceed 1,000,000");
 
+        RuleFor(x => x.CategoryId)
+            .NotEmpty()
+            .WithMessage("Category ID is required")
+            .GreaterThan(0)
+            .WithMessage("Category ID must be greater than 0");
+
         RuleFor(x => x.IsActive)
             .NotNull()
             .WithMessage("Product active status is required");

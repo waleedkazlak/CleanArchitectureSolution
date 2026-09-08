@@ -41,5 +41,11 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
             .WithMessage("Product stock cannot be negative")
             .LessThanOrEqualTo(1000000)
             .WithMessage("Product stock cannot exceed 1,000,000");
+
+        RuleFor(x => x.CategoryId)
+            .NotEmpty()
+            .WithMessage("Category ID is required")
+            .GreaterThan(0)
+            .WithMessage("Category ID must be greater than 0");
     }
 }

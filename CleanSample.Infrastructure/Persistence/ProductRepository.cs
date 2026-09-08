@@ -44,6 +44,7 @@ namespace CleanSample.Infrastructure.Persistence;
             existingProduct.Description = product.Description;
             existingProduct.Price = product.Price;
             existingProduct.Stock = product.Stock;
+            existingProduct.CategoryId = product.CategoryId;
             existingProduct.IsActive = product.IsActive;
             existingProduct.UpdatedAt = DateTime.UtcNow;
 

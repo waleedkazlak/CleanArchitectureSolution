@@ -73,6 +73,13 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
             _logger.LogInformation("Applied minimum stock filter {MinStock}", filter.MinStock);
         }
 
+        // Apply category filter
+        if (filter.CategoryId.HasValue)
+        {
+            products = products.Where(p => p.CategoryId == filter.CategoryId.Value).ToList();
+            _logger.LogInformation("Applied category filter {CategoryId}", filter.CategoryId);
+        }
+
         // Apply sorting
         products = ApplySort(products.ToList(), filter.SortBy, filter.SortDirection);
 
@@ -91,6 +98,7 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
             Description = p.Description,
             Price = p.Price,
             Stock = p.Stock,
+            CategoryId = p.CategoryId,
             IsActive = p.IsActive,
             CreatedAt = p.CreatedAt,
             UpdatedAt = p.UpdatedAt
