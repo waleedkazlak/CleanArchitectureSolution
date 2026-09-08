@@ -57,6 +57,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Part> Parts { get; set; }
 
+    /// <summary>
+    /// ProductBOMs DbSet
+    /// </summary>
+    public DbSet<ProductBOM> ProductBOMs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -391,6 +396,46 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Parts");
+        });
+
+        // Configure ProductBOM entity
+        modelBuilder.Entity<ProductBOM>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("ProductBOMId");
+
+            entity.Property(e => e.ProductVariantId)
+                .IsRequired();
+
+            entity.Property(e => e.PartId)
+                .IsRequired();
+
+            entity.HasOne(e => e.ProductVariant)
+                .WithMany()
+                .HasForeignKey(e => e.ProductVariantId)
+                .HasConstraintName("FK_ProductBOM_ProductVariants")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Part)
+                .WithMany()
+                .HasForeignKey(e => e.PartId)
+                .HasConstraintName("FK_ProductBOM_Parts")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => new { e.ProductVariantId, e.PartId })
+                .IsUnique()
+                .HasDatabaseName("UQ_ProductBOM_Variant_Part");
+
+            entity.Property(e => e.Quantity)
+                .HasPrecision(18, 4)
+                .IsRequired();
+
+            entity.ToTable("ProductBOM", t => t.HasCheckConstraint("CK_ProductBOM_Quantity", "[Quantity] > 0"));
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
         });
     }
 }

@@ -46,6 +46,11 @@ public interface IUnitOfWork : IDisposable
     IPartRepository Parts { get; }
 
     /// <summary>
+    /// ProductBOM repository instance
+    /// </summary>
+    IProductBOMRepository ProductBOMs { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

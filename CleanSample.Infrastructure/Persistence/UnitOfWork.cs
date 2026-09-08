@@ -16,6 +16,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IDesignRepository _designRepository;
     private readonly IProductVariantRepository _productVariantRepository;
     private readonly IPartRepository _partRepository;
+    private readonly IProductBOMRepository _productBOMRepository;
     private readonly ILogger<UnitOfWork> _logger;
     private IDbContextTransaction? _transaction;
 
@@ -29,6 +30,7 @@ public class UnitOfWork : IUnitOfWork
         IDesignRepository designRepository,
         IProductVariantRepository productVariantRepository,
         IPartRepository partRepository,
+        IProductBOMRepository productBOMRepository,
         ILogger<UnitOfWork> logger)
     {
         _context = context;
@@ -40,6 +42,7 @@ public class UnitOfWork : IUnitOfWork
         _designRepository = designRepository;
         _productVariantRepository = productVariantRepository;
         _partRepository = partRepository;
+        _productBOMRepository = productBOMRepository;
         _logger = logger;
     }
 
@@ -82,6 +85,11 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the part repository instance
     /// </summary>
     public IPartRepository Parts => _partRepository;
+
+    /// <summary>
+    /// Gets the product BOM repository instance
+    /// </summary>
+    public IProductBOMRepository ProductBOMs => _productBOMRepository;
 
     /// <summary>
     /// Saves all changes made to the database asynchronously
