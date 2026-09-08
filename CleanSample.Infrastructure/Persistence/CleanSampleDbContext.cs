@@ -42,6 +42,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Material> Materials { get; set; }
 
+    /// <summary>
+    /// Designs DbSet
+    /// </summary>
+    public DbSet<Design> Designs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -240,6 +245,39 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Materials");
+        });
+
+        // Configure Design entity
+        modelBuilder.Entity<Design>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("DesignId");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(150);
+
+            entity.HasIndex(e => e.Name)
+                .IsUnique()
+                .HasDatabaseName("UQ_Designs_Name");
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50);
+
+            entity.HasIndex(e => e.Code)
+                .IsUnique()
+                .HasDatabaseName("UQ_Designs_Code");
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("Designs");
         });
     }
 }

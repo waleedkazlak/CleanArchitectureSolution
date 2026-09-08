@@ -13,6 +13,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly ICategoryRepository _categoryRepository;
     private readonly IColorRepository _colorRepository;
     private readonly IMaterialRepository _materialRepository;
+    private readonly IDesignRepository _designRepository;
     private readonly ILogger<UnitOfWork> _logger;
     private IDbContextTransaction? _transaction;
 
@@ -23,6 +24,7 @@ public class UnitOfWork : IUnitOfWork
         ICategoryRepository categoryRepository,
         IColorRepository colorRepository,
         IMaterialRepository materialRepository,
+        IDesignRepository designRepository,
         ILogger<UnitOfWork> logger)
     {
         _context = context;
@@ -31,6 +33,7 @@ public class UnitOfWork : IUnitOfWork
         _categoryRepository = categoryRepository;
         _colorRepository = colorRepository;
         _materialRepository = materialRepository;
+        _designRepository = designRepository;
         _logger = logger;
     }
 
@@ -58,6 +61,11 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the material repository instance
     /// </summary>
     public IMaterialRepository Materials => _materialRepository;
+
+    /// <summary>
+    /// Gets the design repository instance
+    /// </summary>
+    public IDesignRepository Designs => _designRepository;
 
     /// <summary>
     /// Saves all changes made to the database asynchronously

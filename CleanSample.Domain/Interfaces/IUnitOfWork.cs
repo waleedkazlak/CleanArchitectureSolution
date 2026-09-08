@@ -31,6 +31,11 @@ public interface IUnitOfWork : IDisposable
     IMaterialRepository Materials { get; }
 
     /// <summary>
+    /// Design repository instance
+    /// </summary>
+    IDesignRepository Designs { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>
