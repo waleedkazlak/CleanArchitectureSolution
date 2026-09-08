@@ -47,6 +47,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Design> Designs { get; set; }
 
+    /// <summary>
+    /// ProductVariants DbSet
+    /// </summary>
+    public DbSet<ProductVariant> ProductVariants { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -278,6 +283,69 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Designs");
+        });
+
+        // Configure ProductVariant entity
+        modelBuilder.Entity<ProductVariant>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("ProductVariantId");
+
+            entity.Property(e => e.ProductId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Product)
+                .WithMany()
+                .HasForeignKey(e => e.ProductId)
+                .HasConstraintName("FK_ProductVariants_Products")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Color)
+                .WithMany()
+                .HasForeignKey(e => e.ColorId)
+                .HasConstraintName("FK_ProductVariants_Colors")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Material)
+                .WithMany()
+                .HasForeignKey(e => e.MaterialId)
+                .HasConstraintName("FK_ProductVariants_Materials")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Design)
+                .WithMany()
+                .HasForeignKey(e => e.DesignId)
+                .HasConstraintName("FK_ProductVariants_Designs")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.HasIndex(e => e.Code)
+                .IsUnique()
+                .HasDatabaseName("UQ_ProductVariants_Code");
+
+            entity.Property(e => e.Barcode)
+                .HasMaxLength(100);
+
+            entity.HasIndex(e => e.Barcode)
+                .IsUnique()
+                .HasDatabaseName("UQ_ProductVariants_Barcode");
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("ProductVariants");
         });
     }
 }

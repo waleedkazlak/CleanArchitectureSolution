@@ -36,6 +36,11 @@ public interface IUnitOfWork : IDisposable
     IDesignRepository Designs { get; }
 
     /// <summary>
+    /// ProductVariant repository instance
+    /// </summary>
+    IProductVariantRepository ProductVariants { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>
