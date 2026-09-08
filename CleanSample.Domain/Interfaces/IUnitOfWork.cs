@@ -21,6 +21,11 @@ public interface IUnitOfWork : IDisposable
     ICategoryRepository Categories { get; }
 
     /// <summary>
+    /// Color repository instance
+    /// </summary>
+    IColorRepository Colors { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

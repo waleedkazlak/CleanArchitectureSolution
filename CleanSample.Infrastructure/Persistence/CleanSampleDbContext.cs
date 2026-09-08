@@ -32,6 +32,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Category> Categories { get; set; }
 
+    /// <summary>
+    /// Colors DbSet
+    /// </summary>
+    public DbSet<Color> Colors { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -178,6 +183,32 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Categories");
+        });
+
+        // Configure Color entity
+        modelBuilder.Entity<Color>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("ColorId");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.HasIndex(e => e.Name)
+                .IsUnique()
+                .HasDatabaseName("UQ_Colors_Name");
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("Colors");
         });
     }
 }
