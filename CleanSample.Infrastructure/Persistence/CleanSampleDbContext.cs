@@ -37,6 +37,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Color> Colors { get; set; }
 
+    /// <summary>
+    /// Materials DbSet
+    /// </summary>
+    public DbSet<Material> Materials { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -209,6 +214,32 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Colors");
+        });
+
+        // Configure Material entity
+        modelBuilder.Entity<Material>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("MaterialId");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(150);
+
+            entity.HasIndex(e => e.Name)
+                .IsUnique()
+                .HasDatabaseName("UQ_Materials_Name");
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("Materials");
         });
     }
 }
