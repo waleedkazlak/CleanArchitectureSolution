@@ -21,6 +21,8 @@ public class UnitOfWork : IUnitOfWork
     private readonly IClientLocationRepository _clientLocationRepository;
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderLineRepository _orderLineRepository;
+    private readonly IPickRequestRepository _pickRequestRepository;
+    private readonly IPickRequestLineRepository _pickRequestLineRepository;
     private readonly ILogger<UnitOfWork> _logger;
     private IDbContextTransaction? _transaction;
 
@@ -39,6 +41,8 @@ public class UnitOfWork : IUnitOfWork
         IClientLocationRepository clientLocationRepository,
         IOrderRepository orderRepository,
         IOrderLineRepository orderLineRepository,
+        IPickRequestRepository pickRequestRepository,
+        IPickRequestLineRepository pickRequestLineRepository,
         ILogger<UnitOfWork> logger)
     {
         _context = context;
@@ -55,6 +59,8 @@ public class UnitOfWork : IUnitOfWork
         _clientLocationRepository = clientLocationRepository;
         _orderRepository = orderRepository;
         _orderLineRepository = orderLineRepository;
+        _pickRequestRepository = pickRequestRepository;
+        _pickRequestLineRepository = pickRequestLineRepository;
         _logger = logger;
     }
 
@@ -122,6 +128,16 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the order line repository instance
     /// </summary>
     public IOrderLineRepository OrderLines => _orderLineRepository;
+
+    /// <summary>
+    /// Gets the pick request repository instance
+    /// </summary>
+    public IPickRequestRepository PickRequests => _pickRequestRepository;
+
+    /// <summary>
+    /// Gets the pick request line repository instance
+    /// </summary>
+    public IPickRequestLineRepository PickRequestLines => _pickRequestLineRepository;
 
     /// <summary>
     /// Saves all changes made to the database asynchronously

@@ -71,6 +71,16 @@ public interface IUnitOfWork : IDisposable
     IOrderLineRepository OrderLines { get; }
 
     /// <summary>
+    /// PickRequest repository instance
+    /// </summary>
+    IPickRequestRepository PickRequests { get; }
+
+    /// <summary>
+    /// PickRequestLine repository instance
+    /// </summary>
+    IPickRequestLineRepository PickRequestLines { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

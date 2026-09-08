@@ -1,0 +1,25 @@
+using CleanSample.Application.DTOs;
+using MediatR;
+
+namespace CleanSample.Application.Commands.PickRequest;
+
+public class UpdatePickRequestCommand : IRequest<bool>
+{
+    public long Id { get; set; }
+    public string RequestNumber { get; set; } = null!;
+    public long? OrderId { get; set; }
+    public int ClientId { get; set; }
+    public int? ClientLocationId { get; set; }
+    public int? RequestedBy { get; set; }
+    public DateTime RequestDate { get; set; }
+    public DateTime? ExecutionDate { get; set; }
+    public string Status { get; set; } = null!;
+    public string? DestinationAddress { get; set; }
+    public string? DestinationCity { get; set; }
+    public string? Description { get; set; }
+    public int? DriverId { get; set; }
+    public int? VehicleId { get; set; }
+    public bool Verified { get; set; }
+
+    public List<PickRequestLineItemDto> PickRequestLines { get; set; } = new();
+}

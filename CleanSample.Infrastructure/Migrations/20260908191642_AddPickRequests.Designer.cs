@@ -4,6 +4,7 @@ using CleanSample.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanSample.Infrastructure.Migrations
 {
     [DbContext(typeof(CleanSampleDbContext))]
-    partial class CleanSampleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260908191642_AddPickRequests")]
+    partial class AddPickRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -538,44 +541,6 @@ namespace CleanSample.Infrastructure.Migrations
                     b.ToTable("PickRequests", (string)null);
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequestLine", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("PickRequestLineId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<long>("PickRequestId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("ProductVariantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PickRequestId");
-
-                    b.HasIndex("ProductVariantId");
-
-                    b.ToTable("PickRequestLines", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_PickRequestLines_Quantity", "[Quantity] > 0");
-                        });
-                });
-
             modelBuilder.Entity("CleanSample.Domain.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -951,27 +916,6 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequestLine", b =>
-                {
-                    b.HasOne("CleanSample.Domain.Entities.PickRequest", "PickRequest")
-                        .WithMany("PickRequestLines")
-                        .HasForeignKey("PickRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_PickRequestLines_PickRequests");
-
-                    b.HasOne("CleanSample.Domain.Entities.ProductVariant", "ProductVariant")
-                        .WithMany()
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_PickRequestLines_ProductVariants");
-
-                    b.Navigation("PickRequest");
-
-                    b.Navigation("ProductVariant");
-                });
-
             modelBuilder.Entity("CleanSample.Domain.Entities.Product", b =>
                 {
                     b.HasOne("CleanSample.Domain.Entities.Category", "Category")
@@ -1043,11 +987,6 @@ namespace CleanSample.Infrastructure.Migrations
             modelBuilder.Entity("CleanSample.Domain.Entities.Order", b =>
                 {
                     b.Navigation("OrderLines");
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequest", b =>
-                {
-                    b.Navigation("PickRequestLines");
                 });
 #pragma warning restore 612, 618
         }

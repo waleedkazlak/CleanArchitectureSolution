@@ -82,6 +82,16 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<OrderLine> OrderLines { get; set; }
 
+    /// <summary>
+    /// PickRequests DbSet
+    /// </summary>
+    public DbSet<PickRequest> PickRequests { get; set; }
+
+    /// <summary>
+    /// PickRequestLines DbSet
+    /// </summary>
+    public DbSet<PickRequestLine> PickRequestLines { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -630,6 +640,135 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Notes)
                 .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure PickRequest entity
+        modelBuilder.Entity<PickRequest>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("PickRequestId");
+
+            entity.Property(e => e.RequestNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.HasIndex(e => e.RequestNumber)
+                .IsUnique()
+                .HasDatabaseName("UQ_PickRequests_RequestNumber");
+
+            entity.Property(e => e.OrderId);
+
+            entity.HasOne(e => e.Order)
+                .WithMany()
+                .HasForeignKey(e => e.OrderId)
+                .HasConstraintName("FK_PickRequests_Orders")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.ClientId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Client)
+                .WithMany()
+                .HasForeignKey(e => e.ClientId)
+                .HasConstraintName("FK_PickRequests_Clients")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.ClientLocationId);
+
+            entity.HasOne(e => e.ClientLocation)
+                .WithMany()
+                .HasForeignKey(e => e.ClientLocationId)
+                .HasConstraintName("FK_PickRequests_ClientLocations")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.RequestedBy);
+
+            entity.HasOne(e => e.Requester)
+                .WithMany()
+                .HasForeignKey(e => e.RequestedBy)
+                .HasConstraintName("FK_PickRequests_RequestedBy")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.RequestDate)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.Property(e => e.ExecutionDate);
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Created");
+
+            entity.Property(e => e.DestinationAddress)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.DestinationCity)
+                .HasMaxLength(150);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.DriverId);
+
+            entity.HasOne(e => e.Driver)
+                .WithMany()
+                .HasForeignKey(e => e.DriverId)
+                .HasConstraintName("FK_PickRequests_Driver")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.VehicleId);
+
+            entity.HasOne(e => e.Vehicle)
+                .WithMany()
+                .HasForeignKey(e => e.VehicleId)
+                .HasConstraintName("FK_PickRequests_Vehicle")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Verified)
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("PickRequests");
+        });
+
+        // Configure PickRequestLine entity
+        modelBuilder.Entity<PickRequestLine>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("PickRequestLineId");
+
+            entity.Property(e => e.PickRequestId)
+                .IsRequired();
+
+            entity.HasOne(e => e.PickRequest)
+                .WithMany(p => p.PickRequestLines)
+                .HasForeignKey(e => e.PickRequestId)
+                .HasConstraintName("FK_PickRequestLines_PickRequests")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.ProductVariantId)
+                .IsRequired();
+
+            entity.HasOne(e => e.ProductVariant)
+                .WithMany()
+                .HasForeignKey(e => e.ProductVariantId)
+                .HasConstraintName("FK_PickRequestLines_ProductVariants")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Quantity)
+                .IsRequired();
+
+            entity.ToTable("PickRequestLines", t => t.HasCheckConstraint("CK_PickRequestLines_Quantity", "[Quantity] > 0"));
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
