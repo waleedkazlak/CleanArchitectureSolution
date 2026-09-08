@@ -15,4 +15,5 @@ public class PickRequestPart : BaseEntity<long>
     public decimal PickedQuantity { get; set; } = 0;
 
     public string Status { get; set; } = "Pending";
+    public ICollection<Pick> Picks { get; set; } = new List<Pick>();
 }

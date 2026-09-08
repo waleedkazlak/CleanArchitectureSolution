@@ -36,4 +36,5 @@ public class PickRequest : BaseEntity<long>
 
     public ICollection<PickRequestLine> PickRequestLines { get; set; } = new List<PickRequestLine>();
     public ICollection<PickRequestPart> PickRequestParts { get; set; } = new List<PickRequestPart>();
+    public ICollection<Pick> Picks { get; set; } = new List<Pick>();
 }

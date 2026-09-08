@@ -97,6 +97,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<PickRequestPart> PickRequestParts { get; set; }
 
+    /// <summary>
+    /// Picks DbSet
+    /// </summary>
+    public DbSet<Pick> Picks { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -831,6 +836,91 @@ public class CleanSampleDbContext : DbContext
             {
                 t.HasCheckConstraint("CK_PickRequestParts_RequiredQuantity", "[RequiredQuantity] > 0");
                 t.HasCheckConstraint("CK_PickRequestParts_PickedQuantity", "[PickedQuantity] >= 0");
+            });
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure Pick entity
+        modelBuilder.Entity<Pick>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("PickId");
+
+            entity.Property(e => e.PickRequestId)
+                .IsRequired();
+
+            entity.HasOne(e => e.PickRequest)
+                .WithMany(p => p.Picks)
+                .HasForeignKey(e => e.PickRequestId)
+                .HasConstraintName("FK_Picks_PickRequests")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.PickRequestPartId);
+
+            entity.HasOne(e => e.PickRequestPart)
+                .WithMany(prp => prp.Picks)
+                .HasForeignKey(e => e.PickRequestPartId)
+                .HasConstraintName("FK_Picks_PickRequestParts")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.PartId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Part)
+                .WithMany()
+                .HasForeignKey(e => e.PartId)
+                .HasConstraintName("FK_Picks_Parts")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Barcode)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Quantity)
+                .HasPrecision(18, 4)
+                .IsRequired();
+
+            entity.Property(e => e.PickedBy);
+
+            entity.HasOne(e => e.Picker)
+                .WithMany()
+                .HasForeignKey(e => e.PickedBy)
+                .HasConstraintName("FK_Picks_PickedBy")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.DriverId);
+
+            entity.HasOne(e => e.Driver)
+                .WithMany()
+                .HasForeignKey(e => e.DriverId)
+                .HasConstraintName("FK_Picks_Driver")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.VehicleId);
+
+            entity.HasOne(e => e.Vehicle)
+                .WithMany()
+                .HasForeignKey(e => e.VehicleId)
+                .HasConstraintName("FK_Picks_Vehicle")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.PickDate)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Picked");
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(500);
+
+            entity.ToTable("Picks", t =>
+            {
+                t.HasCheckConstraint("CK_Picks_Quantity", "[Quantity] > 0");
             });
 
             entity.Property(e => e.CreatedAt)
