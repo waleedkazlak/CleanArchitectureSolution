@@ -19,6 +19,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IProductBOMRepository _productBOMRepository;
     private readonly IClientRepository _clientRepository;
     private readonly IClientLocationRepository _clientLocationRepository;
+    private readonly IOrderRepository _orderRepository;
     private readonly ILogger<UnitOfWork> _logger;
     private IDbContextTransaction? _transaction;
 
@@ -35,6 +36,7 @@ public class UnitOfWork : IUnitOfWork
         IProductBOMRepository productBOMRepository,
         IClientRepository clientRepository,
         IClientLocationRepository clientLocationRepository,
+        IOrderRepository orderRepository,
         ILogger<UnitOfWork> logger)
     {
         _context = context;
@@ -49,6 +51,7 @@ public class UnitOfWork : IUnitOfWork
         _productBOMRepository = productBOMRepository;
         _clientRepository = clientRepository;
         _clientLocationRepository = clientLocationRepository;
+        _orderRepository = orderRepository;
         _logger = logger;
     }
 
@@ -106,6 +109,11 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the client location repository instance
     /// </summary>
     public IClientLocationRepository ClientLocations => _clientLocationRepository;
+
+    /// <summary>
+    /// Gets the order repository instance
+    /// </summary>
+    public IOrderRepository Orders => _orderRepository;
 
     /// <summary>
     /// Saves all changes made to the database asynchronously

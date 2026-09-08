@@ -34,6 +34,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IProductBOMRepository, ProductBOMRepository>();
         services.AddScoped<IClientRepository, ClientRepository>();
         services.AddScoped<IClientLocationRepository, ClientLocationRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();

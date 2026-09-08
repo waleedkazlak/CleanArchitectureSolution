@@ -72,6 +72,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<ClientLocation> ClientLocations { get; set; }
 
+    /// <summary>
+    /// Orders DbSet
+    /// </summary>
+    public DbSet<Order> Orders { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -539,6 +544,52 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("ClientLocations");
+        });
+
+        // Configure Order entity
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("OrderId");
+
+            entity.Property(e => e.OrderNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.HasIndex(e => e.OrderNumber)
+                .IsUnique()
+                .HasDatabaseName("UQ_Orders_OrderNumber");
+
+            entity.Property(e => e.ClientId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Client)
+                .WithMany()
+                .HasForeignKey(e => e.ClientId)
+                .HasConstraintName("FK_Orders_Clients")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.OrderDate)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.Property(e => e.RequiredDate)
+                .HasColumnType("date");
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Draft");
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("Orders");
         });
     }
 }
