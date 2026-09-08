@@ -10,4 +10,6 @@ public class Order : BaseEntity<long>
     public DateOnly? RequiredDate { get; set; }
     public string Status { get; set; } = "Draft";
     public string? Notes { get; set; }
+
+    public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
 }

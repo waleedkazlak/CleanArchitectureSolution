@@ -66,6 +66,11 @@ public interface IUnitOfWork : IDisposable
     IOrderRepository Orders { get; }
 
     /// <summary>
+    /// OrderLine repository instance
+    /// </summary>
+    IOrderLineRepository OrderLines { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

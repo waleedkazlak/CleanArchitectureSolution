@@ -1,3 +1,4 @@
+using CleanSample.Domain.Entities;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 
@@ -27,6 +28,15 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, boo
         order.Status = request.Status;
         order.Notes = request.Notes;
         order.UpdatedAt = DateTime.UtcNow;
+
+        order.OrderLines = request.OrderLines.Select(l => new CleanSample.Domain.Entities.OrderLine
+        {
+            Id = l.Id,
+            OrderId = order.Id,
+            ProductVariantId = l.ProductVariantId,
+            Quantity = l.Quantity,
+            Notes = l.Notes
+        }).ToList();
 
         await _unitOfWork.Orders.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

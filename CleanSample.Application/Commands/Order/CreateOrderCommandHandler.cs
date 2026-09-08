@@ -1,3 +1,4 @@
+using CleanSample.Domain.Entities;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 
@@ -21,7 +22,14 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, lon
             OrderDate = request.OrderDate ?? DateTime.UtcNow,
             RequiredDate = request.RequiredDate,
             Status = string.IsNullOrWhiteSpace(request.Status) ? "Draft" : request.Status,
-            Notes = request.Notes
+            Notes = request.Notes,
+            OrderLines = request.OrderLines.Select(l => new CleanSample.Domain.Entities.OrderLine
+            {
+                ProductVariantId = l.ProductVariantId,
+                Quantity = l.Quantity,
+                Notes = l.Notes,
+                CreatedAt = DateTime.UtcNow
+            }).ToList()
         };
 
         var orderId = await _unitOfWork.Orders.AddAsync(order);

@@ -28,7 +28,19 @@ public class GetOrdersByClientIdQueryHandler : IRequestHandler<GetOrdersByClient
             Status = o.Status,
             Notes = o.Notes,
             CreatedAt = o.CreatedAt,
-            UpdatedAt = o.UpdatedAt
+            UpdatedAt = o.UpdatedAt,
+            OrderLines = o.OrderLines?.Select(ol => new OrderLineDto
+            {
+                Id = ol.Id,
+                OrderId = ol.OrderId,
+                OrderNumber = o.OrderNumber,
+                ProductVariantId = ol.ProductVariantId,
+                ProductVariantCode = ol.ProductVariant?.Code,
+                Quantity = ol.Quantity,
+                Notes = ol.Notes,
+                CreatedAt = ol.CreatedAt,
+                UpdatedAt = ol.UpdatedAt
+            }).ToList() ?? new List<OrderLineDto>()
         }).ToList();
     }
 }

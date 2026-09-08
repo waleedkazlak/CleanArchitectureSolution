@@ -77,6 +77,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Order> Orders { get; set; }
 
+    /// <summary>
+    /// OrderLines DbSet
+    /// </summary>
+    public DbSet<OrderLine> OrderLines { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -590,6 +595,44 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Orders");
+        });
+
+        // Configure OrderLine entity
+        modelBuilder.Entity<OrderLine>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("OrderLineId");
+
+            entity.Property(e => e.OrderId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Order)
+                .WithMany(o => o.OrderLines)
+                .HasForeignKey(e => e.OrderId)
+                .HasConstraintName("FK_OrderLines_Orders")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.ProductVariantId)
+                .IsRequired();
+
+            entity.HasOne(e => e.ProductVariant)
+                .WithMany()
+                .HasForeignKey(e => e.ProductVariantId)
+                .HasConstraintName("FK_OrderLines_ProductVariants")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Quantity)
+                .IsRequired();
+
+            entity.ToTable("OrderLines", t => t.HasCheckConstraint("CK_OrderLines_Quantity", "[Quantity] > 0"));
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
         });
     }
 }
