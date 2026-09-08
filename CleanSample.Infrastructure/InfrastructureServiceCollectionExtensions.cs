@@ -30,6 +30,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IMaterialRepository, MaterialRepository>();
         services.AddScoped<IDesignRepository, DesignRepository>();
         services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
+        services.AddScoped<IPartRepository, PartRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();

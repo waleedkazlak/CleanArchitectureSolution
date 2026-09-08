@@ -52,6 +52,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<ProductVariant> ProductVariants { get; set; }
 
+    /// <summary>
+    /// Parts DbSet
+    /// </summary>
+    public DbSet<Part> Parts { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -346,6 +351,46 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("ProductVariants");
+        });
+
+        // Configure Part entity
+        modelBuilder.Entity<Part>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("PartId");
+
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.HasIndex(e => e.Code)
+                .IsUnique()
+                .HasDatabaseName("UQ_Parts_Code");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.Barcode)
+                .HasMaxLength(100);
+
+            entity.HasIndex(e => e.Barcode)
+                .IsUnique()
+                .HasDatabaseName("UQ_Parts_Barcode");
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("Parts");
         });
     }
 }

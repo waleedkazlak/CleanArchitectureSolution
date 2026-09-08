@@ -41,6 +41,11 @@ public interface IUnitOfWork : IDisposable
     IProductVariantRepository ProductVariants { get; }
 
     /// <summary>
+    /// Part repository instance
+    /// </summary>
+    IPartRepository Parts { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>
