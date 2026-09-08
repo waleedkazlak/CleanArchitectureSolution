@@ -62,6 +62,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<ProductBOM> ProductBOMs { get; set; }
 
+    /// <summary>
+    /// Clients DbSet
+    /// </summary>
+    public DbSet<Client> Clients { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -436,6 +441,46 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure Client entity
+        modelBuilder.Entity<Client>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("ClientId");
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(250);
+
+            entity.Property(e => e.Phone)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Mobile)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Email)
+                .HasMaxLength(250);
+
+            entity.Property(e => e.Address)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.City)
+                .HasMaxLength(150);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            // Add table name
+            entity.ToTable("Clients");
         });
     }
 }

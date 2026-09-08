@@ -51,6 +51,11 @@ public interface IUnitOfWork : IDisposable
     IProductBOMRepository ProductBOMs { get; }
 
     /// <summary>
+    /// Client repository instance
+    /// </summary>
+    IClientRepository Clients { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>
