@@ -496,6 +496,12 @@ public class CleanSampleDbContext : DbContext
                 .IsUnique()
                 .HasDatabaseName("UQ_ProductBOM_Variant_Part");
 
+            entity.HasIndex(e => e.ProductVariantId)
+                .HasDatabaseName("IX_ProductBOM_ProductVariantId");
+
+            entity.HasIndex(e => e.PartId)
+                .HasDatabaseName("IX_ProductBOM_PartId");
+
             entity.Property(e => e.Quantity)
                 .HasPrecision(18, 4)
                 .IsRequired();
@@ -624,6 +630,9 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_Orders_Clients")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasIndex(e => e.ClientId)
+                .HasDatabaseName("IX_Orders_ClientId");
+
             entity.Property(e => e.OrderDate)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
 
@@ -671,6 +680,12 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_OrderLines_ProductVariants")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasIndex(e => e.OrderId)
+                .HasDatabaseName("IX_OrderLines_OrderId");
+
+            entity.HasIndex(e => e.ProductVariantId)
+                .HasDatabaseName("IX_OrderLines_ProductVariantId");
+
             entity.Property(e => e.Quantity)
                 .IsRequired();
 
@@ -707,6 +722,9 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_PickRequests_Orders")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasIndex(e => e.OrderId)
+                .HasDatabaseName("IX_PickRequests_OrderId");
+
             entity.Property(e => e.ClientId)
                 .IsRequired();
 
@@ -715,6 +733,9 @@ public class CleanSampleDbContext : DbContext
                 .HasForeignKey(e => e.ClientId)
                 .HasConstraintName("FK_PickRequests_Clients")
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.ClientId)
+                .HasDatabaseName("IX_PickRequests_ClientId");
 
             entity.Property(e => e.ClientLocationId);
 
@@ -741,6 +762,9 @@ public class CleanSampleDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .HasDefaultValue("Created");
+
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("IX_PickRequests_Status");
 
             entity.Property(e => e.DestinationAddress)
                 .HasMaxLength(500);
@@ -829,6 +853,9 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_PickRequestParts_PickRequests")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasIndex(e => e.PickRequestId)
+                .HasDatabaseName("IX_PickRequestParts_PickRequestId");
+
             entity.Property(e => e.PickRequestLineId)
                 .IsRequired();
 
@@ -846,6 +873,9 @@ public class CleanSampleDbContext : DbContext
                 .HasForeignKey(e => e.PartId)
                 .HasConstraintName("FK_PickRequestParts_Parts")
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.PartId)
+                .HasDatabaseName("IX_PickRequestParts_PartId");
 
             entity.Property(e => e.RequiredQuantity)
                 .HasPrecision(18, 4)
@@ -887,6 +917,9 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_Picks_PickRequests")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasIndex(e => e.PickRequestId)
+                .HasDatabaseName("IX_Picks_PickRequestId");
+
             entity.Property(e => e.PickRequestPartId);
 
             entity.HasOne(e => e.PickRequestPart)
@@ -906,6 +939,9 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Barcode)
                 .HasMaxLength(100);
+
+            entity.HasIndex(e => e.Barcode)
+                .HasDatabaseName("IX_Picks_Barcode");
 
             entity.Property(e => e.Quantity)
                 .HasPrecision(18, 4)
@@ -971,6 +1007,9 @@ public class CleanSampleDbContext : DbContext
                 .HasForeignKey(e => e.PickRequestId)
                 .HasConstraintName("FK_VehicleLoads_PickRequests")
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.PickRequestId)
+                .HasDatabaseName("IX_VehicleLoads_PickRequestId");
 
             entity.Property(e => e.VehicleId)
                 .IsRequired();
@@ -1098,6 +1137,9 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_FieldJobs_PickRequests")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasIndex(e => e.PickRequestId)
+                .HasDatabaseName("IX_FieldJobs_PickRequestId");
+
             entity.Property(e => e.ClientId)
                 .IsRequired();
 
@@ -1140,6 +1182,9 @@ public class CleanSampleDbContext : DbContext
                 .HasMaxLength(50)
                 .HasDefaultValue("Scheduled");
 
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("IX_FieldJobs_Status");
+
             entity.Property(e => e.Verified)
                 .HasDefaultValue(false);
 
@@ -1171,6 +1216,9 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_FieldAssemblies_FieldJobs")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasIndex(e => e.FieldJobId)
+                .HasDatabaseName("IX_FieldAssemblies_FieldJobId");
+
             entity.Property(e => e.ProductVariantId)
                 .IsRequired();
 
@@ -1179,6 +1227,9 @@ public class CleanSampleDbContext : DbContext
                 .HasForeignKey(e => e.ProductVariantId)
                 .HasConstraintName("FK_FieldAssemblies_ProductVariants")
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.ProductVariantId)
+                .HasDatabaseName("IX_FieldAssemblies_ProductVariantId");
 
             entity.Property(e => e.ProductBarcode)
                 .HasMaxLength(100);
@@ -1275,6 +1326,9 @@ public class CleanSampleDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .HasDefaultValue("Open");
+
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("IX_Issues_Status");
 
             entity.Property(e => e.ReportedBy);
 
