@@ -111,6 +111,11 @@ public interface IUnitOfWork : IDisposable
     IFieldAssemblyRepository FieldAssemblies { get; }
 
     /// <summary>
+    /// Issue repository instance
+    /// </summary>
+    IIssueRepository Issues { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

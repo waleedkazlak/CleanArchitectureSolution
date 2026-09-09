@@ -122,6 +122,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<FieldAssembly> FieldAssemblies { get; set; }
 
+    /// <summary>
+    /// Issues DbSet
+    /// </summary>
+    public DbSet<Issue> Issues { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -1219,6 +1224,86 @@ public class CleanSampleDbContext : DbContext
             {
                 t.HasCheckConstraint("CK_FieldAssemblies_Quantity", "[Quantity] > 0");
             });
+        });
+
+        // Configure Issue entity
+        modelBuilder.Entity<Issue>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("IssueId");
+
+            entity.Property(e => e.PickRequestId);
+
+            entity.HasOne(e => e.PickRequest)
+                .WithMany(p => p.Issues)
+                .HasForeignKey(e => e.PickRequestId)
+                .HasConstraintName("FK_Issues_PickRequests")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.FieldJobId);
+
+            entity.HasOne(e => e.FieldJob)
+                .WithMany(fj => fj.Issues)
+                .HasForeignKey(e => e.FieldJobId)
+                .HasConstraintName("FK_Issues_FieldJobs")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.FieldAssemblyId);
+
+            entity.HasOne(e => e.FieldAssembly)
+                .WithMany(fa => fa.Issues)
+                .HasForeignKey(e => e.FieldAssemblyId)
+                .HasConstraintName("FK_Issues_FieldAssemblies")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.IssueType)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.Property(e => e.Severity)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Medium");
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Open");
+
+            entity.Property(e => e.ReportedBy);
+
+            entity.HasOne(e => e.ReportedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.ReportedBy)
+                .HasConstraintName("FK_Issues_ReportedBy")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.ReportedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.Property(e => e.ResolvedBy);
+
+            entity.HasOne(e => e.ResolvedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.ResolvedBy)
+                .HasConstraintName("FK_Issues_ResolvedBy")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.ResolvedAt);
+
+            entity.Property(e => e.ResolutionNotes)
+                .HasMaxLength(2000);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.ToTable("Issues");
         });
     }
 }

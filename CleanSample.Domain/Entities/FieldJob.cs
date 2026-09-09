@@ -33,4 +33,5 @@ public class FieldJob : BaseEntity<long>
     public string? Notes { get; set; }
 
     public ICollection<FieldAssembly> FieldAssemblies { get; set; } = new List<FieldAssembly>();
+    public ICollection<Issue> Issues { get; set; } = new List<Issue>();
 }

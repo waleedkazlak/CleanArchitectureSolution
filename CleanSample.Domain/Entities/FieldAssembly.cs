@@ -27,4 +27,6 @@ public class FieldAssembly : BaseEntity<long>
     public DateTime? VerifiedAt { get; set; }
 
     public string? Notes { get; set; }
+
+    public ICollection<Issue> Issues { get; set; } = new List<Issue>();
 }
