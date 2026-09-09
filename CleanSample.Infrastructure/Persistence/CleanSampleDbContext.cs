@@ -127,6 +127,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Issue> Issues { get; set; }
 
+    /// <summary>
+    /// Roles DbSet
+    /// </summary>
+    public DbSet<Role> Roles { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -175,38 +180,42 @@ public class CleanSampleDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
-            entity.Property(e => e.Username)
+            entity.Property(e => e.Id)
+                .HasColumnName("UserId");
+
+            entity.Property(e => e.RoleId);
+
+            entity.HasOne(e => e.Role)
+                .WithMany()
+                .HasForeignKey(e => e.RoleId)
+                .HasConstraintName("FK_Users_Roles")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.UserName)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(100);
 
-            entity.HasIndex(e => e.Username)
-                .IsUnique();
-
-            entity.Property(e => e.Email)
-                .IsRequired()
-                .HasMaxLength(255);
-
-            entity.HasIndex(e => e.Email)
-                .IsUnique();
-
-            entity.Property(e => e.PasswordHash)
-                .IsRequired()
-                .HasMaxLength(500);
+            entity.HasIndex(e => e.UserName)
+                .IsUnique()
+                .HasDatabaseName("UQ_Users_UserName");
 
             entity.Property(e => e.FullName)
                 .IsRequired()
-                .HasMaxLength(255);
+                .HasMaxLength(200);
 
-            entity.Property(e => e.Role)
-                .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("User");
+            entity.Property(e => e.Email)
+                .HasMaxLength(250);
+
+            entity.Property(e => e.Mobile)
+                .HasMaxLength(50);
 
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
 
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.Ignore(e => e.Username);
 
             // Add table name
             entity.ToTable("Users");
@@ -1358,6 +1367,28 @@ public class CleanSampleDbContext : DbContext
                 .HasDefaultValueSql("SYSUTCDATETIME()");
 
             entity.ToTable("Issues");
+        });
+
+        // Configure Role entity
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("RoleId");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.HasIndex(e => e.Name)
+                .IsUnique()
+                .HasDatabaseName("UQ_Roles_Name");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.ToTable("Roles");
         });
     }
 }

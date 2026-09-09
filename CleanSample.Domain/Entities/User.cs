@@ -1,24 +1,33 @@
 namespace CleanSample.Domain.Entities;
 
 /// <summary>
-/// User entity for authentication
+/// User entity
 /// </summary>
 public class User : BaseEntity
 {
     /// <summary>
+    /// Role identifier
+    /// </summary>
+    public int? RoleId { get; set; }
+
+    /// <summary>
+    /// Role navigation property
+    /// </summary>
+    public Role? Role { get; set; }
+
+    /// <summary>
     /// Username
     /// </summary>
-    public string Username { get; set; } = null!;
+    public string UserName { get; set; } = null!;
 
     /// <summary>
-    /// Email address
+    /// Alias for UserName for compatibility
     /// </summary>
-    public string Email { get; set; } = null!;
-
-    /// <summary>
-    /// Hashed password
-    /// </summary>
-    public string PasswordHash { get; set; } = null!;
+    public string Username
+    {
+        get => UserName;
+        set => UserName = value;
+    }
 
     /// <summary>
     /// User's full name
@@ -26,17 +35,17 @@ public class User : BaseEntity
     public string FullName { get; set; } = null!;
 
     /// <summary>
-    /// User role
+    /// Email address
     /// </summary>
-    public string Role { get; set; } = "User";
+    public string? Email { get; set; }
+
+    /// <summary>
+    /// Mobile phone number
+    /// </summary>
+    public string? Mobile { get; set; }
 
     /// <summary>
     /// Whether the user is active
     /// </summary>
     public bool IsActive { get; set; } = true;
-
-    /// <summary>
-    /// Last login timestamp
-    /// </summary>
-    public DateTime? LastLogin { get; set; }
 }

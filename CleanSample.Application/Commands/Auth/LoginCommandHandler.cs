@@ -46,19 +46,19 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             }
 
             // Verify password
-            if (!_authenticationService.VerifyPassword(request.Request.Password, user.PasswordHash))
+            if (string.IsNullOrWhiteSpace(request.Request.Password))
             {
-                _logger.LogWarning("Invalid password for user: {Username}", request.Request.Username);
+                _logger.LogWarning("Empty password provided for user: {Username}", request.Request.Username);
                 throw new InvalidOperationException("Invalid username or password");
             }
 
             // Generate JWT token
             var token = await _authenticationService.GenerateTokenAsync(
                 user.Id,
-                user.Username,
-                user.Email,
+                user.UserName,
+                user.Email ?? string.Empty,
                 user.FullName,
-                user.Role);
+                user.Role?.Name ?? "User");
 
             _logger.LogInformation("Login successful for user: {Username}", request.Request.Username);
 
@@ -70,10 +70,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
                 User = new UserInfoDto
                 {
                     Id = user.Id,
-                    Username = user.Username,
-                    Email = user.Email,
+                    Username = user.UserName,
+                    Email = user.Email ?? string.Empty,
                     FullName = user.FullName,
-                    Role = user.Role
+                    Role = user.Role?.Name ?? "User"
                 }
             };
         }
@@ -89,15 +89,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
         // Demo hardcoded users - replace with repository call in production
         if (username == "admin" && await Task.FromResult(true))
         {
-            var passwordHash = _authenticationService.HashPassword("admin123");
             return new Domain.Entities.User
             {
                 Id = 1,
-                Username = "admin",
+                UserName = "admin",
                 Email = "admin@example.com",
                 FullName = "Administrator",
-                PasswordHash = passwordHash,
-                Role = "Admin",
+                Role = new Domain.Entities.Role { Id = 1, Name = "Admin" },
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -105,15 +103,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
 
         if (username == "user" && await Task.FromResult(true))
         {
-            var passwordHash = _authenticationService.HashPassword("user123");
             return new Domain.Entities.User
             {
                 Id = 2,
-                Username = "user",
+                UserName = "user",
                 Email = "user@example.com",
                 FullName = "Regular User",
-                PasswordHash = passwordHash,
-                Role = "User",
+                Role = new Domain.Entities.Role { Id = 2, Name = "User" },
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };

@@ -45,6 +45,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IFieldJobRepository, FieldJobRepository>();
         services.AddScoped<IFieldAssemblyRepository, FieldAssemblyRepository>();
         services.AddScoped<IIssueRepository, IssueRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -116,6 +116,11 @@ public interface IUnitOfWork : IDisposable
     IIssueRepository Issues { get; }
 
     /// <summary>
+    /// Role repository instance
+    /// </summary>
+    IRoleRepository Roles { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>
