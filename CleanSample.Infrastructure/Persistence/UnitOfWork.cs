@@ -31,6 +31,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IFieldAssemblyRepository _fieldAssemblyRepository;
     private readonly IIssueRepository _issueRepository;
     private readonly IRoleRepository _roleRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ILogger<UnitOfWork> _logger;
     private IDbContextTransaction? _transaction;
 
@@ -59,6 +60,7 @@ public class UnitOfWork : IUnitOfWork
         IFieldAssemblyRepository fieldAssemblyRepository,
         IIssueRepository issueRepository,
         IRoleRepository roleRepository,
+        IUserRepository userRepository,
         ILogger<UnitOfWork> logger)
     {
         _context = context;
@@ -85,6 +87,7 @@ public class UnitOfWork : IUnitOfWork
         _fieldAssemblyRepository = fieldAssemblyRepository;
         _issueRepository = issueRepository;
         _roleRepository = roleRepository;
+        _userRepository = userRepository;
         _logger = logger;
     }
 
@@ -202,6 +205,11 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the role repository instance
     /// </summary>
     public IRoleRepository Roles => _roleRepository;
+
+    /// <summary>
+    /// Gets the user repository instance
+    /// </summary>
+    public IUserRepository Users => _userRepository;
 
     /// <summary>
     /// Saves all changes made to the database asynchronously

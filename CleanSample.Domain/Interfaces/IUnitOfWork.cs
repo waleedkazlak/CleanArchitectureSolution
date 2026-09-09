@@ -121,6 +121,11 @@ public interface IUnitOfWork : IDisposable
     IRoleRepository Roles { get; }
 
     /// <summary>
+    /// User repository instance
+    /// </summary>
+    IUserRepository Users { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>
