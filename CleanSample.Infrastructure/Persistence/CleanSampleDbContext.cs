@@ -121,6 +121,9 @@ public class CleanSampleDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
+            entity.Property(e => e.Id)
+                .HasColumnName("ProductId");
+
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(255);
