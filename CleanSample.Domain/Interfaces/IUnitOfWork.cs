@@ -91,6 +91,16 @@ public interface IUnitOfWork : IDisposable
     IPickRepository Picks { get; }
 
     /// <summary>
+    /// VehicleLoad repository instance
+    /// </summary>
+    IVehicleLoadRepository VehicleLoads { get; }
+
+    /// <summary>
+    /// VehicleLoadItem repository instance
+    /// </summary>
+    IVehicleLoadItemRepository VehicleLoadItems { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

@@ -29,4 +29,6 @@ public class Pick : BaseEntity<long>
     public string Status { get; set; } = "Picked";
 
     public string? Notes { get; set; }
+
+    public ICollection<VehicleLoadItem> VehicleLoadItems { get; set; } = new List<VehicleLoadItem>();
 }

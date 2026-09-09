@@ -102,6 +102,16 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Pick> Picks { get; set; }
 
+    /// <summary>
+    /// VehicleLoads DbSet
+    /// </summary>
+    public DbSet<VehicleLoad> VehicleLoads { get; set; }
+
+    /// <summary>
+    /// VehicleLoadItems DbSet
+    /// </summary>
+    public DbSet<VehicleLoadItem> VehicleLoadItems { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -921,6 +931,124 @@ public class CleanSampleDbContext : DbContext
             entity.ToTable("Picks", t =>
             {
                 t.HasCheckConstraint("CK_Picks_Quantity", "[Quantity] > 0");
+            });
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure VehicleLoad entity
+        modelBuilder.Entity<VehicleLoad>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("VehicleLoadId");
+
+            entity.Property(e => e.PickRequestId)
+                .IsRequired();
+
+            entity.HasOne(e => e.PickRequest)
+                .WithMany(p => p.VehicleLoads)
+                .HasForeignKey(e => e.PickRequestId)
+                .HasConstraintName("FK_VehicleLoads_PickRequests")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.VehicleId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Vehicle)
+                .WithMany()
+                .HasForeignKey(e => e.VehicleId)
+                .HasConstraintName("FK_VehicleLoads_Vehicles")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.DriverId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Driver)
+                .WithMany()
+                .HasForeignKey(e => e.DriverId)
+                .HasConstraintName("FK_VehicleLoads_Drivers")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.LoadDate)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Loading");
+
+            entity.Property(e => e.Verified)
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.VerifiedBy);
+
+            entity.HasOne(e => e.Verifier)
+                .WithMany()
+                .HasForeignKey(e => e.VerifiedBy)
+                .HasConstraintName("FK_VehicleLoads_VerifiedBy")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.VerifiedAt);
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.ToTable("VehicleLoads");
+        });
+
+        // Configure VehicleLoadItem entity
+        modelBuilder.Entity<VehicleLoadItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("VehicleLoadItemId");
+
+            entity.Property(e => e.VehicleLoadId)
+                .IsRequired();
+
+            entity.HasOne(e => e.VehicleLoad)
+                .WithMany(vl => vl.VehicleLoadItems)
+                .HasForeignKey(e => e.VehicleLoadId)
+                .HasConstraintName("FK_VehicleLoadItems_VehicleLoads")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.PickId);
+
+            entity.HasOne(e => e.Pick)
+                .WithMany(p => p.VehicleLoadItems)
+                .HasForeignKey(e => e.PickId)
+                .HasConstraintName("FK_VehicleLoadItems_Picks")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.PartId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Part)
+                .WithMany()
+                .HasForeignKey(e => e.PartId)
+                .HasConstraintName("FK_VehicleLoadItems_Parts")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Barcode)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Quantity)
+                .HasPrecision(18, 4)
+                .IsRequired();
+
+            entity.Property(e => e.LoadedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.ToTable("VehicleLoadItems", t =>
+            {
+                t.HasCheckConstraint("CK_VehicleLoadItems_Quantity", "[Quantity] > 0");
             });
 
             entity.Property(e => e.CreatedAt)
