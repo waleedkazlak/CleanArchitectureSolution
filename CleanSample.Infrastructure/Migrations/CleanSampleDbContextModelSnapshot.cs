@@ -1177,6 +1177,117 @@ namespace CleanSample.Infrastructure.Migrations
                     b.ToTable("Roles", (string)null);
                 });
 
+            modelBuilder.Entity("CleanSample.Domain.Entities.RolePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("RolePermissionId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("CanCreate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanUpdate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanView")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScreenId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("IX_RolePermissions_RoleId");
+
+                    b.HasIndex("ScreenId")
+                        .HasDatabaseName("IX_RolePermissions_ScreenId");
+
+                    b.HasIndex("RoleId", "ScreenId")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_RolePermissions_Role_Screen");
+
+                    b.ToTable("RolePermissions", (string)null);
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.Screen", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ScreenId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Module")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_Screens_Code");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_Screens_Name");
+
+                    b.ToTable("Screens", (string)null);
+                });
+
             modelBuilder.Entity("CleanSample.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -1208,6 +1319,20 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Property<string>("Mobile")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasDefaultValue("");
+
+                    b.Property<string>("PasswordSalt")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)")
+                        .HasDefaultValue("");
 
                     b.Property<int?>("RoleId")
                         .HasColumnType("int");
@@ -1798,6 +1923,27 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("CleanSample.Domain.Entities.RolePermission", b =>
+                {
+                    b.HasOne("CleanSample.Domain.Entities.Role", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_RolePermissions_Roles");
+
+                    b.HasOne("CleanSample.Domain.Entities.Screen", "Screen")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("ScreenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_RolePermissions_Screens");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("Screen");
+                });
+
             modelBuilder.Entity("CleanSample.Domain.Entities.User", b =>
                 {
                     b.HasOne("CleanSample.Domain.Entities.Role", "Role")
@@ -1936,6 +2082,16 @@ namespace CleanSample.Infrastructure.Migrations
             modelBuilder.Entity("CleanSample.Domain.Entities.ProductVariant", b =>
                 {
                     b.Navigation("FieldAssemblies");
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.Role", b =>
+                {
+                    b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.Screen", b =>
+                {
+                    b.Navigation("RolePermissions");
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.VehicleLoad", b =>

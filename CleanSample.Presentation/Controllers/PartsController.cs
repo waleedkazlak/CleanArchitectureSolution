@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Part;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Part;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class PartsController : ControllerBase
     /// <param name="filter">Part search filter object</param>
     /// <returns>Paginated list of parts</returns>
     [HttpPost("search")]
+    [RequirePermission("PARTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class PartsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of parts</returns>
     [HttpGet]
+    [RequirePermission("PARTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class PartsController : ControllerBase
     /// <param name="id">Part id</param>
     /// <returns>Part details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("PARTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,12 +110,12 @@ public class PartsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new part (Admin only)
+    /// Create a new part
     /// </summary>
     /// <param name="command">Part creation command</param>
     /// <returns>Created part id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PARTS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -128,13 +133,13 @@ public class PartsController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing part (Admin only)
+    /// Update an existing part
     /// </summary>
     /// <param name="id">Part id</param>
     /// <param name="command">Part update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PARTS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -164,12 +169,12 @@ public class PartsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a part (Admin only)
+    /// Delete a part
     /// </summary>
     /// <param name="id">Part id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PARTS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

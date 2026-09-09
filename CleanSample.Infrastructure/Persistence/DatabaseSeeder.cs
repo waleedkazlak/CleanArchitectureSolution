@@ -64,7 +64,12 @@ public static class DatabaseSeeder
 
             // 13. Issues
             await SeedIssuesAsync(context);
+
+            // 14. Screens & RolePermissions
+            await SeedScreensAsync(context);
+            await SeedRolePermissionsAsync(context);
         }
+
         catch (Exception ex)
         {
             throw new InvalidOperationException("Error occurred while seeding the database", ex);
@@ -91,6 +96,8 @@ public static class DatabaseSeeder
 
     private static async Task SeedUsersAsync(CleanSampleDbContext context)
     {
+        var (defaultHash, defaultSalt) = HashPasswordWithSalt("P@$$w0rd");
+
         var existingUsersCount = await context.Users.CountAsync();
         var adminRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
         var userRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
@@ -110,6 +117,8 @@ public static class DatabaseSeeder
                     FullName = "Administrator",
                     RoleId = adminRole?.Id,
                     Mobile = "555-0001",
+                    PasswordHash = defaultHash,
+                    PasswordSalt = defaultSalt,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -120,6 +129,8 @@ public static class DatabaseSeeder
                     FullName = "Regular User",
                     RoleId = userRole?.Id,
                     Mobile = "555-0002",
+                    PasswordHash = defaultHash,
+                    PasswordSalt = defaultSalt,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 },
@@ -130,6 +141,8 @@ public static class DatabaseSeeder
                     FullName = "Manager User",
                     RoleId = managerRole?.Id,
                     Mobile = "555-0003",
+                    PasswordHash = defaultHash,
+                    PasswordSalt = defaultSalt,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 }
@@ -149,6 +162,8 @@ public static class DatabaseSeeder
                 FullName = "John Driver",
                 RoleId = driverRole?.Id,
                 Mobile = "555-0101",
+                PasswordHash = defaultHash,
+                PasswordSalt = defaultSalt,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             });
@@ -163,6 +178,8 @@ public static class DatabaseSeeder
                 FullName = "Mike Driver",
                 RoleId = driverRole?.Id,
                 Mobile = "555-0102",
+                PasswordHash = defaultHash,
+                PasswordSalt = defaultSalt,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             });
@@ -177,6 +194,8 @@ public static class DatabaseSeeder
                 FullName = "Alex Technician",
                 RoleId = technicianRole?.Id,
                 Mobile = "555-0201",
+                PasswordHash = defaultHash,
+                PasswordSalt = defaultSalt,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             });
@@ -191,6 +210,8 @@ public static class DatabaseSeeder
                 FullName = "Sam Technician",
                 RoleId = technicianRole?.Id,
                 Mobile = "555-0202",
+                PasswordHash = defaultHash,
+                PasswordSalt = defaultSalt,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             });
@@ -205,15 +226,86 @@ public static class DatabaseSeeder
                 FullName = "Robert Supervisor",
                 RoleId = supervisorRole?.Id,
                 Mobile = "555-0301",
+                PasswordHash = defaultHash,
+                PasswordSalt = defaultSalt,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             });
         }
 
         await context.SaveChangesAsync();
+
+        // Ensure all seeded and existing users have their corresponding RoleId assigned
+        var adminUser = await context.Users.FirstOrDefaultAsync(u => u.UserName == "admin");
+        if (adminUser != null && (adminUser.RoleId == null || adminUser.RoleId != (adminRole?.Id ?? 1)))
+        {
+            adminUser.RoleId = adminRole?.Id ?? 1;
+        }
+
+        var regularUser = await context.Users.FirstOrDefaultAsync(u => u.UserName == "user");
+        if (regularUser != null && regularUser.RoleId == null)
+        {
+            regularUser.RoleId = userRole?.Id ?? 2;
+        }
+
+        var managerUser = await context.Users.FirstOrDefaultAsync(u => u.UserName == "manager");
+        if (managerUser != null && managerUser.RoleId == null)
+        {
+            managerUser.RoleId = managerRole?.Id ?? 3;
+        }
+
+        // Update any existing users in DB that have null RoleId
+        var usersWithoutRole = await context.Users
+            .Where(u => u.RoleId == null)
+            .ToListAsync();
+
+        if (usersWithoutRole.Any())
+        {
+            foreach (var u in usersWithoutRole)
+            {
+                if (u.UserName.StartsWith("driver", StringComparison.OrdinalIgnoreCase))
+                    u.RoleId = driverRole?.Id ?? 4;
+                else if (u.UserName.StartsWith("tech", StringComparison.OrdinalIgnoreCase))
+                    u.RoleId = technicianRole?.Id ?? 5;
+                else if (u.UserName.StartsWith("supervisor", StringComparison.OrdinalIgnoreCase))
+                    u.RoleId = supervisorRole?.Id ?? 6;
+                else
+                    u.RoleId = adminRole?.Id ?? 1;
+            }
+        }
+
+        // Update any existing users in DB that have empty password hash
+        var usersWithoutPassword = await context.Users
+            .Where(u => string.IsNullOrEmpty(u.PasswordHash))
+            .ToListAsync();
+
+        if (usersWithoutPassword.Any())
+        {
+            foreach (var u in usersWithoutPassword)
+            {
+                u.PasswordHash = defaultHash;
+                u.PasswordSalt = defaultSalt;
+            }
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    private static (string Hash, string Salt) HashPasswordWithSalt(string password)
+    {
+        byte[] saltBytes = System.Security.Cryptography.RandomNumberGenerator.GetBytes(16);
+        byte[] hashBytes = System.Security.Cryptography.Rfc2898DeriveBytes.Pbkdf2(
+            System.Text.Encoding.UTF8.GetBytes(password),
+            saltBytes,
+            iterations: 100000,
+            hashAlgorithm: System.Security.Cryptography.HashAlgorithmName.SHA256,
+            outputLength: 32);
+
+        return (Convert.ToBase64String(hashBytes), Convert.ToBase64String(saltBytes));
     }
 
     private static async Task SeedCategoriesAsync(CleanSampleDbContext context)
+
     {
         if (await context.Categories.AnyAsync()) return;
 
@@ -941,6 +1033,158 @@ public static class DatabaseSeeder
         };
 
         await context.Issues.AddRangeAsync(issues);
+        await context.SaveChangesAsync();
+    }
+
+    private static async Task SeedScreensAsync(CleanSampleDbContext context)
+    {
+        if (await context.Screens.AnyAsync()) return;
+
+        var screens = new List<Screen>
+        {
+            new Screen { Code = "USERS", Name = "Users Management", Module = "Administration", Description = "Manage system users and active states" },
+            new Screen { Code = "ROLES", Name = "Roles & Permissions", Module = "Administration", Description = "Configure roles and screen access rights" },
+            new Screen { Code = "SCREENS", Name = "System Screens", Module = "Administration", Description = "Manage system screen registry" },
+
+            new Screen { Code = "CATEGORIES", Name = "Categories", Module = "Master Data", Description = "Manage item categories" },
+            new Screen { Code = "COLORS", Name = "Colors", Module = "Master Data", Description = "Manage item colors" },
+            new Screen { Code = "MATERIALS", Name = "Materials", Module = "Master Data", Description = "Manage item materials" },
+            new Screen { Code = "DESIGNS", Name = "Designs", Module = "Master Data", Description = "Manage item designs" },
+
+            new Screen { Code = "PRODUCTS", Name = "Products Catalog", Module = "Inventory", Description = "Manage master products catalog" },
+            new Screen { Code = "PRODUCT_VARIANTS", Name = "Product Variants", Module = "Inventory", Description = "Manage product SKUs and barcodes" },
+            new Screen { Code = "PARTS", Name = "Parts & Components", Module = "Inventory", Description = "Manage raw parts inventory" },
+            new Screen { Code = "PRODUCT_BOM", Name = "Product BOM", Module = "Inventory", Description = "Manage bill of materials composition" },
+
+            new Screen { Code = "CLIENTS", Name = "Clients", Module = "Sales", Description = "Manage client accounts" },
+            new Screen { Code = "CLIENT_LOCATIONS", Name = "Client Locations", Module = "Sales", Description = "Manage client delivery sites" },
+            new Screen { Code = "ORDERS", Name = "Sales Orders", Module = "Sales", Description = "Manage sales orders and lines" },
+
+            new Screen { Code = "PICK_REQUESTS", Name = "Pick Requests", Module = "Warehouse", Description = "Manage warehouse pick allocations" },
+            new Screen { Code = "PICKS", Name = "Picks Scanning", Module = "Warehouse", Description = "Barcode pick scanning and logging" },
+
+            new Screen { Code = "VEHICLES", Name = "Vehicles", Module = "Logistics", Description = "Fleet vehicle tracking" },
+            new Screen { Code = "VEHICLE_LOADS", Name = "Vehicle Loads", Module = "Logistics", Description = "Manage truck loading manifests" },
+
+            new Screen { Code = "FIELD_JOBS", Name = "Field Jobs", Module = "Operations", Description = "Manage field service work orders" },
+            new Screen { Code = "FIELD_ASSEMBLIES", Name = "Field Assemblies", Module = "Operations", Description = "Manage on-site product assemblies" },
+            new Screen { Code = "ISSUES", Name = "Issue Tracking", Module = "Operations", Description = "Incident reporting and defect logging" }
+        };
+
+        await context.Screens.AddRangeAsync(screens);
+        await context.SaveChangesAsync();
+    }
+
+    private static async Task SeedRolePermissionsAsync(CleanSampleDbContext context)
+    {
+        if (await context.RolePermissions.AnyAsync()) return;
+
+        var roles = await context.Roles.ToListAsync();
+        var screens = await context.Screens.ToListAsync();
+
+        var adminRole = roles.FirstOrDefault(r => r.Name == "Admin");
+        var managerRole = roles.FirstOrDefault(r => r.Name == "Manager");
+        var supervisorRole = roles.FirstOrDefault(r => r.Name == "Supervisor");
+        var technicianRole = roles.FirstOrDefault(r => r.Name == "Technician");
+        var driverRole = roles.FirstOrDefault(r => r.Name == "Driver");
+        var userRole = roles.FirstOrDefault(r => r.Name == "User");
+
+        var permissions = new List<RolePermission>();
+
+        foreach (var screen in screens)
+        {
+            // Admin: Full access to everything
+            if (adminRole != null)
+            {
+                permissions.Add(new RolePermission
+                {
+                    RoleId = adminRole.Id,
+                    ScreenId = screen.Id,
+                    CanView = true,
+                    CanCreate = true,
+                    CanUpdate = true,
+                    CanDelete = true
+                });
+            }
+
+            // Manager: View everything, Create/Update on non-admin
+            if (managerRole != null)
+            {
+                var isAdministration = screen.Module == "Administration";
+                permissions.Add(new RolePermission
+                {
+                    RoleId = managerRole.Id,
+                    ScreenId = screen.Id,
+                    CanView = true,
+                    CanCreate = !isAdministration,
+                    CanUpdate = !isAdministration,
+                    CanDelete = screen.Module == "Sales" || screen.Module == "Inventory"
+                });
+            }
+
+            // Supervisor: Full on Operations & Warehouse & Logistics
+            if (supervisorRole != null)
+            {
+                var isOpsOrLogistics = screen.Module is "Operations" or "Logistics" or "Warehouse";
+                permissions.Add(new RolePermission
+                {
+                    RoleId = supervisorRole.Id,
+                    ScreenId = screen.Id,
+                    CanView = isOpsOrLogistics || screen.Module == "Inventory",
+                    CanCreate = isOpsOrLogistics,
+                    CanUpdate = isOpsOrLogistics,
+                    CanDelete = screen.Module == "Operations"
+                });
+            }
+
+            // Technician: Operations & Inventory
+            if (technicianRole != null)
+            {
+                var isTechScreen = screen.Code is "FIELD_JOBS" or "FIELD_ASSEMBLIES" or "ISSUES" or "PRODUCTS" or "PRODUCT_VARIANTS" or "PARTS";
+                var canUpdate = screen.Code is "FIELD_ASSEMBLIES" or "ISSUES";
+                permissions.Add(new RolePermission
+                {
+                    RoleId = technicianRole.Id,
+                    ScreenId = screen.Id,
+                    CanView = isTechScreen,
+                    CanCreate = screen.Code is "ISSUES" or "FIELD_ASSEMBLIES",
+                    CanUpdate = canUpdate,
+                    CanDelete = false
+                });
+            }
+
+            // Driver: Logistics & Issues
+            if (driverRole != null)
+            {
+                var isDriverScreen = screen.Code is "VEHICLES" or "VEHICLE_LOADS" or "ISSUES";
+                permissions.Add(new RolePermission
+                {
+                    RoleId = driverRole.Id,
+                    ScreenId = screen.Id,
+                    CanView = isDriverScreen,
+                    CanCreate = screen.Code == "ISSUES",
+                    CanUpdate = screen.Code is "VEHICLE_LOADS" or "ISSUES",
+                    CanDelete = false
+                });
+            }
+
+            // User: View only on Products, Orders, Categories
+            if (userRole != null)
+            {
+                var isUserScreen = screen.Code is "PRODUCTS" or "CATEGORIES" or "ORDERS";
+                permissions.Add(new RolePermission
+                {
+                    RoleId = userRole.Id,
+                    ScreenId = screen.Id,
+                    CanView = isUserScreen,
+                    CanCreate = false,
+                    CanUpdate = false,
+                    CanDelete = false
+                });
+            }
+        }
+
+        await context.RolePermissions.AddRangeAsync(permissions);
         await context.SaveChangesAsync();
     }
 }

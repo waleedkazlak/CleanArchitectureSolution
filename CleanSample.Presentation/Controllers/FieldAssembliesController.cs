@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.FieldAssembly;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.FieldAssembly;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +32,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="filter">Field assembly search filter parameters</param>
     /// <returns>Paginated list of field assemblies</returns>
     [HttpPost("search")]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<FieldAssemblyDto>>>> Search(
@@ -53,8 +57,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of field assemblies</returns>
     [HttpGet]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<FieldAssemblyDto>>>> GetAll(
         [FromQuery] int pageNumber = 1,
@@ -81,8 +87,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="id">Field assembly ID (bigint)</param>
     /// <returns>Field assembly details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<FieldAssemblyDto>>> GetById([FromRoute] long id)
@@ -108,8 +116,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="fieldJobId">Field job ID (bigint)</param>
     /// <returns>List of field assemblies</returns>
     [HttpGet("by-field-job/{fieldJobId}")]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldAssemblyDto>>>> GetByFieldJobId([FromRoute] long fieldJobId)
     {
@@ -128,8 +138,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="productVariantId">Product variant ID</param>
     /// <returns>List of field assemblies</returns>
     [HttpGet("by-product-variant/{productVariantId}")]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldAssemblyDto>>>> GetByProductVariantId([FromRoute] int productVariantId)
     {
@@ -148,8 +160,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="technicianId">Technician user ID</param>
     /// <returns>List of field assemblies</returns>
     [HttpGet("by-technician/{technicianId}")]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldAssemblyDto>>>> GetByTechnicianId([FromRoute] int technicianId)
     {
@@ -168,8 +182,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="supervisorId">Supervisor user ID</param>
     /// <returns>List of field assemblies</returns>
     [HttpGet("by-supervisor/{supervisorId}")]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldAssemblyDto>>>> GetBySupervisorId([FromRoute] int supervisorId)
     {
@@ -188,8 +204,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="command">Field assembly creation command</param>
     /// <returns>Created field assembly ID</returns>
     [HttpPost]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<long>>> Create(
@@ -212,8 +230,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="command">Field assembly update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -245,8 +265,10 @@ public class FieldAssembliesController : ControllerBase
     /// <param name="id">Field assembly ID (bigint)</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<bool>>> Delete([FromRoute] long id)

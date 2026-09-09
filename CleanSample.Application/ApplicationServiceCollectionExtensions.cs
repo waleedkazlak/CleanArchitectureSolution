@@ -25,6 +25,10 @@ public static class ApplicationServiceCollectionExtensions
         // Register Fluent Validators from this assembly
         services.AddValidatorsFromAssembly(assembly);
 
+        // Register Memory Cache and Permission Checker Service
+        services.AddMemoryCache();
+        services.AddScoped<Services.IPermissionCheckerService, Services.PermissionCheckerService>();
+
         return services;
     }
 }

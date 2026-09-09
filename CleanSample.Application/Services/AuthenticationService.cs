@@ -13,14 +13,15 @@ namespace CleanSample.Application.Services;
 public interface IAuthenticationService
 {
     /// <summary>
-    /// Generates a JWT token for a user
+    /// Generates a JWT token for a user with role and permissions
     /// </summary>
-    Task<string> GenerateTokenAsync(int userId, string username, string email, string fullName, string role);
+    Task<string> GenerateTokenAsync(int userId, string username, string email, string fullName, string role, int? roleId = null, IEnumerable<string>? permissions = null);
 
     /// <summary>
     /// Validates a JWT token
     /// </summary>
     Task<bool> ValidateTokenAsync(string token);
+
 
     /// <summary>
     /// Gets claims from a JWT token
@@ -28,15 +29,26 @@ public interface IAuthenticationService
     Task<Dictionary<string, string>> GetTokenClaimsAsync(string token);
 
     /// <summary>
-    /// Hashes a password
+    /// Hashes a password with a randomly generated salt key
+    /// </summary>
+    (string Hash, string Salt) HashPasswordWithSalt(string password);
+
+    /// <summary>
+    /// Verifies a password against a hash and salt
+    /// </summary>
+    bool VerifyPassword(string password, string hash, string salt);
+
+    /// <summary>
+    /// Hashes a password (legacy overload)
     /// </summary>
     string HashPassword(string password);
 
     /// <summary>
-    /// Verifies a password against a hash
+    /// Verifies a password against a hash (legacy overload)
     /// </summary>
     bool VerifyPassword(string password, string hash);
 }
+
 
 /// <summary>
 /// Implementation of authentication service
@@ -52,11 +64,18 @@ public class AuthenticationService : IAuthenticationService
         _logger = logger;
     }
 
-    public async Task<string> GenerateTokenAsync(int userId, string username, string email, string fullName, string role)
+    public async Task<string> GenerateTokenAsync(
+        int userId,
+        string username,
+        string email,
+        string fullName,
+        string role,
+        int? roleId = null,
+        IEnumerable<string>? permissions = null)
     {
         try
         {
-            _logger.LogInformation("Generating JWT token for user: {Username}", username);
+            _logger.LogInformation("Generating JWT token for user: {Username}, role: {Role}", username, role);
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -65,11 +84,20 @@ public class AuthenticationService : IAuthenticationService
             {
                 new(System.Security.Claims.ClaimTypes.NameIdentifier, userId.ToString()),
                 new(System.Security.Claims.ClaimTypes.Name, username),
+                new("unique_name", username),
                 new(System.Security.Claims.ClaimTypes.Email, email),
+                new("email", email),
                 new("FullName", fullName),
                 new(System.Security.Claims.ClaimTypes.Role, role),
+                new("role", role),
                 new("iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), System.Security.Claims.ClaimValueTypes.Integer64)
             };
+
+            if (roleId.HasValue)
+            {
+                claims.Add(new System.Security.Claims.Claim("RoleId", roleId.Value.ToString()));
+                claims.Add(new System.Security.Claims.Claim("roleId", roleId.Value.ToString()));
+            }
 
             var token = new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
@@ -90,6 +118,7 @@ public class AuthenticationService : IAuthenticationService
             throw;
         }
     }
+
 
     public async Task<bool> ValidateTokenAsync(string token)
     {
@@ -141,6 +170,59 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
+    public (string Hash, string Salt) HashPasswordWithSalt(string password)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(password))
+            {
+                throw new ArgumentException("Password cannot be empty", nameof(password));
+            }
+
+            byte[] saltBytes = RandomNumberGenerator.GetBytes(16); // 128-bit salt
+            byte[] hashBytes = Rfc2898DeriveBytes.Pbkdf2(
+                Encoding.UTF8.GetBytes(password),
+                saltBytes,
+                iterations: 100000,
+                hashAlgorithm: HashAlgorithmName.SHA256,
+                outputLength: 32);
+
+            return (Convert.ToBase64String(hashBytes), Convert.ToBase64String(saltBytes));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while hashing password with salt");
+            throw;
+        }
+    }
+
+    public bool VerifyPassword(string password, string hash, string salt)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash) || string.IsNullOrEmpty(salt))
+            {
+                return false;
+            }
+
+            byte[] saltBytes = Convert.FromBase64String(salt);
+            byte[] expectedHashBytes = Convert.FromBase64String(hash);
+            byte[] actualHashBytes = Rfc2898DeriveBytes.Pbkdf2(
+                Encoding.UTF8.GetBytes(password),
+                saltBytes,
+                iterations: 100000,
+                hashAlgorithm: HashAlgorithmName.SHA256,
+                outputLength: 32);
+
+            return CryptographicOperations.FixedTimeEquals(actualHashBytes, expectedHashBytes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while verifying password with salt");
+            return false;
+        }
+    }
+
     public string HashPassword(string password)
     {
         try
@@ -171,4 +253,4 @@ public class AuthenticationService : IAuthenticationService
             return false;
         }
     }
-}
+}

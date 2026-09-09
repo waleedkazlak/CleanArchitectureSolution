@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Role;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Role;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class RolesController : ControllerBase
     /// <param name="filter">Role search filter object</param>
     /// <returns>Paginated list of roles</returns>
     [HttpPost("search")]
+    [RequirePermission("ROLES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class RolesController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of roles</returns>
     [HttpGet]
+    [RequirePermission("ROLES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class RolesController : ControllerBase
     /// <param name="id">Role id</param>
     /// <returns>Role details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("ROLES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,12 +110,12 @@ public class RolesController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new role (Admin only)
+    /// Create a new role
     /// </summary>
     /// <param name="command">Role creation command</param>
     /// <returns>Created role id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("ROLES", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -128,13 +133,13 @@ public class RolesController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing role (Admin only)
+    /// Update an existing role
     /// </summary>
     /// <param name="id">Role id</param>
     /// <param name="command">Role update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("ROLES", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -164,12 +169,12 @@ public class RolesController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a role (Admin only)
+    /// Delete a role
     /// </summary>
     /// <param name="id">Role id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("ROLES", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

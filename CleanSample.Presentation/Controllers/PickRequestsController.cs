@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.PickRequest;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.PickRequest;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class PickRequestsController : ControllerBase
     /// <param name="filter">Pick request search filter object</param>
     /// <returns>Paginated list of pick requests</returns>
     [HttpPost("search")]
+    [RequirePermission("PICK_REQUESTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class PickRequestsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of pick requests</returns>
     [HttpGet]
+    [RequirePermission("PICK_REQUESTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class PickRequestsController : ControllerBase
     /// <param name="id">Pick request id (bigint)</param>
     /// <returns>Pick request details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("PICK_REQUESTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -110,6 +115,7 @@ public class PickRequestsController : ControllerBase
     /// <param name="orderId">Order id (bigint)</param>
     /// <returns>List of pick requests</returns>
     [HttpGet("order/{orderId}")]
+    [RequirePermission("PICK_REQUESTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -130,6 +136,7 @@ public class PickRequestsController : ControllerBase
     /// <param name="clientId">Client id</param>
     /// <returns>List of pick requests</returns>
     [HttpGet("client/{clientId}")]
+    [RequirePermission("PICK_REQUESTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -145,12 +152,12 @@ public class PickRequestsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new pick request (Admin only)
+    /// Create a new pick request
     /// </summary>
     /// <param name="command">Pick request creation command</param>
     /// <returns>Created pick request id (bigint)</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PICK_REQUESTS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -168,13 +175,13 @@ public class PickRequestsController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing pick request (Admin only)
+    /// Update an existing pick request
     /// </summary>
     /// <param name="id">Pick request id (bigint)</param>
     /// <param name="command">Pick request update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PICK_REQUESTS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -204,12 +211,12 @@ public class PickRequestsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a pick request (Admin only)
+    /// Delete a pick request
     /// </summary>
     /// <param name="id">Pick request id (bigint)</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PICK_REQUESTS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

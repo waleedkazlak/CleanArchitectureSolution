@@ -1,3 +1,4 @@
+using CleanSample.Application.Services;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -7,11 +8,16 @@ namespace CleanSample.Application.Commands.User;
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthenticationService _authenticationService;
     private readonly ILogger<CreateUserCommandHandler> _logger;
 
-    public CreateUserCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateUserCommandHandler> logger)
+    public CreateUserCommandHandler(
+        IUnitOfWork unitOfWork,
+        IAuthenticationService authenticationService,
+        ILogger<CreateUserCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _authenticationService = authenticationService;
         _logger = logger;
     }
 
@@ -25,6 +31,9 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
             throw new InvalidOperationException($"User with username '{request.UserName}' already exists.");
         }
 
+        var rawPassword = string.IsNullOrWhiteSpace(request.Password) ? "P@$$w0rd" : request.Password;
+        var (hash, salt) = _authenticationService.HashPasswordWithSalt(rawPassword);
+
         var user = new Domain.Entities.User
         {
             RoleId = request.RoleId,
@@ -32,6 +41,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
             FullName = request.FullName,
             Email = request.Email,
             Mobile = request.Mobile,
+            PasswordHash = hash,
+            PasswordSalt = salt,
             IsActive = request.IsActive,
             CreatedAt = DateTime.UtcNow
         };
@@ -43,3 +54,4 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
         return userId;
     }
 }
+

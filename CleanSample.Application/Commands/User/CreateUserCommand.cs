@@ -9,5 +9,7 @@ public class CreateUserCommand : IRequest<int>
     public string FullName { get; set; } = null!;
     public string? Email { get; set; }
     public string? Mobile { get; set; }
+    public string? Password { get; set; }
     public bool IsActive { get; set; } = true;
 }
+

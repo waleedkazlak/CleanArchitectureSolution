@@ -24,6 +24,16 @@ public class LoginResponseDto
     /// User information
     /// </summary>
     public UserInfoDto User { get; set; } = new();
+
+    /// <summary>
+    /// Flat list of permission codes (e.g. "USERS.VIEW", "ORDERS.CREATE")
+    /// </summary>
+    public List<string> Permissions { get; set; } = new();
+
+    /// <summary>
+    /// Detailed screen permissions matrix
+    /// </summary>
+    public List<ScreenPermissionItemDto> ScreenPermissions { get; set; } = new();
 }
 
 /// <summary>
@@ -52,7 +62,12 @@ public class UserInfoDto
     public string FullName { get; set; } = null!;
 
     /// <summary>
-    /// User role
+    /// User role name
     /// </summary>
     public string Role { get; set; } = null!;
-}
+
+    /// <summary>
+    /// Role identifier
+    /// </summary>
+    public int? RoleId { get; set; }
+}

@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.VehicleLoad;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.VehicleLoad;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +32,10 @@ public class VehicleLoadsController : ControllerBase
     /// <param name="filter">Vehicle load search filter parameters</param>
     /// <returns>Paginated list of vehicle loads</returns>
     [HttpPost("search")]
+    [RequirePermission("VEHICLE_LOADS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<VehicleLoadDto>>>> Search(
@@ -53,8 +57,10 @@ public class VehicleLoadsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of vehicle loads</returns>
     [HttpGet]
+    [RequirePermission("VEHICLE_LOADS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<VehicleLoadDto>>>> GetAll(
         [FromQuery] int pageNumber = 1,
@@ -81,8 +87,10 @@ public class VehicleLoadsController : ControllerBase
     /// <param name="id">Vehicle load ID (bigint)</param>
     /// <returns>Vehicle load details with all load items</returns>
     [HttpGet("{id}")]
+    [RequirePermission("VEHICLE_LOADS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<VehicleLoadDto>>> GetById([FromRoute] long id)
@@ -108,8 +116,10 @@ public class VehicleLoadsController : ControllerBase
     /// <param name="pickRequestId">Pick request ID (bigint)</param>
     /// <returns>List of vehicle loads</returns>
     [HttpGet("by-pick-request/{pickRequestId}")]
+    [RequirePermission("VEHICLE_LOADS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<VehicleLoadDto>>>> GetByPickRequestId([FromRoute] long pickRequestId)
     {
@@ -128,8 +138,10 @@ public class VehicleLoadsController : ControllerBase
     /// <param name="driverId">Driver user ID</param>
     /// <returns>List of vehicle loads</returns>
     [HttpGet("by-driver/{driverId}")]
+    [RequirePermission("VEHICLE_LOADS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<VehicleLoadDto>>>> GetByDriverId([FromRoute] int driverId)
     {
@@ -148,8 +160,10 @@ public class VehicleLoadsController : ControllerBase
     /// <param name="vehicleId">Vehicle ID</param>
     /// <returns>List of vehicle loads</returns>
     [HttpGet("by-vehicle/{vehicleId}")]
+    [RequirePermission("VEHICLE_LOADS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<VehicleLoadDto>>>> GetByVehicleId([FromRoute] int vehicleId)
     {
@@ -168,8 +182,10 @@ public class VehicleLoadsController : ControllerBase
     /// <param name="command">Vehicle load creation command with items</param>
     /// <returns>Created vehicle load ID</returns>
     [HttpPost]
+    [RequirePermission("VEHICLE_LOADS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<long>>> Create(
@@ -192,8 +208,10 @@ public class VehicleLoadsController : ControllerBase
     /// <param name="command">Vehicle load update command with items</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
+    [RequirePermission("VEHICLE_LOADS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -225,8 +243,10 @@ public class VehicleLoadsController : ControllerBase
     /// <param name="id">Vehicle load ID (bigint)</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
+    [RequirePermission("VEHICLE_LOADS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<bool>>> Delete([FromRoute] long id)

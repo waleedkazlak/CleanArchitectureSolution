@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Color;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Color;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class ColorsController : ControllerBase
     /// <param name="filter">Color search filter object</param>
     /// <returns>Paginated list of colors</returns>
     [HttpPost("search")]
+    [RequirePermission("COLORS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class ColorsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of colors</returns>
     [HttpGet]
+    [RequirePermission("COLORS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class ColorsController : ControllerBase
     /// <param name="id">Color id</param>
     /// <returns>Color details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("COLORS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,12 +110,12 @@ public class ColorsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new color (Admin only)
+    /// Create a new color
     /// </summary>
     /// <param name="command">Color creation command</param>
     /// <returns>Created color id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("COLORS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -128,13 +133,13 @@ public class ColorsController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing color (Admin only)
+    /// Update an existing color
     /// </summary>
     /// <param name="id">Color id</param>
     /// <param name="command">Color update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("COLORS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -164,12 +169,12 @@ public class ColorsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a color (Admin only)
+    /// Delete a color
     /// </summary>
     /// <param name="id">Color id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("COLORS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

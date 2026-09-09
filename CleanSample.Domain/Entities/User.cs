@@ -45,6 +45,16 @@ public class User : BaseEntity
     public string? Mobile { get; set; }
 
     /// <summary>
+    /// Hashed password
+    /// </summary>
+    public string PasswordHash { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Password salt key
+    /// </summary>
+    public string PasswordSalt { get; set; } = string.Empty;
+
+    /// <summary>
     /// Whether the user is active
     /// </summary>
     public bool IsActive { get; set; } = true;

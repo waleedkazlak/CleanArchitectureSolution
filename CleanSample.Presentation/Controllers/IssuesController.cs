@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Issue;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Issue;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +32,10 @@ public class IssuesController : ControllerBase
     /// <param name="filter">Issue search filter parameters</param>
     /// <returns>Paginated list of issues</returns>
     [HttpPost("search")]
+    [RequirePermission("ISSUES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<IssueDto>>>> Search(
@@ -53,8 +57,10 @@ public class IssuesController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of issues</returns>
     [HttpGet]
+    [RequirePermission("ISSUES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<IssueDto>>>> GetAll(
         [FromQuery] int pageNumber = 1,
@@ -81,8 +87,10 @@ public class IssuesController : ControllerBase
     /// <param name="id">Issue ID (bigint)</param>
     /// <returns>Issue details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("ISSUES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IssueDto>>> GetById([FromRoute] long id)
@@ -108,8 +116,10 @@ public class IssuesController : ControllerBase
     /// <param name="pickRequestId">Pick request ID (bigint)</param>
     /// <returns>List of issues</returns>
     [HttpGet("by-pick-request/{pickRequestId}")]
+    [RequirePermission("ISSUES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<IssueDto>>>> GetByPickRequestId([FromRoute] long pickRequestId)
     {
@@ -128,8 +138,10 @@ public class IssuesController : ControllerBase
     /// <param name="fieldJobId">Field job ID (bigint)</param>
     /// <returns>List of issues</returns>
     [HttpGet("by-field-job/{fieldJobId}")]
+    [RequirePermission("ISSUES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<IssueDto>>>> GetByFieldJobId([FromRoute] long fieldJobId)
     {
@@ -148,8 +160,10 @@ public class IssuesController : ControllerBase
     /// <param name="fieldAssemblyId">Field assembly ID (bigint)</param>
     /// <returns>List of issues</returns>
     [HttpGet("by-field-assembly/{fieldAssemblyId}")]
+    [RequirePermission("ISSUES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<IssueDto>>>> GetByFieldAssemblyId([FromRoute] long fieldAssemblyId)
     {
@@ -168,8 +182,10 @@ public class IssuesController : ControllerBase
     /// <param name="userId">User ID</param>
     /// <returns>List of issues</returns>
     [HttpGet("by-reported-by/{userId}")]
+    [RequirePermission("ISSUES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<IssueDto>>>> GetByReportedBy([FromRoute] int userId)
     {
@@ -188,8 +204,10 @@ public class IssuesController : ControllerBase
     /// <param name="userId">User ID</param>
     /// <returns>List of issues</returns>
     [HttpGet("by-resolved-by/{userId}")]
+    [RequirePermission("ISSUES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<IssueDto>>>> GetByResolvedBy([FromRoute] int userId)
     {
@@ -208,8 +226,10 @@ public class IssuesController : ControllerBase
     /// <param name="command">Issue creation command</param>
     /// <returns>Created issue ID</returns>
     [HttpPost]
+    [RequirePermission("ISSUES", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<long>>> Create(
@@ -232,8 +252,10 @@ public class IssuesController : ControllerBase
     /// <param name="command">Issue update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
+    [RequirePermission("ISSUES", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -265,8 +287,10 @@ public class IssuesController : ControllerBase
     /// <param name="id">Issue ID (bigint)</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
+    [RequirePermission("ISSUES", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<bool>>> Delete([FromRoute] long id)

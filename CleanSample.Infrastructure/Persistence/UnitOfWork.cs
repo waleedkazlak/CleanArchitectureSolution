@@ -32,6 +32,8 @@ public class UnitOfWork : IUnitOfWork
     private readonly IIssueRepository _issueRepository;
     private readonly IRoleRepository _roleRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IScreenRepository _screenRepository;
+    private readonly IRolePermissionRepository _rolePermissionRepository;
     private readonly ILogger<UnitOfWork> _logger;
     private IDbContextTransaction? _transaction;
 
@@ -61,6 +63,8 @@ public class UnitOfWork : IUnitOfWork
         IIssueRepository issueRepository,
         IRoleRepository roleRepository,
         IUserRepository userRepository,
+        IScreenRepository screenRepository,
+        IRolePermissionRepository rolePermissionRepository,
         ILogger<UnitOfWork> logger)
     {
         _context = context;
@@ -88,8 +92,11 @@ public class UnitOfWork : IUnitOfWork
         _issueRepository = issueRepository;
         _roleRepository = roleRepository;
         _userRepository = userRepository;
+        _screenRepository = screenRepository;
+        _rolePermissionRepository = rolePermissionRepository;
         _logger = logger;
     }
+
 
     /// <summary>
     /// Gets the product repository instance
@@ -210,6 +217,17 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the user repository instance
     /// </summary>
     public IUserRepository Users => _userRepository;
+
+    /// <summary>
+    /// Gets the screen repository instance
+    /// </summary>
+    public IScreenRepository Screens => _screenRepository;
+
+    /// <summary>
+    /// Gets the role permission repository instance
+    /// </summary>
+    public IRolePermissionRepository RolePermissions => _rolePermissionRepository;
+
 
     /// <summary>
     /// Saves all changes made to the database asynchronously

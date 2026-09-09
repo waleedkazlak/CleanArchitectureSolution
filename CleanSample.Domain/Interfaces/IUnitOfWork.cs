@@ -126,6 +126,17 @@ public interface IUnitOfWork : IDisposable
     IUserRepository Users { get; }
 
     /// <summary>
+    /// Screen repository instance
+    /// </summary>
+    IScreenRepository Screens { get; }
+
+    /// <summary>
+    /// RolePermission repository instance
+    /// </summary>
+    IRolePermissionRepository RolePermissions { get; }
+
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>

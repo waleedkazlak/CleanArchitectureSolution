@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.User;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.User;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class UsersController : ControllerBase
     /// <param name="filter">User search filter object</param>
     /// <returns>Paginated list of users</returns>
     [HttpPost("search")]
+    [RequirePermission("USERS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class UsersController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of users</returns>
     [HttpGet]
+    [RequirePermission("USERS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class UsersController : ControllerBase
     /// <param name="id">User ID</param>
     /// <returns>User details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("USERS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -110,6 +115,7 @@ public class UsersController : ControllerBase
     /// <param name="roleId">Role ID</param>
     /// <returns>List of users in the specified role</returns>
     [HttpGet("by-role/{roleId}")]
+    [RequirePermission("USERS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -126,12 +132,12 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new user (Admin only)
+    /// Create a new user
     /// </summary>
     /// <param name="command">User creation command</param>
     /// <returns>Created user ID</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("USERS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -158,13 +164,13 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing user (Admin only)
+    /// Update an existing user
     /// </summary>
     /// <param name="id">User ID</param>
     /// <param name="command">User update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("USERS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -194,12 +200,12 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a user (Admin only)
+    /// Delete a user
     /// </summary>
     /// <param name="id">User ID</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("USERS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -224,12 +230,12 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Toggle user active/inactive status (Admin only)
+    /// Toggle user active/inactive status
     /// </summary>
     /// <param name="id">User ID</param>
     /// <returns>Success status</returns>
     [HttpPatch("{id}/toggle-status")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("USERS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

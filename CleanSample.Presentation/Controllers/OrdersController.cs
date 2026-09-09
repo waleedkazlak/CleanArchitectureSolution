@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Order;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Order;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class OrdersController : ControllerBase
     /// <param name="filter">Order search filter object</param>
     /// <returns>Paginated list of orders</returns>
     [HttpPost("search")]
+    [RequirePermission("ORDERS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class OrdersController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of orders</returns>
     [HttpGet]
+    [RequirePermission("ORDERS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class OrdersController : ControllerBase
     /// <param name="id">Order id (bigint)</param>
     /// <returns>Order details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("ORDERS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -110,6 +115,7 @@ public class OrdersController : ControllerBase
     /// <param name="clientId">Client id</param>
     /// <returns>List of orders</returns>
     [HttpGet("client/{clientId}")]
+    [RequirePermission("ORDERS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -125,12 +131,12 @@ public class OrdersController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new order (Admin only)
+    /// Create a new order
     /// </summary>
     /// <param name="command">Order creation command</param>
     /// <returns>Created order id (bigint)</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("ORDERS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -148,13 +154,13 @@ public class OrdersController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing order (Admin only)
+    /// Update an existing order
     /// </summary>
     /// <param name="id">Order id (bigint)</param>
     /// <param name="command">Order update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("ORDERS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -184,12 +190,12 @@ public class OrdersController : ControllerBase
     }
 
     /// <summary>
-    /// Delete an order (Admin only)
+    /// Delete an order
     /// </summary>
     /// <param name="id">Order id (bigint)</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("ORDERS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

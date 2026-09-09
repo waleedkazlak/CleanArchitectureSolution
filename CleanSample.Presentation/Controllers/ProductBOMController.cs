@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.ProductBOM;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.ProductBOM;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class ProductBOMController : ControllerBase
     /// <param name="filter">Product BOM search filter object</param>
     /// <returns>Paginated list of product BOMs</returns>
     [HttpPost("search")]
+    [RequirePermission("PRODUCT_BOM", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class ProductBOMController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of product BOMs</returns>
     [HttpGet]
+    [RequirePermission("PRODUCT_BOM", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class ProductBOMController : ControllerBase
     /// <param name="id">Product BOM id</param>
     /// <returns>Product BOM details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("PRODUCT_BOM", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -110,6 +115,7 @@ public class ProductBOMController : ControllerBase
     /// <param name="productVariantId">Product variant id</param>
     /// <returns>List of product BOMs</returns>
     [HttpGet("variant/{productVariantId}")]
+    [RequirePermission("PRODUCT_BOM", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -125,12 +131,12 @@ public class ProductBOMController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new product BOM (Admin only)
+    /// Create a new product BOM
     /// </summary>
     /// <param name="command">Product BOM creation command</param>
     /// <returns>Created product BOM id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PRODUCT_BOM", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -149,13 +155,13 @@ public class ProductBOMController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing product BOM (Admin only)
+    /// Update an existing product BOM
     /// </summary>
     /// <param name="id">Product BOM id</param>
     /// <param name="command">Product BOM update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PRODUCT_BOM", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -185,12 +191,12 @@ public class ProductBOMController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a product BOM (Admin only)
+    /// Delete a product BOM
     /// </summary>
     /// <param name="id">Product BOM id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PRODUCT_BOM", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

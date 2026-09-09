@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.FieldJob;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.FieldJob;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +32,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="filter">Field job search filter parameters</param>
     /// <returns>Paginated list of field jobs</returns>
     [HttpPost("search")]
+    [RequirePermission("FIELD_JOBS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<FieldJobDto>>>> Search(
@@ -53,8 +57,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of field jobs</returns>
     [HttpGet]
+    [RequirePermission("FIELD_JOBS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<FieldJobDto>>>> GetAll(
         [FromQuery] int pageNumber = 1,
@@ -81,8 +87,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="id">Field job ID (bigint)</param>
     /// <returns>Field job details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("FIELD_JOBS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<FieldJobDto>>> GetById([FromRoute] long id)
@@ -108,8 +116,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="pickRequestId">Pick request ID (bigint)</param>
     /// <returns>List of field jobs</returns>
     [HttpGet("by-pick-request/{pickRequestId}")]
+    [RequirePermission("FIELD_JOBS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldJobDto>>>> GetByPickRequestId([FromRoute] long pickRequestId)
     {
@@ -128,8 +138,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="clientId">Client ID</param>
     /// <returns>List of field jobs</returns>
     [HttpGet("by-client/{clientId}")]
+    [RequirePermission("FIELD_JOBS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldJobDto>>>> GetByClientId([FromRoute] int clientId)
     {
@@ -148,8 +160,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="technicianId">Technician user ID</param>
     /// <returns>List of field jobs</returns>
     [HttpGet("by-technician/{technicianId}")]
+    [RequirePermission("FIELD_JOBS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldJobDto>>>> GetByTechnicianId([FromRoute] int technicianId)
     {
@@ -168,8 +182,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="supervisorId">Supervisor user ID</param>
     /// <returns>List of field jobs</returns>
     [HttpGet("by-supervisor/{supervisorId}")]
+    [RequirePermission("FIELD_JOBS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldJobDto>>>> GetBySupervisorId([FromRoute] int supervisorId)
     {
@@ -188,8 +204,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="command">Field job creation command</param>
     /// <returns>Created field job ID</returns>
     [HttpPost]
+    [RequirePermission("FIELD_JOBS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<long>>> Create(
@@ -212,8 +230,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="command">Field job update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
+    [RequirePermission("FIELD_JOBS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -245,8 +265,10 @@ public class FieldJobsController : ControllerBase
     /// <param name="id">Field job ID (bigint)</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
+    [RequirePermission("FIELD_JOBS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<bool>>> Delete([FromRoute] long id)

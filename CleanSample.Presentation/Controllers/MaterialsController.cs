@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Material;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Material;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class MaterialsController : ControllerBase
     /// <param name="filter">Material search filter object</param>
     /// <returns>Paginated list of materials</returns>
     [HttpPost("search")]
+    [RequirePermission("MATERIALS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class MaterialsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of materials</returns>
     [HttpGet]
+    [RequirePermission("MATERIALS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class MaterialsController : ControllerBase
     /// <param name="id">Material id</param>
     /// <returns>Material details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("MATERIALS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,12 +110,12 @@ public class MaterialsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new material (Admin only)
+    /// Create a new material
     /// </summary>
     /// <param name="command">Material creation command</param>
     /// <returns>Created material id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("MATERIALS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -128,13 +133,13 @@ public class MaterialsController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing material (Admin only)
+    /// Update an existing material
     /// </summary>
     /// <param name="id">Material id</param>
     /// <param name="command">Material update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("MATERIALS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -164,12 +169,12 @@ public class MaterialsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a material (Admin only)
+    /// Delete a material
     /// </summary>
     /// <param name="id">Material id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("MATERIALS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

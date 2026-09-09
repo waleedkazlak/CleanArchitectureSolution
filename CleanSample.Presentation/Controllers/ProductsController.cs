@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Product;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Product;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class ProductsController : ControllerBase
     /// <param name="filter">Product search filter object</param>
     /// <returns>Paginated list of products</returns>
     [HttpPost("search")]
+    [RequirePermission("PRODUCTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class ProductsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of products</returns>
     [HttpGet]
+    [RequirePermission("PRODUCTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class ProductsController : ControllerBase
     /// <param name="id">Product id</param>
     /// <returns>Product details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("PRODUCTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,12 +110,12 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new product (Admin only)
+    /// Create a new product
     /// </summary>
     /// <param name="command">Product creation command</param>
     /// <returns>Created product id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PRODUCTS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -128,13 +133,13 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing product (Admin only)
+    /// Update an existing product
     /// </summary>
     /// <param name="id">Product id</param>
     /// <param name="command">Product update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PRODUCTS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -159,12 +164,12 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a product (Admin only)
+    /// Delete a product
     /// </summary>
     /// <param name="id">Product id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PRODUCTS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

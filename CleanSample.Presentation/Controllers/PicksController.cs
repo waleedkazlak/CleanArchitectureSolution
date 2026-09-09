@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Pick;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Pick;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +32,10 @@ public class PicksController : ControllerBase
     /// <param name="filter">Pick search filter parameters</param>
     /// <returns>Paginated list of picks</returns>
     [HttpPost("search")]
+    [RequirePermission("PICKS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<PickDto>>>> Search(
@@ -53,8 +57,10 @@ public class PicksController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of picks</returns>
     [HttpGet]
+    [RequirePermission("PICKS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<PickDto>>>> GetAll(
         [FromQuery] int pageNumber = 1,
@@ -81,8 +87,10 @@ public class PicksController : ControllerBase
     /// <param name="id">Pick ID (bigint)</param>
     /// <returns>Pick details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("PICKS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<PickDto>>> GetById([FromRoute] long id)
@@ -108,8 +116,10 @@ public class PicksController : ControllerBase
     /// <param name="pickRequestId">Pick request ID (bigint)</param>
     /// <returns>List of picks</returns>
     [HttpGet("by-pick-request/{pickRequestId}")]
+    [RequirePermission("PICKS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<PickDto>>>> GetByPickRequestId([FromRoute] long pickRequestId)
     {
@@ -128,8 +138,10 @@ public class PicksController : ControllerBase
     /// <param name="driverId">Driver user ID</param>
     /// <returns>List of picks</returns>
     [HttpGet("by-driver/{driverId}")]
+    [RequirePermission("PICKS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<IEnumerable<PickDto>>>> GetByDriverId([FromRoute] int driverId)
     {
@@ -148,8 +160,10 @@ public class PicksController : ControllerBase
     /// <param name="command">Create picks command containing a list of pick items</param>
     /// <returns>List of created picks</returns>
     [HttpPost]
+    [RequirePermission("PICKS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<List<PickDto>>>> CreateBatch(
@@ -170,8 +184,10 @@ public class PicksController : ControllerBase
     /// <param name="command">Update picks command containing a list of updated pick items</param>
     /// <returns>List of updated picks</returns>
     [HttpPut]
+    [RequirePermission("PICKS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<List<PickDto>>>> UpdateBatch(
@@ -192,8 +208,10 @@ public class PicksController : ControllerBase
     /// <param name="item">Pick update data</param>
     /// <returns>Updated pick details</returns>
     [HttpPut("{id}")]
+    [RequirePermission("PICKS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -224,8 +242,10 @@ public class PicksController : ControllerBase
     /// <param name="pickIds">List of pick IDs to delete</param>
     /// <returns>Success status</returns>
     [HttpDelete]
+    [RequirePermission("PICKS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -253,8 +273,10 @@ public class PicksController : ControllerBase
     /// <param name="command">Delete picks command with list of pick IDs</param>
     /// <returns>Success status</returns>
     [HttpPost("batch-delete")]
+    [RequirePermission("PICKS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -281,8 +303,10 @@ public class PicksController : ControllerBase
     /// <param name="id">Pick ID (bigint)</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
+    [RequirePermission("PICKS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<bool>>> DeleteSingle([FromRoute] long id)

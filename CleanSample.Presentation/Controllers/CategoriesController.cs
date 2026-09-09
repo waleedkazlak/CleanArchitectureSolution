@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Category;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Category;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class CategoriesController : ControllerBase
     /// <param name="filter">Category search filter object</param>
     /// <returns>Paginated list of categories</returns>
     [HttpPost("search")]
+    [RequirePermission("CATEGORIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class CategoriesController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of categories</returns>
     [HttpGet]
+    [RequirePermission("CATEGORIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class CategoriesController : ControllerBase
     /// <param name="id">Category id</param>
     /// <returns>Category details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("CATEGORIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,12 +110,12 @@ public class CategoriesController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new category (Admin only)
+    /// Create a new category
     /// </summary>
     /// <param name="command">Category creation command</param>
     /// <returns>Created category id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("CATEGORIES", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -128,13 +133,13 @@ public class CategoriesController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing category (Admin only)
+    /// Update an existing category
     /// </summary>
     /// <param name="id">Category id</param>
     /// <param name="command">Category update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("CATEGORIES", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -164,12 +169,12 @@ public class CategoriesController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a category (Admin only)
+    /// Delete a category
     /// </summary>
     /// <param name="id">Category id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("CATEGORIES", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

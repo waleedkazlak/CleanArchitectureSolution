@@ -132,6 +132,17 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Role> Roles { get; set; }
 
+    /// <summary>
+    /// Screens DbSet
+    /// </summary>
+    public DbSet<Screen> Screens { get; set; }
+
+    /// <summary>
+    /// RolePermissions DbSet
+    /// </summary>
+    public DbSet<RolePermission> RolePermissions { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -209,6 +220,16 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Mobile)
                 .HasMaxLength(50);
 
+            entity.Property(e => e.PasswordHash)
+                .IsRequired()
+                .HasMaxLength(500)
+                .HasDefaultValue(string.Empty);
+
+            entity.Property(e => e.PasswordSalt)
+                .IsRequired()
+                .HasMaxLength(250)
+                .HasDefaultValue(string.Empty);
+
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
 
@@ -220,6 +241,7 @@ public class CleanSampleDbContext : DbContext
             // Add table name
             entity.ToTable("Users");
         });
+
 
         // Configure Vehicle entity
         modelBuilder.Entity<Vehicle>(entity =>
@@ -1390,5 +1412,103 @@ public class CleanSampleDbContext : DbContext
 
             entity.ToTable("Roles");
         });
+
+        // Configure Screen entity
+        modelBuilder.Entity<Screen>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("ScreenId");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Module)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(250);
+
+            entity.Property(e => e.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
+
+            entity.HasIndex(e => e.Code)
+                .IsUnique()
+                .HasDatabaseName("UQ_Screens_Code");
+
+            entity.HasIndex(e => e.Name)
+                .IsUnique()
+                .HasDatabaseName("UQ_Screens_Name");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.ToTable("Screens");
+        });
+
+        // Configure RolePermission entity
+        modelBuilder.Entity<RolePermission>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("RolePermissionId");
+
+            entity.Property(e => e.RoleId)
+                .IsRequired();
+
+            entity.Property(e => e.ScreenId)
+                .IsRequired();
+
+            entity.Property(e => e.CanView)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.CanCreate)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.CanUpdate)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.CanDelete)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            entity.HasIndex(e => new { e.RoleId, e.ScreenId })
+                .IsUnique()
+                .HasDatabaseName("UQ_RolePermissions_Role_Screen");
+
+            entity.HasIndex(e => e.RoleId)
+                .HasDatabaseName("IX_RolePermissions_RoleId");
+
+            entity.HasIndex(e => e.ScreenId)
+                .HasDatabaseName("IX_RolePermissions_ScreenId");
+
+            entity.HasOne(e => e.Role)
+                .WithMany(r => r.RolePermissions)
+                .HasForeignKey(e => e.RoleId)
+                .HasConstraintName("FK_RolePermissions_Roles")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Screen)
+                .WithMany(s => s.RolePermissions)
+                .HasForeignKey(e => e.ScreenId)
+                .HasConstraintName("FK_RolePermissions_Screens")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.ToTable("RolePermissions");
+        });
     }
-}
+}

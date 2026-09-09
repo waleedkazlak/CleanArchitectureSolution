@@ -47,6 +47,9 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IIssueRepository, IssueRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IScreenRepository, ScreenRepository>();
+        services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
+
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();

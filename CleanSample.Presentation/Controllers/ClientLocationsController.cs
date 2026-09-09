@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.ClientLocation;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.ClientLocation;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class ClientLocationsController : ControllerBase
     /// <param name="filter">Client location search filter object</param>
     /// <returns>Paginated list of client locations</returns>
     [HttpPost("search")]
+    [RequirePermission("CLIENT_LOCATIONS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class ClientLocationsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of client locations</returns>
     [HttpGet]
+    [RequirePermission("CLIENT_LOCATIONS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class ClientLocationsController : ControllerBase
     /// <param name="id">Client location id</param>
     /// <returns>Client location details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("CLIENT_LOCATIONS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -110,6 +115,7 @@ public class ClientLocationsController : ControllerBase
     /// <param name="clientId">Client id</param>
     /// <returns>List of client locations</returns>
     [HttpGet("client/{clientId}")]
+    [RequirePermission("CLIENT_LOCATIONS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -125,12 +131,12 @@ public class ClientLocationsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new client location (Admin only)
+    /// Create a new client location
     /// </summary>
     /// <param name="command">Client location creation command</param>
     /// <returns>Created client location id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("CLIENT_LOCATIONS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -148,13 +154,13 @@ public class ClientLocationsController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing client location (Admin only)
+    /// Update an existing client location
     /// </summary>
     /// <param name="id">Client location id</param>
     /// <param name="command">Client location update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("CLIENT_LOCATIONS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -184,12 +190,12 @@ public class ClientLocationsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a client location (Admin only)
+    /// Delete a client location
     /// </summary>
     /// <param name="id">Client location id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("CLIENT_LOCATIONS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

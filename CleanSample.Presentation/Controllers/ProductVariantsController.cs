@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.ProductVariant;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.ProductVariant;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class ProductVariantsController : ControllerBase
     /// <param name="filter">Product variant search filter object</param>
     /// <returns>Paginated list of product variants</returns>
     [HttpPost("search")]
+    [RequirePermission("PRODUCT_VARIANTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class ProductVariantsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of product variants</returns>
     [HttpGet]
+    [RequirePermission("PRODUCT_VARIANTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class ProductVariantsController : ControllerBase
     /// <param name="id">Product variant id</param>
     /// <returns>Product variant details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("PRODUCT_VARIANTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,12 +110,12 @@ public class ProductVariantsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new product variant (Admin only)
+    /// Create a new product variant
     /// </summary>
     /// <param name="command">Product variant creation command</param>
     /// <returns>Created product variant id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PRODUCT_VARIANTS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -128,13 +133,13 @@ public class ProductVariantsController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing product variant (Admin only)
+    /// Update an existing product variant
     /// </summary>
     /// <param name="id">Product variant id</param>
     /// <param name="command">Product variant update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PRODUCT_VARIANTS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -164,12 +169,12 @@ public class ProductVariantsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a product variant (Admin only)
+    /// Delete a product variant
     /// </summary>
     /// <param name="id">Product variant id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("PRODUCT_VARIANTS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

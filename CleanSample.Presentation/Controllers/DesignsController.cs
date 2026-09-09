@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Design;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Design;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class DesignsController : ControllerBase
     /// <param name="filter">Design search filter object</param>
     /// <returns>Paginated list of designs</returns>
     [HttpPost("search")]
+    [RequirePermission("DESIGNS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class DesignsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of designs</returns>
     [HttpGet]
+    [RequirePermission("DESIGNS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class DesignsController : ControllerBase
     /// <param name="id">Design id</param>
     /// <returns>Design details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("DESIGNS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,12 +110,12 @@ public class DesignsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new design (Admin only)
+    /// Create a new design
     /// </summary>
     /// <param name="command">Design creation command</param>
     /// <returns>Created design id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("DESIGNS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -128,13 +133,13 @@ public class DesignsController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing design (Admin only)
+    /// Update an existing design
     /// </summary>
     /// <param name="id">Design id</param>
     /// <param name="command">Design update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("DESIGNS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -164,12 +169,12 @@ public class DesignsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a design (Admin only)
+    /// Delete a design
     /// </summary>
     /// <param name="id">Design id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("DESIGNS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

@@ -1,6 +1,8 @@
 using CleanSample.Application.Commands.Client;
+using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Client;
+using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class ClientsController : ControllerBase
     /// <param name="filter">Client search filter object</param>
     /// <returns>Paginated list of clients</returns>
     [HttpPost("search")]
+    [RequirePermission("CLIENTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -54,6 +57,7 @@ public class ClientsController : ControllerBase
     /// <param name="pageSize">Number of items per page, defaults to 10</param>
     /// <returns>Paginated list of clients</returns>
     [HttpGet]
+    [RequirePermission("CLIENTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -83,6 +87,7 @@ public class ClientsController : ControllerBase
     /// <param name="id">Client id</param>
     /// <returns>Client details</returns>
     [HttpGet("{id}")]
+    [RequirePermission("CLIENTS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -105,12 +110,12 @@ public class ClientsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new client (Admin only)
+    /// Create a new client
     /// </summary>
     /// <param name="command">Client creation command</param>
     /// <returns>Created client id</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("CLIENTS", PermissionAction.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -128,13 +133,13 @@ public class ClientsController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing client (Admin only)
+    /// Update an existing client
     /// </summary>
     /// <param name="id">Client id</param>
     /// <param name="command">Client update command</param>
     /// <returns>Success status</returns>
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("CLIENTS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -164,12 +169,12 @@ public class ClientsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete a client (Admin only)
+    /// Delete a client
     /// </summary>
     /// <param name="id">Client id</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [RequirePermission("CLIENTS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
