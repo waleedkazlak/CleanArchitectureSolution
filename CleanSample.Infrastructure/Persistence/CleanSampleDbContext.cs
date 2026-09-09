@@ -117,6 +117,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<FieldJob> FieldJobs { get; set; }
 
+    /// <summary>
+    /// FieldAssemblies DbSet
+    /// </summary>
+    public DbSet<FieldAssembly> FieldAssemblies { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -1142,6 +1147,78 @@ public class CleanSampleDbContext : DbContext
                 .HasDefaultValueSql("SYSUTCDATETIME()");
 
             entity.ToTable("FieldJobs");
+        });
+
+        // Configure FieldAssembly entity
+        modelBuilder.Entity<FieldAssembly>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("FieldAssemblyId");
+
+            entity.Property(e => e.FieldJobId)
+                .IsRequired();
+
+            entity.HasOne(e => e.FieldJob)
+                .WithMany(fj => fj.FieldAssemblies)
+                .HasForeignKey(e => e.FieldJobId)
+                .HasConstraintName("FK_FieldAssemblies_FieldJobs")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.ProductVariantId)
+                .IsRequired();
+
+            entity.HasOne(e => e.ProductVariant)
+                .WithMany(pv => pv.FieldAssemblies)
+                .HasForeignKey(e => e.ProductVariantId)
+                .HasConstraintName("FK_FieldAssemblies_ProductVariants")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.ProductBarcode)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Quantity)
+                .IsRequired();
+
+            entity.Property(e => e.AssemblyDate);
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Pending");
+
+            entity.Property(e => e.TechnicianId);
+
+            entity.HasOne(e => e.Technician)
+                .WithMany()
+                .HasForeignKey(e => e.TechnicianId)
+                .HasConstraintName("FK_FieldAssemblies_Technician")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.SupervisorId);
+
+            entity.HasOne(e => e.Supervisor)
+                .WithMany()
+                .HasForeignKey(e => e.SupervisorId)
+                .HasConstraintName("FK_FieldAssemblies_Supervisor")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Verified)
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.VerifiedAt);
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.ToTable("FieldAssemblies", t =>
+            {
+                t.HasCheckConstraint("CK_FieldAssemblies_Quantity", "[Quantity] > 0");
+            });
         });
     }
 }

@@ -43,6 +43,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IVehicleLoadRepository, VehicleLoadRepository>();
         services.AddScoped<IVehicleLoadItemRepository, VehicleLoadItemRepository>();
         services.AddScoped<IFieldJobRepository, FieldJobRepository>();
+        services.AddScoped<IFieldAssemblyRepository, FieldAssemblyRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -18,4 +18,5 @@ public class ProductVariant : BaseEntity
     public string? Barcode { get; set; }
     public string? Description { get; set; }
     public bool IsActive { get; set; } = true;
+    public ICollection<FieldAssembly> FieldAssemblies { get; set; } = new List<FieldAssembly>();
 }

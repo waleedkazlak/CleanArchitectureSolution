@@ -31,4 +31,6 @@ public class FieldJob : BaseEntity<long>
     public DateTime? VerifiedAt { get; set; }
 
     public string? Notes { get; set; }
+
+    public ICollection<FieldAssembly> FieldAssemblies { get; set; } = new List<FieldAssembly>();
 }
