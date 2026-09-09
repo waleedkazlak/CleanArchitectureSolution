@@ -112,6 +112,11 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<VehicleLoadItem> VehicleLoadItems { get; set; }
 
+    /// <summary>
+    /// FieldJobs DbSet
+    /// </summary>
+    public DbSet<FieldJob> FieldJobs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -1056,6 +1061,87 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure FieldJob entity
+        modelBuilder.Entity<FieldJob>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("FieldJobId");
+
+            entity.Property(e => e.JobNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.HasIndex(e => e.JobNumber)
+                .IsUnique()
+                .HasDatabaseName("UQ_FieldJobs_JobNumber");
+
+            entity.Property(e => e.PickRequestId)
+                .IsRequired();
+
+            entity.HasOne(e => e.PickRequest)
+                .WithMany(p => p.FieldJobs)
+                .HasForeignKey(e => e.PickRequestId)
+                .HasConstraintName("FK_FieldJobs_PickRequests")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.ClientId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Client)
+                .WithMany(c => c.FieldJobs)
+                .HasForeignKey(e => e.ClientId)
+                .HasConstraintName("FK_FieldJobs_Clients")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.ClientLocationId);
+
+            entity.HasOne(e => e.ClientLocation)
+                .WithMany(cl => cl.FieldJobs)
+                .HasForeignKey(e => e.ClientLocationId)
+                .HasConstraintName("FK_FieldJobs_ClientLocations")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.TechnicianId);
+
+            entity.HasOne(e => e.Technician)
+                .WithMany()
+                .HasForeignKey(e => e.TechnicianId)
+                .HasConstraintName("FK_FieldJobs_Technician")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.SupervisorId);
+
+            entity.HasOne(e => e.Supervisor)
+                .WithMany()
+                .HasForeignKey(e => e.SupervisorId)
+                .HasConstraintName("FK_FieldJobs_Supervisor")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.ScheduledDate);
+            entity.Property(e => e.StartDate);
+            entity.Property(e => e.CompletionDate);
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Scheduled");
+
+            entity.Property(e => e.Verified)
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.VerifiedAt);
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.ToTable("FieldJobs");
         });
     }
 }

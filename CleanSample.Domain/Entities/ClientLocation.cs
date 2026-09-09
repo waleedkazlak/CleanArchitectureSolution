@@ -17,4 +17,5 @@ public class ClientLocation : BaseEntity
 
     public bool IsDefault { get; set; } = false;
     public bool IsActive { get; set; } = true;
+    public ICollection<FieldJob> FieldJobs { get; set; } = new List<FieldJob>();
 }

@@ -27,6 +27,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IPickRepository _pickRepository;
     private readonly IVehicleLoadRepository _vehicleLoadRepository;
     private readonly IVehicleLoadItemRepository _vehicleLoadItemRepository;
+    private readonly IFieldJobRepository _fieldJobRepository;
     private readonly ILogger<UnitOfWork> _logger;
     private IDbContextTransaction? _transaction;
 
@@ -51,6 +52,7 @@ public class UnitOfWork : IUnitOfWork
         IPickRepository pickRepository,
         IVehicleLoadRepository vehicleLoadRepository,
         IVehicleLoadItemRepository vehicleLoadItemRepository,
+        IFieldJobRepository fieldJobRepository,
         ILogger<UnitOfWork> logger)
     {
         _context = context;
@@ -73,6 +75,7 @@ public class UnitOfWork : IUnitOfWork
         _pickRepository = pickRepository;
         _vehicleLoadRepository = vehicleLoadRepository;
         _vehicleLoadItemRepository = vehicleLoadItemRepository;
+        _fieldJobRepository = fieldJobRepository;
         _logger = logger;
     }
 
@@ -170,6 +173,11 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the vehicle load item repository instance
     /// </summary>
     public IVehicleLoadItemRepository VehicleLoadItems => _vehicleLoadItemRepository;
+
+    /// <summary>
+    /// Gets the field job repository instance
+    /// </summary>
+    public IFieldJobRepository FieldJobs => _fieldJobRepository;
 
     /// <summary>
     /// Saves all changes made to the database asynchronously

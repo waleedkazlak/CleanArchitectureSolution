@@ -38,4 +38,5 @@ public class PickRequest : BaseEntity<long>
     public ICollection<PickRequestPart> PickRequestParts { get; set; } = new List<PickRequestPart>();
     public ICollection<Pick> Picks { get; set; } = new List<Pick>();
     public ICollection<VehicleLoad> VehicleLoads { get; set; } = new List<VehicleLoad>();
+    public ICollection<FieldJob> FieldJobs { get; set; } = new List<FieldJob>();
 }

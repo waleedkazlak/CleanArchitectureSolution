@@ -101,6 +101,11 @@ public interface IUnitOfWork : IDisposable
     IVehicleLoadItemRepository VehicleLoadItems { get; }
 
     /// <summary>
+    /// FieldJob repository instance
+    /// </summary>
+    IFieldJobRepository FieldJobs { get; }
+
+    /// <summary>
     /// Saves all changes made to the database asynchronously
     /// </summary>
     /// <returns>Number of state entries written to the database</returns>
