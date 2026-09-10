@@ -111,25 +111,25 @@ public class IssuesController : ControllerBase
     }
 
     /// <summary>
-    /// Get all issues for a specific pick request
+    /// Get all issues for a specific load request
     /// </summary>
-    /// <param name="pickRequestId">Pick request ID (bigint)</param>
+    /// <param name="loadRequestId">Load request ID (bigint)</param>
     /// <returns>List of issues</returns>
-    [HttpGet("by-pick-request/{pickRequestId}")]
+    [HttpGet("by-load-request/{loadRequestId}")]
     [RequirePermission("ISSUES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<APIBaseResponse<IEnumerable<IssueDto>>>> GetByPickRequestId([FromRoute] long pickRequestId)
+    public async Task<ActionResult<APIBaseResponse<IEnumerable<IssueDto>>>> GetByLoadRequestId([FromRoute] long loadRequestId)
     {
-        _logger.LogInformation("User {User} fetching issues for pick request: {PickRequestId}", User.Identity?.Name, pickRequestId);
+        _logger.LogInformation("User {User} fetching issues for load request: {LoadRequestId}", User.Identity?.Name, loadRequestId);
 
-        var query = new GetIssuesByPickRequestIdQuery(pickRequestId);
+        var query = new GetIssuesByLoadRequestIdQuery(loadRequestId);
         var result = await _mediator.Send(query);
 
         return Ok(new APIBaseResponse<IEnumerable<IssueDto>>()
-            .SetSuccess(result, "Issues for pick request retrieved successfully"));
+            .SetSuccess(result, "Issues for load request retrieved successfully"));
     }
 
     /// <summary>

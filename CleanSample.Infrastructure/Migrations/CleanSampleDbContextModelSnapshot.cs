@@ -363,12 +363,12 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<long>("LoadRequestId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<long>("PickRequestId")
-                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("ScheduledDate")
                         .HasColumnType("datetime2");
@@ -410,8 +410,8 @@ namespace CleanSample.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UQ_FieldJobs_JobNumber");
 
-                    b.HasIndex("PickRequestId")
-                        .HasDatabaseName("IX_FieldJobs_PickRequestId");
+                    b.HasIndex("LoadRequestId")
+                        .HasDatabaseName("IX_FieldJobs_LoadRequestId");
 
                     b.HasIndex("Status")
                         .HasDatabaseName("IX_FieldJobs_Status");
@@ -453,7 +453,7 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<long?>("PickRequestId")
+                    b.Property<long?>("LoadRequestId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("ReportedAt")
@@ -497,7 +497,7 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.HasIndex("FieldJobId");
 
-                    b.HasIndex("PickRequestId");
+                    b.HasIndex("LoadRequestId");
 
                     b.HasIndex("ReportedBy");
 
@@ -507,6 +507,286 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasDatabaseName("IX_Issues_Status");
 
                     b.ToTable("Issues", (string)null);
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.Load", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("LoadId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Barcode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LoadDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<long>("LoadRequestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("LoadRequestPartId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("LoadedBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Loaded");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Barcode")
+                        .HasDatabaseName("IX_Loads_Barcode");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("LoadRequestId")
+                        .HasDatabaseName("IX_Loads_LoadRequestId");
+
+                    b.HasIndex("LoadRequestPartId");
+
+                    b.HasIndex("LoadedBy");
+
+                    b.HasIndex("PartId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("Loads", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Loads_Quantity", "[Quantity] > 0");
+                        });
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequest", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("LoadRequestId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClientLocationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("DestinationAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DestinationCity")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int?>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExecutionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("RequestDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<string>("RequestNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("RequestedBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Created");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Verified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("IX_LoadRequests_ClientId");
+
+                    b.HasIndex("ClientLocationId");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("IX_LoadRequests_OrderId");
+
+                    b.HasIndex("RequestNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_LoadRequests_RequestNumber");
+
+                    b.HasIndex("RequestedBy");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_LoadRequests_Status");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("LoadRequests", (string)null);
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequestLine", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("LoadRequestLineId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<long>("LoadRequestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ProductVariantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LoadRequestId");
+
+                    b.HasIndex("ProductVariantId");
+
+                    b.ToTable("LoadRequestLines", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_LoadRequestLines_Quantity", "[Quantity] > 0");
+                        });
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequestPart", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("LoadRequestPartId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<long>("LoadRequestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("LoadRequestLineId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("LoadedQuantity")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("RequiredQuantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LoadRequestId")
+                        .HasDatabaseName("IX_LoadRequestParts_LoadRequestId");
+
+                    b.HasIndex("LoadRequestLineId");
+
+                    b.HasIndex("PartId")
+                        .HasDatabaseName("IX_LoadRequestParts_PartId");
+
+                    b.ToTable("LoadRequestParts", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_LoadRequestParts_LoadedQuantity", "[LoadedQuantity] >= 0");
+
+                            t.HasCheckConstraint("CK_LoadRequestParts_RequiredQuantity", "[RequiredQuantity] > 0");
+                        });
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.Material", b =>
@@ -696,286 +976,6 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasDatabaseName("UQ_Parts_Code");
 
                     b.ToTable("Parts", (string)null);
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.Pick", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("PickId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Barcode")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<int?>("DriverId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PickDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<long>("PickRequestId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("PickRequestPartId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("PickedBy")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Quantity")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Picked");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Barcode")
-                        .HasDatabaseName("IX_Picks_Barcode");
-
-                    b.HasIndex("DriverId");
-
-                    b.HasIndex("PartId");
-
-                    b.HasIndex("PickRequestId")
-                        .HasDatabaseName("IX_Picks_PickRequestId");
-
-                    b.HasIndex("PickRequestPartId");
-
-                    b.HasIndex("PickedBy");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("Picks", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Picks_Quantity", "[Quantity] > 0");
-                        });
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequest", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("PickRequestId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ClientLocationId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("DestinationAddress")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("DestinationCity")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<int?>("DriverId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ExecutionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("OrderId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("RequestDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<string>("RequestNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("RequestedBy")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Created");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Verified")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("IX_PickRequests_ClientId");
-
-                    b.HasIndex("ClientLocationId");
-
-                    b.HasIndex("DriverId");
-
-                    b.HasIndex("OrderId")
-                        .HasDatabaseName("IX_PickRequests_OrderId");
-
-                    b.HasIndex("RequestNumber")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_PickRequests_RequestNumber");
-
-                    b.HasIndex("RequestedBy");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("IX_PickRequests_Status");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("PickRequests", (string)null);
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequestLine", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("PickRequestLineId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<long>("PickRequestId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("ProductVariantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PickRequestId");
-
-                    b.HasIndex("ProductVariantId");
-
-                    b.ToTable("PickRequestLines", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_PickRequestLines_Quantity", "[Quantity] > 0");
-                        });
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequestPart", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("PickRequestPartId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<int>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("PickRequestId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("PickRequestLineId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("PickedQuantity")
-                        .ValueGeneratedOnAdd()
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("RequiredQuantity")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Pending");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PartId")
-                        .HasDatabaseName("IX_PickRequestParts_PartId");
-
-                    b.HasIndex("PickRequestId")
-                        .HasDatabaseName("IX_PickRequestParts_PickRequestId");
-
-                    b.HasIndex("PickRequestLineId");
-
-                    b.ToTable("PickRequestParts", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_PickRequestParts_PickedQuantity", "[PickedQuantity] >= 0");
-
-                            t.HasCheckConstraint("CK_PickRequestParts_RequiredQuantity", "[RequiredQuantity] > 0");
-                        });
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.Product", b =>
@@ -1409,12 +1409,12 @@ namespace CleanSample.Infrastructure.Migrations
                     b.ToTable("Vehicles", (string)null);
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleLoad", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffload", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("VehicleLoadId");
+                        .HasColumnName("VehicleOffloadId");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
@@ -1426,24 +1426,24 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("LoadDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
+                    b.Property<long>("LoadRequestId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<long>("PickRequestId")
-                        .HasColumnType("bigint");
+                    b.Property<DateTime>("OffloadDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Loading");
+                        .HasDefaultValue("Offloading");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1466,22 +1466,22 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.HasIndex("DriverId");
 
-                    b.HasIndex("PickRequestId")
-                        .HasDatabaseName("IX_VehicleLoads_PickRequestId");
+                    b.HasIndex("LoadRequestId")
+                        .HasDatabaseName("IX_VehicleOffloads_LoadRequestId");
 
                     b.HasIndex("VehicleId");
 
                     b.HasIndex("VerifiedBy");
 
-                    b.ToTable("VehicleLoads", (string)null);
+                    b.ToTable("VehicleOffloads", (string)null);
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleLoadItem", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffloadItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("VehicleLoadItemId");
+                        .HasColumnName("VehicleOffloadItemId");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
@@ -1494,16 +1494,16 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
-                    b.Property<DateTime>("LoadedAt")
+                    b.Property<long?>("LoadId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("OffloadedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
                     b.Property<int>("PartId")
                         .HasColumnType("int");
-
-                    b.Property<long?>("PickId")
-                        .HasColumnType("bigint");
 
                     b.Property<decimal>("Quantity")
                         .HasPrecision(18, 4)
@@ -1512,20 +1512,20 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("VehicleLoadId")
+                    b.Property<long>("VehicleOffloadId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LoadId");
+
                     b.HasIndex("PartId");
 
-                    b.HasIndex("PickId");
+                    b.HasIndex("VehicleOffloadId");
 
-                    b.HasIndex("VehicleLoadId");
-
-                    b.ToTable("VehicleLoadItems", null, t =>
+                    b.ToTable("VehicleOffloadItems", null, t =>
                         {
-                            t.HasCheckConstraint("CK_VehicleLoadItems_Quantity", "[Quantity] > 0");
+                            t.HasCheckConstraint("CK_VehicleOffloadItems_Quantity", "[Quantity] > 0");
                         });
                 });
 
@@ -1593,12 +1593,12 @@ namespace CleanSample.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("FK_FieldJobs_ClientLocations");
 
-                    b.HasOne("CleanSample.Domain.Entities.PickRequest", "PickRequest")
+                    b.HasOne("CleanSample.Domain.Entities.LoadRequest", "LoadRequest")
                         .WithMany("FieldJobs")
-                        .HasForeignKey("PickRequestId")
+                        .HasForeignKey("LoadRequestId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_FieldJobs_PickRequests");
+                        .HasConstraintName("FK_FieldJobs_LoadRequests");
 
                     b.HasOne("CleanSample.Domain.Entities.User", "Supervisor")
                         .WithMany()
@@ -1616,7 +1616,7 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.Navigation("ClientLocation");
 
-                    b.Navigation("PickRequest");
+                    b.Navigation("LoadRequest");
 
                     b.Navigation("Supervisor");
 
@@ -1637,11 +1637,11 @@ namespace CleanSample.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("FK_Issues_FieldJobs");
 
-                    b.HasOne("CleanSample.Domain.Entities.PickRequest", "PickRequest")
+                    b.HasOne("CleanSample.Domain.Entities.LoadRequest", "LoadRequest")
                         .WithMany("Issues")
-                        .HasForeignKey("PickRequestId")
+                        .HasForeignKey("LoadRequestId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_Issues_PickRequests");
+                        .HasConstraintName("FK_Issues_LoadRequests");
 
                     b.HasOne("CleanSample.Domain.Entities.User", "ReportedByUser")
                         .WithMany()
@@ -1659,11 +1659,167 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.Navigation("FieldJob");
 
-                    b.Navigation("PickRequest");
+                    b.Navigation("LoadRequest");
 
                     b.Navigation("ReportedByUser");
 
                     b.Navigation("ResolvedByUser");
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.Load", b =>
+                {
+                    b.HasOne("CleanSample.Domain.Entities.User", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Loads_Driver");
+
+                    b.HasOne("CleanSample.Domain.Entities.LoadRequest", "LoadRequest")
+                        .WithMany("Loads")
+                        .HasForeignKey("LoadRequestId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Loads_LoadRequests");
+
+                    b.HasOne("CleanSample.Domain.Entities.LoadRequestPart", "LoadRequestPart")
+                        .WithMany("Loads")
+                        .HasForeignKey("LoadRequestPartId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Loads_LoadRequestParts");
+
+                    b.HasOne("CleanSample.Domain.Entities.User", "Loader")
+                        .WithMany()
+                        .HasForeignKey("LoadedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Loads_LoadedBy");
+
+                    b.HasOne("CleanSample.Domain.Entities.Part", "Part")
+                        .WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Loads_Parts");
+
+                    b.HasOne("CleanSample.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Loads_Vehicle");
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("LoadRequest");
+
+                    b.Navigation("LoadRequestPart");
+
+                    b.Navigation("Loader");
+
+                    b.Navigation("Part");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequest", b =>
+                {
+                    b.HasOne("CleanSample.Domain.Entities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_LoadRequests_Clients");
+
+                    b.HasOne("CleanSample.Domain.Entities.ClientLocation", "ClientLocation")
+                        .WithMany()
+                        .HasForeignKey("ClientLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_LoadRequests_ClientLocations");
+
+                    b.HasOne("CleanSample.Domain.Entities.User", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_LoadRequests_Driver");
+
+                    b.HasOne("CleanSample.Domain.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_LoadRequests_Orders");
+
+                    b.HasOne("CleanSample.Domain.Entities.User", "Requester")
+                        .WithMany()
+                        .HasForeignKey("RequestedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_LoadRequests_RequestedBy");
+
+                    b.HasOne("CleanSample.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_LoadRequests_Vehicle");
+
+                    b.Navigation("Client");
+
+                    b.Navigation("ClientLocation");
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Requester");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequestLine", b =>
+                {
+                    b.HasOne("CleanSample.Domain.Entities.LoadRequest", "LoadRequest")
+                        .WithMany("LoadRequestLines")
+                        .HasForeignKey("LoadRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_LoadRequestLines_LoadRequests");
+
+                    b.HasOne("CleanSample.Domain.Entities.ProductVariant", "ProductVariant")
+                        .WithMany()
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_LoadRequestLines_ProductVariants");
+
+                    b.Navigation("LoadRequest");
+
+                    b.Navigation("ProductVariant");
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequestPart", b =>
+                {
+                    b.HasOne("CleanSample.Domain.Entities.LoadRequest", "LoadRequest")
+                        .WithMany("LoadRequestParts")
+                        .HasForeignKey("LoadRequestId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_LoadRequestParts_LoadRequests");
+
+                    b.HasOne("CleanSample.Domain.Entities.LoadRequestLine", "LoadRequestLine")
+                        .WithMany("LoadRequestParts")
+                        .HasForeignKey("LoadRequestLineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_LoadRequestParts_LoadRequestLines");
+
+                    b.HasOne("CleanSample.Domain.Entities.Part", "Part")
+                        .WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_LoadRequestParts_Parts");
+
+                    b.Navigation("LoadRequest");
+
+                    b.Navigation("LoadRequestLine");
+
+                    b.Navigation("Part");
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.Order", b =>
@@ -1697,162 +1853,6 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("ProductVariant");
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.Pick", b =>
-                {
-                    b.HasOne("CleanSample.Domain.Entities.User", "Driver")
-                        .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_Picks_Driver");
-
-                    b.HasOne("CleanSample.Domain.Entities.Part", "Part")
-                        .WithMany()
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Picks_Parts");
-
-                    b.HasOne("CleanSample.Domain.Entities.PickRequest", "PickRequest")
-                        .WithMany("Picks")
-                        .HasForeignKey("PickRequestId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Picks_PickRequests");
-
-                    b.HasOne("CleanSample.Domain.Entities.PickRequestPart", "PickRequestPart")
-                        .WithMany("Picks")
-                        .HasForeignKey("PickRequestPartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_Picks_PickRequestParts");
-
-                    b.HasOne("CleanSample.Domain.Entities.User", "Picker")
-                        .WithMany()
-                        .HasForeignKey("PickedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_Picks_PickedBy");
-
-                    b.HasOne("CleanSample.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_Picks_Vehicle");
-
-                    b.Navigation("Driver");
-
-                    b.Navigation("Part");
-
-                    b.Navigation("PickRequest");
-
-                    b.Navigation("PickRequestPart");
-
-                    b.Navigation("Picker");
-
-                    b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequest", b =>
-                {
-                    b.HasOne("CleanSample.Domain.Entities.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_PickRequests_Clients");
-
-                    b.HasOne("CleanSample.Domain.Entities.ClientLocation", "ClientLocation")
-                        .WithMany()
-                        .HasForeignKey("ClientLocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_PickRequests_ClientLocations");
-
-                    b.HasOne("CleanSample.Domain.Entities.User", "Driver")
-                        .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_PickRequests_Driver");
-
-                    b.HasOne("CleanSample.Domain.Entities.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_PickRequests_Orders");
-
-                    b.HasOne("CleanSample.Domain.Entities.User", "Requester")
-                        .WithMany()
-                        .HasForeignKey("RequestedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_PickRequests_RequestedBy");
-
-                    b.HasOne("CleanSample.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_PickRequests_Vehicle");
-
-                    b.Navigation("Client");
-
-                    b.Navigation("ClientLocation");
-
-                    b.Navigation("Driver");
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Requester");
-
-                    b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequestLine", b =>
-                {
-                    b.HasOne("CleanSample.Domain.Entities.PickRequest", "PickRequest")
-                        .WithMany("PickRequestLines")
-                        .HasForeignKey("PickRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_PickRequestLines_PickRequests");
-
-                    b.HasOne("CleanSample.Domain.Entities.ProductVariant", "ProductVariant")
-                        .WithMany()
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_PickRequestLines_ProductVariants");
-
-                    b.Navigation("PickRequest");
-
-                    b.Navigation("ProductVariant");
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequestPart", b =>
-                {
-                    b.HasOne("CleanSample.Domain.Entities.Part", "Part")
-                        .WithMany()
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_PickRequestParts_Parts");
-
-                    b.HasOne("CleanSample.Domain.Entities.PickRequest", "PickRequest")
-                        .WithMany("PickRequestParts")
-                        .HasForeignKey("PickRequestId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_PickRequestParts_PickRequests");
-
-                    b.HasOne("CleanSample.Domain.Entities.PickRequestLine", "PickRequestLine")
-                        .WithMany("PickRequestParts")
-                        .HasForeignKey("PickRequestLineId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_PickRequestParts_PickRequestLines");
-
-                    b.Navigation("Part");
-
-                    b.Navigation("PickRequest");
-
-                    b.Navigation("PickRequestLine");
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.Product", b =>
@@ -1955,71 +1955,71 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleLoad", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffload", b =>
                 {
                     b.HasOne("CleanSample.Domain.Entities.User", "Driver")
                         .WithMany()
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_VehicleLoads_Drivers");
+                        .HasConstraintName("FK_VehicleOffloads_Drivers");
 
-                    b.HasOne("CleanSample.Domain.Entities.PickRequest", "PickRequest")
-                        .WithMany("VehicleLoads")
-                        .HasForeignKey("PickRequestId")
+                    b.HasOne("CleanSample.Domain.Entities.LoadRequest", "LoadRequest")
+                        .WithMany("VehicleOffloads")
+                        .HasForeignKey("LoadRequestId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_VehicleLoads_PickRequests");
+                        .HasConstraintName("FK_VehicleOffloads_LoadRequests");
 
                     b.HasOne("CleanSample.Domain.Entities.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_VehicleLoads_Vehicles");
+                        .HasConstraintName("FK_VehicleOffloads_Vehicles");
 
                     b.HasOne("CleanSample.Domain.Entities.User", "Verifier")
                         .WithMany()
                         .HasForeignKey("VerifiedBy")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_VehicleLoads_VerifiedBy");
+                        .HasConstraintName("FK_VehicleOffloads_VerifiedBy");
 
                     b.Navigation("Driver");
 
-                    b.Navigation("PickRequest");
+                    b.Navigation("LoadRequest");
 
                     b.Navigation("Vehicle");
 
                     b.Navigation("Verifier");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleLoadItem", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffloadItem", b =>
                 {
+                    b.HasOne("CleanSample.Domain.Entities.Load", "Load")
+                        .WithMany("VehicleOffloadItems")
+                        .HasForeignKey("LoadId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_VehicleOffloadItems_Loads");
+
                     b.HasOne("CleanSample.Domain.Entities.Part", "Part")
                         .WithMany()
                         .HasForeignKey("PartId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_VehicleLoadItems_Parts");
+                        .HasConstraintName("FK_VehicleOffloadItems_Parts");
 
-                    b.HasOne("CleanSample.Domain.Entities.Pick", "Pick")
-                        .WithMany("VehicleLoadItems")
-                        .HasForeignKey("PickId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_VehicleLoadItems_Picks");
-
-                    b.HasOne("CleanSample.Domain.Entities.VehicleLoad", "VehicleLoad")
-                        .WithMany("VehicleLoadItems")
-                        .HasForeignKey("VehicleLoadId")
+                    b.HasOne("CleanSample.Domain.Entities.VehicleOffload", "VehicleOffload")
+                        .WithMany("VehicleOffloadItems")
+                        .HasForeignKey("VehicleOffloadId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_VehicleLoadItems_VehicleLoads");
+                        .HasConstraintName("FK_VehicleOffloadItems_VehicleOffloads");
+
+                    b.Navigation("Load");
 
                     b.Navigation("Part");
 
-                    b.Navigation("Pick");
-
-                    b.Navigation("VehicleLoad");
+                    b.Navigation("VehicleOffload");
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.Client", b =>
@@ -2044,39 +2044,39 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("Issues");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.Order", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.Load", b =>
                 {
-                    b.Navigation("OrderLines");
+                    b.Navigation("VehicleOffloadItems");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.Pick", b =>
-                {
-                    b.Navigation("VehicleLoadItems");
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequest", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequest", b =>
                 {
                     b.Navigation("FieldJobs");
 
                     b.Navigation("Issues");
 
-                    b.Navigation("PickRequestLines");
+                    b.Navigation("LoadRequestLines");
 
-                    b.Navigation("PickRequestParts");
+                    b.Navigation("LoadRequestParts");
 
-                    b.Navigation("Picks");
+                    b.Navigation("Loads");
 
-                    b.Navigation("VehicleLoads");
+                    b.Navigation("VehicleOffloads");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequestLine", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequestLine", b =>
                 {
-                    b.Navigation("PickRequestParts");
+                    b.Navigation("LoadRequestParts");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.PickRequestPart", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequestPart", b =>
                 {
-                    b.Navigation("Picks");
+                    b.Navigation("Loads");
+                });
+
+            modelBuilder.Entity("CleanSample.Domain.Entities.Order", b =>
+                {
+                    b.Navigation("OrderLines");
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.ProductVariant", b =>
@@ -2094,9 +2094,9 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("RolePermissions");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleLoad", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffload", b =>
                 {
-                    b.Navigation("VehicleLoadItems");
+                    b.Navigation("VehicleOffloadItems");
                 });
 #pragma warning restore 612, 618
         }

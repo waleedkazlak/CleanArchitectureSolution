@@ -38,16 +38,16 @@ public class GetIssuesWithFilterQueryHandler : IRequestHandler<GetIssuesWithFilt
                 i.Severity.ToLower().Contains(searchTermLower) ||
                 i.Status.ToLower().Contains(searchTermLower) ||
                 (i.ResolutionNotes != null && i.ResolutionNotes.ToLower().Contains(searchTermLower)) ||
-                (i.PickRequest != null && i.PickRequest.RequestNumber.ToLower().Contains(searchTermLower)) ||
+                (i.LoadRequest != null && i.LoadRequest.RequestNumber.ToLower().Contains(searchTermLower)) ||
                 (i.FieldJob != null && i.FieldJob.JobNumber.ToLower().Contains(searchTermLower)) ||
                 (i.ReportedByUser != null && i.ReportedByUser.FullName.ToLower().Contains(searchTermLower)) ||
                 (i.ResolvedByUser != null && i.ResolvedByUser.FullName.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
-        if (filter.PickRequestId.HasValue)
+        if (filter.LoadRequestId.HasValue)
         {
-            issues = issues.Where(i => i.PickRequestId == filter.PickRequestId.Value).ToList();
+            issues = issues.Where(i => i.LoadRequestId == filter.LoadRequestId.Value).ToList();
         }
 
         if (filter.FieldJobId.HasValue)
@@ -110,8 +110,8 @@ public class GetIssuesWithFilterQueryHandler : IRequestHandler<GetIssuesWithFilt
         var dtos = paginatedItems.Select(i => new IssueDto
         {
             Id = i.Id,
-            PickRequestId = i.PickRequestId,
-            PickRequestNumber = i.PickRequest?.RequestNumber,
+            LoadRequestId = i.LoadRequestId,
+            LoadRequestNumber = i.LoadRequest?.RequestNumber,
             FieldJobId = i.FieldJobId,
             FieldJobNumber = i.FieldJob?.JobNumber,
             FieldAssemblyId = i.FieldAssemblyId,
@@ -165,9 +165,9 @@ public class GetIssuesWithFilterQueryHandler : IRequestHandler<GetIssuesWithFilt
                 ? items.OrderByDescending(x => x.IssueType).ToList()
                 : items.OrderBy(x => x.IssueType).ToList(),
 
-            "pickrequestid" => isDescending
-                ? items.OrderByDescending(x => x.PickRequestId).ToList()
-                : items.OrderBy(x => x.PickRequestId).ToList(),
+            "loadrequestid" => isDescending
+                ? items.OrderByDescending(x => x.LoadRequestId).ToList()
+                : items.OrderBy(x => x.LoadRequestId).ToList(),
 
             "fieldjobid" => isDescending
                 ? items.OrderByDescending(x => x.FieldJobId).ToList()

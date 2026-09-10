@@ -26,7 +26,7 @@ public class UpdateIssueCommandHandler : IRequestHandler<UpdateIssueCommand, boo
             return false;
         }
 
-        existingIssue.PickRequestId = request.PickRequestId;
+        existingIssue.LoadRequestId = request.LoadRequestId;
         existingIssue.FieldJobId = request.FieldJobId;
         existingIssue.FieldAssemblyId = request.FieldAssemblyId;
         existingIssue.IssueType = request.IssueType;

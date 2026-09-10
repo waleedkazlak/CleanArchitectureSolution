@@ -1,10 +1,9 @@
-
-
 using CleanSample.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace CleanSample.Infrastructure.Persistence;
+
 public class UnitOfWork : IUnitOfWork
 {
     private readonly CleanSampleDbContext _context;
@@ -21,12 +20,12 @@ public class UnitOfWork : IUnitOfWork
     private readonly IClientLocationRepository _clientLocationRepository;
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderLineRepository _orderLineRepository;
-    private readonly IPickRequestRepository _pickRequestRepository;
-    private readonly IPickRequestLineRepository _pickRequestLineRepository;
-    private readonly IPickRequestPartRepository _pickRequestPartRepository;
-    private readonly IPickRepository _pickRepository;
-    private readonly IVehicleLoadRepository _vehicleLoadRepository;
-    private readonly IVehicleLoadItemRepository _vehicleLoadItemRepository;
+    private readonly ILoadRequestRepository _loadRequestRepository;
+    private readonly ILoadRequestLineRepository _loadRequestLineRepository;
+    private readonly ILoadRequestPartRepository _loadRequestPartRepository;
+    private readonly ILoadRepository _loadRepository;
+    private readonly IVehicleOffloadRepository _vehicleOffloadRepository;
+    private readonly IVehicleOffloadItemRepository _vehicleOffloadItemRepository;
     private readonly IFieldJobRepository _fieldJobRepository;
     private readonly IFieldAssemblyRepository _fieldAssemblyRepository;
     private readonly IIssueRepository _issueRepository;
@@ -52,12 +51,12 @@ public class UnitOfWork : IUnitOfWork
         IClientLocationRepository clientLocationRepository,
         IOrderRepository orderRepository,
         IOrderLineRepository orderLineRepository,
-        IPickRequestRepository pickRequestRepository,
-        IPickRequestLineRepository pickRequestLineRepository,
-        IPickRequestPartRepository pickRequestPartRepository,
-        IPickRepository pickRepository,
-        IVehicleLoadRepository vehicleLoadRepository,
-        IVehicleLoadItemRepository vehicleLoadItemRepository,
+        ILoadRequestRepository loadRequestRepository,
+        ILoadRequestLineRepository loadRequestLineRepository,
+        ILoadRequestPartRepository loadRequestPartRepository,
+        ILoadRepository loadRepository,
+        IVehicleOffloadRepository vehicleOffloadRepository,
+        IVehicleOffloadItemRepository vehicleOffloadItemRepository,
         IFieldJobRepository fieldJobRepository,
         IFieldAssemblyRepository fieldAssemblyRepository,
         IIssueRepository issueRepository,
@@ -81,12 +80,12 @@ public class UnitOfWork : IUnitOfWork
         _clientLocationRepository = clientLocationRepository;
         _orderRepository = orderRepository;
         _orderLineRepository = orderLineRepository;
-        _pickRequestRepository = pickRequestRepository;
-        _pickRequestLineRepository = pickRequestLineRepository;
-        _pickRequestPartRepository = pickRequestPartRepository;
-        _pickRepository = pickRepository;
-        _vehicleLoadRepository = vehicleLoadRepository;
-        _vehicleLoadItemRepository = vehicleLoadItemRepository;
+        _loadRequestRepository = loadRequestRepository;
+        _loadRequestLineRepository = loadRequestLineRepository;
+        _loadRequestPartRepository = loadRequestPartRepository;
+        _loadRepository = loadRepository;
+        _vehicleOffloadRepository = vehicleOffloadRepository;
+        _vehicleOffloadItemRepository = vehicleOffloadItemRepository;
         _fieldJobRepository = fieldJobRepository;
         _fieldAssemblyRepository = fieldAssemblyRepository;
         _issueRepository = issueRepository;
@@ -96,7 +95,6 @@ public class UnitOfWork : IUnitOfWork
         _rolePermissionRepository = rolePermissionRepository;
         _logger = logger;
     }
-
 
     /// <summary>
     /// Gets the product repository instance
@@ -164,34 +162,34 @@ public class UnitOfWork : IUnitOfWork
     public IOrderLineRepository OrderLines => _orderLineRepository;
 
     /// <summary>
-    /// Gets the pick request repository instance
+    /// Gets the load request repository instance
     /// </summary>
-    public IPickRequestRepository PickRequests => _pickRequestRepository;
+    public ILoadRequestRepository LoadRequests => _loadRequestRepository;
 
     /// <summary>
-    /// Gets the pick request line repository instance
+    /// Gets the load request line repository instance
     /// </summary>
-    public IPickRequestLineRepository PickRequestLines => _pickRequestLineRepository;
+    public ILoadRequestLineRepository LoadRequestLines => _loadRequestLineRepository;
 
     /// <summary>
-    /// Gets the pick request part repository instance
+    /// Gets the load request part repository instance
     /// </summary>
-    public IPickRequestPartRepository PickRequestParts => _pickRequestPartRepository;
+    public ILoadRequestPartRepository LoadRequestParts => _loadRequestPartRepository;
 
     /// <summary>
-    /// Gets the pick repository instance
+    /// Gets the load repository instance
     /// </summary>
-    public IPickRepository Picks => _pickRepository;
+    public ILoadRepository Loads => _loadRepository;
 
     /// <summary>
-    /// Gets the vehicle load repository instance
+    /// Gets the vehicle offload repository instance
     /// </summary>
-    public IVehicleLoadRepository VehicleLoads => _vehicleLoadRepository;
+    public IVehicleOffloadRepository VehicleOffloads => _vehicleOffloadRepository;
 
     /// <summary>
-    /// Gets the vehicle load item repository instance
+    /// Gets the vehicle offload item repository instance
     /// </summary>
-    public IVehicleLoadItemRepository VehicleLoadItems => _vehicleLoadItemRepository;
+    public IVehicleOffloadItemRepository VehicleOffloadItems => _vehicleOffloadItemRepository;
 
     /// <summary>
     /// Gets the field job repository instance
@@ -227,7 +225,6 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the role permission repository instance
     /// </summary>
     public IRolePermissionRepository RolePermissions => _rolePermissionRepository;
-
 
     /// <summary>
     /// Saves all changes made to the database asynchronously

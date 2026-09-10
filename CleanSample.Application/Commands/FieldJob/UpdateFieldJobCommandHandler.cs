@@ -27,7 +27,7 @@ public class UpdateFieldJobCommandHandler : IRequestHandler<UpdateFieldJobComman
         }
 
         existingJob.JobNumber = request.JobNumber;
-        existingJob.PickRequestId = request.PickRequestId;
+        existingJob.LoadRequestId = request.LoadRequestId;
         existingJob.ClientId = request.ClientId;
         existingJob.ClientLocationId = request.ClientLocationId;
         existingJob.TechnicianId = request.TechnicianId;

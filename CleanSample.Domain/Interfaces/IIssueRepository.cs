@@ -6,7 +6,7 @@ public interface IIssueRepository
 {
     Task<Issue?> GetByIdAsync(long id);
     Task<IEnumerable<Issue>> GetAllAsync();
-    Task<IEnumerable<Issue>> GetByPickRequestIdAsync(long pickRequestId);
+    Task<IEnumerable<Issue>> GetByLoadRequestIdAsync(long loadRequestId);
     Task<IEnumerable<Issue>> GetByFieldJobIdAsync(long fieldJobId);
     Task<IEnumerable<Issue>> GetByFieldAssemblyIdAsync(long fieldAssemblyId);
     Task<IEnumerable<Issue>> GetByReportedByAsync(int reportedBy);

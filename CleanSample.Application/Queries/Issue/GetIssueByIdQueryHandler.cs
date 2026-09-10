@@ -24,8 +24,8 @@ public class GetIssueByIdQueryHandler : IRequestHandler<GetIssueByIdQuery, Issue
         return new IssueDto
         {
             Id = issue.Id,
-            PickRequestId = issue.PickRequestId,
-            PickRequestNumber = issue.PickRequest?.RequestNumber,
+            LoadRequestId = issue.LoadRequestId,
+            LoadRequestNumber = issue.LoadRequest?.RequestNumber,
             FieldJobId = issue.FieldJobId,
             FieldJobNumber = issue.FieldJob?.JobNumber,
             FieldAssemblyId = issue.FieldAssemblyId,

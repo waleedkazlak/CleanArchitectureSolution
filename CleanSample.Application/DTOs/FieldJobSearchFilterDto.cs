@@ -6,7 +6,7 @@ public class FieldJobSearchFilterDto
     public int PageSize { get; set; } = 10;
     public string? SearchTerm { get; set; }
     public string? JobNumber { get; set; }
-    public long? PickRequestId { get; set; }
+    public long? LoadRequestId { get; set; }
     public int? ClientId { get; set; }
     public int? ClientLocationId { get; set; }
     public int? TechnicianId { get; set; }

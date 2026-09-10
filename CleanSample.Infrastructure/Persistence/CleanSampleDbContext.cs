@@ -83,34 +83,34 @@ public class CleanSampleDbContext : DbContext
     public DbSet<OrderLine> OrderLines { get; set; }
 
     /// <summary>
-    /// PickRequests DbSet
+    /// LoadRequests DbSet
     /// </summary>
-    public DbSet<PickRequest> PickRequests { get; set; }
+    public DbSet<LoadRequest> LoadRequests { get; set; }
 
     /// <summary>
-    /// PickRequestLines DbSet
+    /// LoadRequestLines DbSet
     /// </summary>
-    public DbSet<PickRequestLine> PickRequestLines { get; set; }
+    public DbSet<LoadRequestLine> LoadRequestLines { get; set; }
 
     /// <summary>
-    /// PickRequestParts DbSet
+    /// LoadRequestParts DbSet
     /// </summary>
-    public DbSet<PickRequestPart> PickRequestParts { get; set; }
+    public DbSet<LoadRequestPart> LoadRequestParts { get; set; }
 
     /// <summary>
-    /// Picks DbSet
+    /// Loads DbSet
     /// </summary>
-    public DbSet<Pick> Picks { get; set; }
+    public DbSet<Load> Loads { get; set; }
 
     /// <summary>
-    /// VehicleLoads DbSet
+    /// VehicleOffloads DbSet
     /// </summary>
-    public DbSet<VehicleLoad> VehicleLoads { get; set; }
+    public DbSet<VehicleOffload> VehicleOffloads { get; set; }
 
     /// <summary>
-    /// VehicleLoadItems DbSet
+    /// VehicleOffloadItems DbSet
     /// </summary>
-    public DbSet<VehicleLoadItem> VehicleLoadItems { get; set; }
+    public DbSet<VehicleOffloadItem> VehicleOffloadItems { get; set; }
 
     /// <summary>
     /// FieldJobs DbSet
@@ -729,13 +729,13 @@ public class CleanSampleDbContext : DbContext
                 .HasDefaultValueSql("SYSUTCDATETIME()");
         });
 
-        // Configure PickRequest entity
-        modelBuilder.Entity<PickRequest>(entity =>
+        // Configure LoadRequest entity
+        modelBuilder.Entity<LoadRequest>(entity =>
         {
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Id)
-                .HasColumnName("PickRequestId");
+                .HasColumnName("LoadRequestId");
 
             entity.Property(e => e.RequestNumber)
                 .IsRequired()
@@ -743,18 +743,18 @@ public class CleanSampleDbContext : DbContext
 
             entity.HasIndex(e => e.RequestNumber)
                 .IsUnique()
-                .HasDatabaseName("UQ_PickRequests_RequestNumber");
+                .HasDatabaseName("UQ_LoadRequests_RequestNumber");
 
             entity.Property(e => e.OrderId);
 
             entity.HasOne(e => e.Order)
                 .WithMany()
                 .HasForeignKey(e => e.OrderId)
-                .HasConstraintName("FK_PickRequests_Orders")
+                .HasConstraintName("FK_LoadRequests_Orders")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.OrderId)
-                .HasDatabaseName("IX_PickRequests_OrderId");
+                .HasDatabaseName("IX_LoadRequests_OrderId");
 
             entity.Property(e => e.ClientId)
                 .IsRequired();
@@ -762,18 +762,18 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Client)
                 .WithMany()
                 .HasForeignKey(e => e.ClientId)
-                .HasConstraintName("FK_PickRequests_Clients")
+                .HasConstraintName("FK_LoadRequests_Clients")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.ClientId)
-                .HasDatabaseName("IX_PickRequests_ClientId");
+                .HasDatabaseName("IX_LoadRequests_ClientId");
 
             entity.Property(e => e.ClientLocationId);
 
             entity.HasOne(e => e.ClientLocation)
                 .WithMany()
                 .HasForeignKey(e => e.ClientLocationId)
-                .HasConstraintName("FK_PickRequests_ClientLocations")
+                .HasConstraintName("FK_LoadRequests_ClientLocations")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.RequestedBy);
@@ -781,7 +781,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Requester)
                 .WithMany()
                 .HasForeignKey(e => e.RequestedBy)
-                .HasConstraintName("FK_PickRequests_RequestedBy")
+                .HasConstraintName("FK_LoadRequests_RequestedBy")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.RequestDate)
@@ -795,7 +795,7 @@ public class CleanSampleDbContext : DbContext
                 .HasDefaultValue("Created");
 
             entity.HasIndex(e => e.Status)
-                .HasDatabaseName("IX_PickRequests_Status");
+                .HasDatabaseName("IX_LoadRequests_Status");
 
             entity.Property(e => e.DestinationAddress)
                 .HasMaxLength(500);
@@ -811,7 +811,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Driver)
                 .WithMany()
                 .HasForeignKey(e => e.DriverId)
-                .HasConstraintName("FK_PickRequests_Driver")
+                .HasConstraintName("FK_LoadRequests_Driver")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.VehicleId);
@@ -819,7 +819,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Vehicle)
                 .WithMany()
                 .HasForeignKey(e => e.VehicleId)
-                .HasConstraintName("FK_PickRequests_Vehicle")
+                .HasConstraintName("FK_LoadRequests_Vehicle")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.Verified)
@@ -829,24 +829,24 @@ public class CleanSampleDbContext : DbContext
                 .HasDefaultValueSql("SYSUTCDATETIME()");
 
             // Add table name
-            entity.ToTable("PickRequests");
+            entity.ToTable("LoadRequests");
         });
 
-        // Configure PickRequestLine entity
-        modelBuilder.Entity<PickRequestLine>(entity =>
+        // Configure LoadRequestLine entity
+        modelBuilder.Entity<LoadRequestLine>(entity =>
         {
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Id)
-                .HasColumnName("PickRequestLineId");
+                .HasColumnName("LoadRequestLineId");
 
-            entity.Property(e => e.PickRequestId)
+            entity.Property(e => e.LoadRequestId)
                 .IsRequired();
 
-            entity.HasOne(e => e.PickRequest)
-                .WithMany(p => p.PickRequestLines)
-                .HasForeignKey(e => e.PickRequestId)
-                .HasConstraintName("FK_PickRequestLines_PickRequests")
+            entity.HasOne(e => e.LoadRequest)
+                .WithMany(p => p.LoadRequestLines)
+                .HasForeignKey(e => e.LoadRequestId)
+                .HasConstraintName("FK_LoadRequestLines_LoadRequests")
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.Property(e => e.ProductVariantId)
@@ -855,45 +855,45 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.ProductVariant)
                 .WithMany()
                 .HasForeignKey(e => e.ProductVariantId)
-                .HasConstraintName("FK_PickRequestLines_ProductVariants")
+                .HasConstraintName("FK_LoadRequestLines_ProductVariants")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.Quantity)
                 .IsRequired();
 
-            entity.ToTable("PickRequestLines", t => t.HasCheckConstraint("CK_PickRequestLines_Quantity", "[Quantity] > 0"));
+            entity.ToTable("LoadRequestLines", t => t.HasCheckConstraint("CK_LoadRequestLines_Quantity", "[Quantity] > 0"));
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
         });
 
-        // Configure PickRequestPart entity
-        modelBuilder.Entity<PickRequestPart>(entity =>
+        // Configure LoadRequestPart entity
+        modelBuilder.Entity<LoadRequestPart>(entity =>
         {
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Id)
-                .HasColumnName("PickRequestPartId");
+                .HasColumnName("LoadRequestPartId");
 
-            entity.Property(e => e.PickRequestId)
+            entity.Property(e => e.LoadRequestId)
                 .IsRequired();
 
-            entity.HasOne(e => e.PickRequest)
-                .WithMany(p => p.PickRequestParts)
-                .HasForeignKey(e => e.PickRequestId)
-                .HasConstraintName("FK_PickRequestParts_PickRequests")
+            entity.HasOne(e => e.LoadRequest)
+                .WithMany(p => p.LoadRequestParts)
+                .HasForeignKey(e => e.LoadRequestId)
+                .HasConstraintName("FK_LoadRequestParts_LoadRequests")
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasIndex(e => e.PickRequestId)
-                .HasDatabaseName("IX_PickRequestParts_PickRequestId");
+            entity.HasIndex(e => e.LoadRequestId)
+                .HasDatabaseName("IX_LoadRequestParts_LoadRequestId");
 
-            entity.Property(e => e.PickRequestLineId)
+            entity.Property(e => e.LoadRequestLineId)
                 .IsRequired();
 
-            entity.HasOne(e => e.PickRequestLine)
-                .WithMany(l => l.PickRequestParts)
-                .HasForeignKey(e => e.PickRequestLineId)
-                .HasConstraintName("FK_PickRequestParts_PickRequestLines")
+            entity.HasOne(e => e.LoadRequestLine)
+                .WithMany(l => l.LoadRequestParts)
+                .HasForeignKey(e => e.LoadRequestLineId)
+                .HasConstraintName("FK_LoadRequestParts_LoadRequestLines")
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.Property(e => e.PartId)
@@ -902,17 +902,17 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Part)
                 .WithMany()
                 .HasForeignKey(e => e.PartId)
-                .HasConstraintName("FK_PickRequestParts_Parts")
+                .HasConstraintName("FK_LoadRequestParts_Parts")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.PartId)
-                .HasDatabaseName("IX_PickRequestParts_PartId");
+                .HasDatabaseName("IX_LoadRequestParts_PartId");
 
             entity.Property(e => e.RequiredQuantity)
                 .HasPrecision(18, 4)
                 .IsRequired();
 
-            entity.Property(e => e.PickedQuantity)
+            entity.Property(e => e.LoadedQuantity)
                 .HasPrecision(18, 4)
                 .HasDefaultValue(0m);
 
@@ -921,42 +921,42 @@ public class CleanSampleDbContext : DbContext
                 .HasMaxLength(50)
                 .HasDefaultValue("Pending");
 
-            entity.ToTable("PickRequestParts", t =>
+            entity.ToTable("LoadRequestParts", t =>
             {
-                t.HasCheckConstraint("CK_PickRequestParts_RequiredQuantity", "[RequiredQuantity] > 0");
-                t.HasCheckConstraint("CK_PickRequestParts_PickedQuantity", "[PickedQuantity] >= 0");
+                t.HasCheckConstraint("CK_LoadRequestParts_RequiredQuantity", "[RequiredQuantity] > 0");
+                t.HasCheckConstraint("CK_LoadRequestParts_LoadedQuantity", "[LoadedQuantity] >= 0");
             });
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
         });
 
-        // Configure Pick entity
-        modelBuilder.Entity<Pick>(entity =>
+        // Configure Load entity
+        modelBuilder.Entity<Load>(entity =>
         {
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Id)
-                .HasColumnName("PickId");
+                .HasColumnName("LoadId");
 
-            entity.Property(e => e.PickRequestId)
+            entity.Property(e => e.LoadRequestId)
                 .IsRequired();
 
-            entity.HasOne(e => e.PickRequest)
-                .WithMany(p => p.Picks)
-                .HasForeignKey(e => e.PickRequestId)
-                .HasConstraintName("FK_Picks_PickRequests")
+            entity.HasOne(e => e.LoadRequest)
+                .WithMany(p => p.Loads)
+                .HasForeignKey(e => e.LoadRequestId)
+                .HasConstraintName("FK_Loads_LoadRequests")
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasIndex(e => e.PickRequestId)
-                .HasDatabaseName("IX_Picks_PickRequestId");
+            entity.HasIndex(e => e.LoadRequestId)
+                .HasDatabaseName("IX_Loads_LoadRequestId");
 
-            entity.Property(e => e.PickRequestPartId);
+            entity.Property(e => e.LoadRequestPartId);
 
-            entity.HasOne(e => e.PickRequestPart)
-                .WithMany(prp => prp.Picks)
-                .HasForeignKey(e => e.PickRequestPartId)
-                .HasConstraintName("FK_Picks_PickRequestParts")
+            entity.HasOne(e => e.LoadRequestPart)
+                .WithMany(prp => prp.Loads)
+                .HasForeignKey(e => e.LoadRequestPartId)
+                .HasConstraintName("FK_Loads_LoadRequestParts")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.PartId)
@@ -965,25 +965,25 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Part)
                 .WithMany()
                 .HasForeignKey(e => e.PartId)
-                .HasConstraintName("FK_Picks_Parts")
+                .HasConstraintName("FK_Loads_Parts")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.Barcode)
                 .HasMaxLength(100);
 
             entity.HasIndex(e => e.Barcode)
-                .HasDatabaseName("IX_Picks_Barcode");
+                .HasDatabaseName("IX_Loads_Barcode");
 
             entity.Property(e => e.Quantity)
                 .HasPrecision(18, 4)
                 .IsRequired();
 
-            entity.Property(e => e.PickedBy);
+            entity.Property(e => e.LoadedBy);
 
-            entity.HasOne(e => e.Picker)
+            entity.HasOne(e => e.Loader)
                 .WithMany()
-                .HasForeignKey(e => e.PickedBy)
-                .HasConstraintName("FK_Picks_PickedBy")
+                .HasForeignKey(e => e.LoadedBy)
+                .HasConstraintName("FK_Loads_LoadedBy")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.DriverId);
@@ -991,7 +991,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Driver)
                 .WithMany()
                 .HasForeignKey(e => e.DriverId)
-                .HasConstraintName("FK_Picks_Driver")
+                .HasConstraintName("FK_Loads_Driver")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.VehicleId);
@@ -999,65 +999,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Vehicle)
                 .WithMany()
                 .HasForeignKey(e => e.VehicleId)
-                .HasConstraintName("FK_Picks_Vehicle")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.Property(e => e.PickDate)
-                .HasDefaultValueSql("SYSUTCDATETIME()");
-
-            entity.Property(e => e.Status)
-                .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("Picked");
-
-            entity.Property(e => e.Notes)
-                .HasMaxLength(500);
-
-            entity.ToTable("Picks", t =>
-            {
-                t.HasCheckConstraint("CK_Picks_Quantity", "[Quantity] > 0");
-            });
-
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("SYSUTCDATETIME()");
-        });
-
-        // Configure VehicleLoad entity
-        modelBuilder.Entity<VehicleLoad>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-
-            entity.Property(e => e.Id)
-                .HasColumnName("VehicleLoadId");
-
-            entity.Property(e => e.PickRequestId)
-                .IsRequired();
-
-            entity.HasOne(e => e.PickRequest)
-                .WithMany(p => p.VehicleLoads)
-                .HasForeignKey(e => e.PickRequestId)
-                .HasConstraintName("FK_VehicleLoads_PickRequests")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasIndex(e => e.PickRequestId)
-                .HasDatabaseName("IX_VehicleLoads_PickRequestId");
-
-            entity.Property(e => e.VehicleId)
-                .IsRequired();
-
-            entity.HasOne(e => e.Vehicle)
-                .WithMany()
-                .HasForeignKey(e => e.VehicleId)
-                .HasConstraintName("FK_VehicleLoads_Vehicles")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.Property(e => e.DriverId)
-                .IsRequired();
-
-            entity.HasOne(e => e.Driver)
-                .WithMany()
-                .HasForeignKey(e => e.DriverId)
-                .HasConstraintName("FK_VehicleLoads_Drivers")
+                .HasConstraintName("FK_Loads_Vehicle")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.LoadDate)
@@ -1066,7 +1008,65 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Status)
                 .IsRequired()
                 .HasMaxLength(50)
-                .HasDefaultValue("Loading");
+                .HasDefaultValue("Loaded");
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(500);
+
+            entity.ToTable("Loads", t =>
+            {
+                t.HasCheckConstraint("CK_Loads_Quantity", "[Quantity] > 0");
+            });
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure VehicleOffload entity
+        modelBuilder.Entity<VehicleOffload>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                .HasColumnName("VehicleOffloadId");
+
+            entity.Property(e => e.LoadRequestId)
+                .IsRequired();
+
+            entity.HasOne(e => e.LoadRequest)
+                .WithMany(p => p.VehicleOffloads)
+                .HasForeignKey(e => e.LoadRequestId)
+                .HasConstraintName("FK_VehicleOffloads_LoadRequests")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.LoadRequestId)
+                .HasDatabaseName("IX_VehicleOffloads_LoadRequestId");
+
+            entity.Property(e => e.VehicleId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Vehicle)
+                .WithMany()
+                .HasForeignKey(e => e.VehicleId)
+                .HasConstraintName("FK_VehicleOffloads_Vehicles")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.DriverId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Driver)
+                .WithMany()
+                .HasForeignKey(e => e.DriverId)
+                .HasConstraintName("FK_VehicleOffloads_Drivers")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.OffloadDate)
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Offloading");
 
             entity.Property(e => e.Verified)
                 .HasDefaultValue(false);
@@ -1076,7 +1076,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Verifier)
                 .WithMany()
                 .HasForeignKey(e => e.VerifiedBy)
-                .HasConstraintName("FK_VehicleLoads_VerifiedBy")
+                .HasConstraintName("FK_VehicleOffloads_VerifiedBy")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.VerifiedAt);
@@ -1087,32 +1087,32 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
 
-            entity.ToTable("VehicleLoads");
+            entity.ToTable("VehicleOffloads");
         });
 
-        // Configure VehicleLoadItem entity
-        modelBuilder.Entity<VehicleLoadItem>(entity =>
+        // Configure VehicleOffloadItem entity
+        modelBuilder.Entity<VehicleOffloadItem>(entity =>
         {
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Id)
-                .HasColumnName("VehicleLoadItemId");
+                .HasColumnName("VehicleOffloadItemId");
 
-            entity.Property(e => e.VehicleLoadId)
+            entity.Property(e => e.VehicleOffloadId)
                 .IsRequired();
 
-            entity.HasOne(e => e.VehicleLoad)
-                .WithMany(vl => vl.VehicleLoadItems)
-                .HasForeignKey(e => e.VehicleLoadId)
-                .HasConstraintName("FK_VehicleLoadItems_VehicleLoads")
+            entity.HasOne(e => e.VehicleOffload)
+                .WithMany(vl => vl.VehicleOffloadItems)
+                .HasForeignKey(e => e.VehicleOffloadId)
+                .HasConstraintName("FK_VehicleOffloadItems_VehicleOffloads")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.Property(e => e.PickId);
+            entity.Property(e => e.LoadId);
 
-            entity.HasOne(e => e.Pick)
-                .WithMany(p => p.VehicleLoadItems)
-                .HasForeignKey(e => e.PickId)
-                .HasConstraintName("FK_VehicleLoadItems_Picks")
+            entity.HasOne(e => e.Load)
+                .WithMany(p => p.VehicleOffloadItems)
+                .HasForeignKey(e => e.LoadId)
+                .HasConstraintName("FK_VehicleOffloadItems_Loads")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.PartId)
@@ -1121,7 +1121,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Part)
                 .WithMany()
                 .HasForeignKey(e => e.PartId)
-                .HasConstraintName("FK_VehicleLoadItems_Parts")
+                .HasConstraintName("FK_VehicleOffloadItems_Parts")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.Barcode)
@@ -1131,12 +1131,12 @@ public class CleanSampleDbContext : DbContext
                 .HasPrecision(18, 4)
                 .IsRequired();
 
-            entity.Property(e => e.LoadedAt)
+            entity.Property(e => e.OffloadedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
 
-            entity.ToTable("VehicleLoadItems", t =>
+            entity.ToTable("VehicleOffloadItems", t =>
             {
-                t.HasCheckConstraint("CK_VehicleLoadItems_Quantity", "[Quantity] > 0");
+                t.HasCheckConstraint("CK_VehicleOffloadItems_Quantity", "[Quantity] > 0");
             });
 
             entity.Property(e => e.CreatedAt)
@@ -1159,17 +1159,17 @@ public class CleanSampleDbContext : DbContext
                 .IsUnique()
                 .HasDatabaseName("UQ_FieldJobs_JobNumber");
 
-            entity.Property(e => e.PickRequestId)
+            entity.Property(e => e.LoadRequestId)
                 .IsRequired();
 
-            entity.HasOne(e => e.PickRequest)
+            entity.HasOne(e => e.LoadRequest)
                 .WithMany(p => p.FieldJobs)
-                .HasForeignKey(e => e.PickRequestId)
-                .HasConstraintName("FK_FieldJobs_PickRequests")
+                .HasForeignKey(e => e.LoadRequestId)
+                .HasConstraintName("FK_FieldJobs_LoadRequests")
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasIndex(e => e.PickRequestId)
-                .HasDatabaseName("IX_FieldJobs_PickRequestId");
+            entity.HasIndex(e => e.LoadRequestId)
+                .HasDatabaseName("IX_FieldJobs_LoadRequestId");
 
             entity.Property(e => e.ClientId)
                 .IsRequired();
@@ -1316,12 +1316,12 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("IssueId");
 
-            entity.Property(e => e.PickRequestId);
+            entity.Property(e => e.LoadRequestId);
 
-            entity.HasOne(e => e.PickRequest)
+            entity.HasOne(e => e.LoadRequest)
                 .WithMany(p => p.Issues)
-                .HasForeignKey(e => e.PickRequestId)
-                .HasConstraintName("FK_Issues_PickRequests")
+                .HasForeignKey(e => e.LoadRequestId)
+                .HasConstraintName("FK_Issues_LoadRequests")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.FieldJobId);

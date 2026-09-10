@@ -36,12 +36,12 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IClientLocationRepository, ClientLocationRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IOrderLineRepository, OrderLineRepository>();
-        services.AddScoped<IPickRequestRepository, PickRequestRepository>();
-        services.AddScoped<IPickRequestLineRepository, PickRequestLineRepository>();
-        services.AddScoped<IPickRequestPartRepository, PickRequestPartRepository>();
-        services.AddScoped<IPickRepository, PickRepository>();
-        services.AddScoped<IVehicleLoadRepository, VehicleLoadRepository>();
-        services.AddScoped<IVehicleLoadItemRepository, VehicleLoadItemRepository>();
+        services.AddScoped<ILoadRequestRepository, LoadRequestRepository>();
+        services.AddScoped<ILoadRequestLineRepository, LoadRequestLineRepository>();
+        services.AddScoped<ILoadRequestPartRepository, LoadRequestPartRepository>();
+        services.AddScoped<ILoadRepository, LoadRepository>();
+        services.AddScoped<IVehicleOffloadRepository, VehicleOffloadRepository>();
+        services.AddScoped<IVehicleOffloadItemRepository, VehicleOffloadItemRepository>();
         services.AddScoped<IFieldJobRepository, FieldJobRepository>();
         services.AddScoped<IFieldAssemblyRepository, FieldAssemblyRepository>();
         services.AddScoped<IIssueRepository, IssueRepository>();
@@ -49,7 +49,6 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IScreenRepository, ScreenRepository>();
         services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
-
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();

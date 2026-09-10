@@ -20,8 +20,8 @@ public class GetIssuesByFieldAssemblyIdQueryHandler : IRequestHandler<GetIssuesB
         return issues.Select(i => new IssueDto
         {
             Id = i.Id,
-            PickRequestId = i.PickRequestId,
-            PickRequestNumber = i.PickRequest?.RequestNumber,
+            LoadRequestId = i.LoadRequestId,
+            LoadRequestNumber = i.LoadRequest?.RequestNumber,
             FieldJobId = i.FieldJobId,
             FieldJobNumber = i.FieldJob?.JobNumber,
             FieldAssemblyId = i.FieldAssemblyId,

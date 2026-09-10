@@ -4,8 +4,8 @@ public class FieldJob : BaseEntity<long>
 {
     public string JobNumber { get; set; } = null!;
 
-    public long PickRequestId { get; set; }
-    public PickRequest PickRequest { get; set; } = null!;
+    public long LoadRequestId { get; set; }
+    public LoadRequest LoadRequest { get; set; } = null!;
 
     public int ClientId { get; set; }
     public Client Client { get; set; } = null!;

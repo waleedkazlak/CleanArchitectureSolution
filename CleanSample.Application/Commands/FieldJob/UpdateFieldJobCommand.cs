@@ -6,7 +6,7 @@ public class UpdateFieldJobCommand : IRequest<bool>
 {
     public long Id { get; set; }
     public string JobNumber { get; set; } = string.Empty;
-    public long PickRequestId { get; set; }
+    public long LoadRequestId { get; set; }
     public int ClientId { get; set; }
     public int? ClientLocationId { get; set; }
     public int? TechnicianId { get; set; }

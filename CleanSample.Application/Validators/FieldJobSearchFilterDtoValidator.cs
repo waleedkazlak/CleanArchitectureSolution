@@ -5,7 +5,7 @@ namespace CleanSample.Application.Validators;
 
 public class FieldJobSearchFilterDtoValidator : AbstractValidator<FieldJobSearchFilterDto>
 {
-    private readonly string[] _validSortFields = { "JobNumber", "ScheduledDate", "StartDate", "CompletionDate", "PickRequestId", "ClientId", "Status", "CreatedAt" };
+    private readonly string[] _validSortFields = { "JobNumber", "ScheduledDate", "StartDate", "CompletionDate", "LoadRequestId", "ClientId", "Status", "CreatedAt" };
     private readonly string[] _validSortDirections = { "asc", "desc" };
 
     public FieldJobSearchFilterDtoValidator()
@@ -27,9 +27,9 @@ public class FieldJobSearchFilterDtoValidator : AbstractValidator<FieldJobSearch
             .MaximumLength(50).WithMessage("Job number cannot exceed 50 characters")
             .When(x => !string.IsNullOrWhiteSpace(x.JobNumber));
 
-        RuleFor(x => x.PickRequestId)
-            .GreaterThan(0).WithMessage("Pick request ID must be greater than 0")
-            .When(x => x.PickRequestId.HasValue);
+        RuleFor(x => x.LoadRequestId)
+            .GreaterThan(0).WithMessage("Load request ID must be greater than 0")
+            .When(x => x.LoadRequestId.HasValue);
 
         RuleFor(x => x.ClientId)
             .GreaterThan(0).WithMessage("Client ID must be greater than 0")

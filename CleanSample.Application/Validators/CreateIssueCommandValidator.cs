@@ -7,9 +7,9 @@ public class CreateIssueCommandValidator : AbstractValidator<CreateIssueCommand>
 {
     public CreateIssueCommandValidator()
     {
-        RuleFor(x => x.PickRequestId)
-            .GreaterThan(0).WithMessage("Pick request ID must be greater than 0.")
-            .When(x => x.PickRequestId.HasValue);
+        RuleFor(x => x.LoadRequestId)
+            .GreaterThan(0).WithMessage("Load request ID must be greater than 0.")
+            .When(x => x.LoadRequestId.HasValue);
 
         RuleFor(x => x.FieldJobId)
             .GreaterThan(0).WithMessage("Field job ID must be greater than 0.")

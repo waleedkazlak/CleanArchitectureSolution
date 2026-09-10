@@ -21,8 +21,8 @@ public class GetFieldJobsByClientIdQueryHandler : IRequestHandler<GetFieldJobsBy
         {
             Id = fj.Id,
             JobNumber = fj.JobNumber,
-            PickRequestId = fj.PickRequestId,
-            PickRequestNumber = fj.PickRequest?.RequestNumber,
+            LoadRequestId = fj.LoadRequestId,
+            LoadRequestNumber = fj.LoadRequest?.RequestNumber,
             ClientId = fj.ClientId,
             ClientName = fj.Client?.Name,
             ClientLocationId = fj.ClientLocationId,

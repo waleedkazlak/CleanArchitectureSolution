@@ -2,8 +2,8 @@ namespace CleanSample.Domain.Entities;
 
 public class Issue : BaseEntity<long>
 {
-    public long? PickRequestId { get; set; }
-    public PickRequest? PickRequest { get; set; }
+    public long? LoadRequestId { get; set; }
+    public LoadRequest? LoadRequest { get; set; }
 
     public long? FieldJobId { get; set; }
     public FieldJob? FieldJob { get; set; }

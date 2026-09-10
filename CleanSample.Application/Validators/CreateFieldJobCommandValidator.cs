@@ -11,8 +11,8 @@ public class CreateFieldJobCommandValidator : AbstractValidator<CreateFieldJobCo
             .NotEmpty().WithMessage("Job number is required.")
             .MaximumLength(50).WithMessage("Job number cannot exceed 50 characters.");
 
-        RuleFor(x => x.PickRequestId)
-            .GreaterThan(0).WithMessage("Pick request ID must be greater than 0.");
+        RuleFor(x => x.LoadRequestId)
+            .GreaterThan(0).WithMessage("Load request ID must be greater than 0.");
 
         RuleFor(x => x.ClientId)
             .GreaterThan(0).WithMessage("Client ID must be greater than 0.");

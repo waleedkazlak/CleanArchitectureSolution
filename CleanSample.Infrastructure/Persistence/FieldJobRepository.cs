@@ -16,7 +16,7 @@ public class FieldJobRepository : IFieldJobRepository
     public async Task<FieldJob?> GetByIdAsync(long id)
     {
         return await _context.FieldJobs
-            .Include(f => f.PickRequest)
+            .Include(f => f.LoadRequest)
             .Include(f => f.Client)
             .Include(f => f.ClientLocation)
             .Include(f => f.Technician)
@@ -27,7 +27,7 @@ public class FieldJobRepository : IFieldJobRepository
     public async Task<FieldJob?> GetByJobNumberAsync(string jobNumber)
     {
         return await _context.FieldJobs
-            .Include(f => f.PickRequest)
+            .Include(f => f.LoadRequest)
             .Include(f => f.Client)
             .Include(f => f.ClientLocation)
             .Include(f => f.Technician)
@@ -38,7 +38,7 @@ public class FieldJobRepository : IFieldJobRepository
     public async Task<IEnumerable<FieldJob>> GetAllAsync()
     {
         return await _context.FieldJobs
-            .Include(f => f.PickRequest)
+            .Include(f => f.LoadRequest)
             .Include(f => f.Client)
             .Include(f => f.ClientLocation)
             .Include(f => f.Technician)
@@ -46,22 +46,22 @@ public class FieldJobRepository : IFieldJobRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<FieldJob>> GetByPickRequestIdAsync(long pickRequestId)
+    public async Task<IEnumerable<FieldJob>> GetByLoadRequestIdAsync(long loadRequestId)
     {
         return await _context.FieldJobs
-            .Include(f => f.PickRequest)
+            .Include(f => f.LoadRequest)
             .Include(f => f.Client)
             .Include(f => f.ClientLocation)
             .Include(f => f.Technician)
             .Include(f => f.Supervisor)
-            .Where(f => f.PickRequestId == pickRequestId)
+            .Where(f => f.LoadRequestId == loadRequestId)
             .ToListAsync();
     }
 
     public async Task<IEnumerable<FieldJob>> GetByClientIdAsync(int clientId)
     {
         return await _context.FieldJobs
-            .Include(f => f.PickRequest)
+            .Include(f => f.LoadRequest)
             .Include(f => f.Client)
             .Include(f => f.ClientLocation)
             .Include(f => f.Technician)
@@ -73,7 +73,7 @@ public class FieldJobRepository : IFieldJobRepository
     public async Task<IEnumerable<FieldJob>> GetByTechnicianIdAsync(int technicianId)
     {
         return await _context.FieldJobs
-            .Include(f => f.PickRequest)
+            .Include(f => f.LoadRequest)
             .Include(f => f.Client)
             .Include(f => f.ClientLocation)
             .Include(f => f.Technician)
@@ -85,7 +85,7 @@ public class FieldJobRepository : IFieldJobRepository
     public async Task<IEnumerable<FieldJob>> GetBySupervisorIdAsync(int supervisorId)
     {
         return await _context.FieldJobs
-            .Include(f => f.PickRequest)
+            .Include(f => f.LoadRequest)
             .Include(f => f.Client)
             .Include(f => f.ClientLocation)
             .Include(f => f.Technician)

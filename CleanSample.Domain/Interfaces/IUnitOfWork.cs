@@ -71,34 +71,34 @@ public interface IUnitOfWork : IDisposable
     IOrderLineRepository OrderLines { get; }
 
     /// <summary>
-    /// PickRequest repository instance
+    /// LoadRequest repository instance
     /// </summary>
-    IPickRequestRepository PickRequests { get; }
+    ILoadRequestRepository LoadRequests { get; }
 
     /// <summary>
-    /// PickRequestLine repository instance
+    /// LoadRequestLine repository instance
     /// </summary>
-    IPickRequestLineRepository PickRequestLines { get; }
+    ILoadRequestLineRepository LoadRequestLines { get; }
 
     /// <summary>
-    /// PickRequestPart repository instance
+    /// LoadRequestPart repository instance
     /// </summary>
-    IPickRequestPartRepository PickRequestParts { get; }
+    ILoadRequestPartRepository LoadRequestParts { get; }
 
     /// <summary>
-    /// Pick repository instance
+    /// Load repository instance
     /// </summary>
-    IPickRepository Picks { get; }
+    ILoadRepository Loads { get; }
 
     /// <summary>
-    /// VehicleLoad repository instance
+    /// VehicleOffload repository instance
     /// </summary>
-    IVehicleLoadRepository VehicleLoads { get; }
+    IVehicleOffloadRepository VehicleOffloads { get; }
 
     /// <summary>
-    /// VehicleLoadItem repository instance
+    /// VehicleOffloadItem repository instance
     /// </summary>
-    IVehicleLoadItemRepository VehicleLoadItems { get; }
+    IVehicleOffloadItemRepository VehicleOffloadItems { get; }
 
     /// <summary>
     /// FieldJob repository instance

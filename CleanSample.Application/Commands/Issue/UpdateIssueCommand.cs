@@ -5,7 +5,7 @@ namespace CleanSample.Application.Commands.Issue;
 public class UpdateIssueCommand : IRequest<bool>
 {
     public long Id { get; set; }
-    public long? PickRequestId { get; set; }
+    public long? LoadRequestId { get; set; }
     public long? FieldJobId { get; set; }
     public long? FieldAssemblyId { get; set; }
     public string IssueType { get; set; } = string.Empty;

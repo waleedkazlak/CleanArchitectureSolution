@@ -5,7 +5,7 @@ public class IssueSearchFilterDto
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
     public string? SearchTerm { get; set; }
-    public long? PickRequestId { get; set; }
+    public long? LoadRequestId { get; set; }
     public long? FieldJobId { get; set; }
     public long? FieldAssemblyId { get; set; }
     public string? IssueType { get; set; }

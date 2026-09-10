@@ -16,7 +16,7 @@ public class IssueRepository : IIssueRepository
     public async Task<Issue?> GetByIdAsync(long id)
     {
         return await _context.Issues
-            .Include(i => i.PickRequest)
+            .Include(i => i.LoadRequest)
             .Include(i => i.FieldJob)
             .Include(i => i.FieldAssembly)
             .Include(i => i.ReportedByUser)
@@ -27,7 +27,7 @@ public class IssueRepository : IIssueRepository
     public async Task<IEnumerable<Issue>> GetAllAsync()
     {
         return await _context.Issues
-            .Include(i => i.PickRequest)
+            .Include(i => i.LoadRequest)
             .Include(i => i.FieldJob)
             .Include(i => i.FieldAssembly)
             .Include(i => i.ReportedByUser)
@@ -35,22 +35,22 @@ public class IssueRepository : IIssueRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Issue>> GetByPickRequestIdAsync(long pickRequestId)
+    public async Task<IEnumerable<Issue>> GetByLoadRequestIdAsync(long loadRequestId)
     {
         return await _context.Issues
-            .Include(i => i.PickRequest)
+            .Include(i => i.LoadRequest)
             .Include(i => i.FieldJob)
             .Include(i => i.FieldAssembly)
             .Include(i => i.ReportedByUser)
             .Include(i => i.ResolvedByUser)
-            .Where(i => i.PickRequestId == pickRequestId)
+            .Where(i => i.LoadRequestId == loadRequestId)
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Issue>> GetByFieldJobIdAsync(long fieldJobId)
     {
         return await _context.Issues
-            .Include(i => i.PickRequest)
+            .Include(i => i.LoadRequest)
             .Include(i => i.FieldJob)
             .Include(i => i.FieldAssembly)
             .Include(i => i.ReportedByUser)
@@ -62,7 +62,7 @@ public class IssueRepository : IIssueRepository
     public async Task<IEnumerable<Issue>> GetByFieldAssemblyIdAsync(long fieldAssemblyId)
     {
         return await _context.Issues
-            .Include(i => i.PickRequest)
+            .Include(i => i.LoadRequest)
             .Include(i => i.FieldJob)
             .Include(i => i.FieldAssembly)
             .Include(i => i.ReportedByUser)
@@ -74,7 +74,7 @@ public class IssueRepository : IIssueRepository
     public async Task<IEnumerable<Issue>> GetByReportedByAsync(int reportedBy)
     {
         return await _context.Issues
-            .Include(i => i.PickRequest)
+            .Include(i => i.LoadRequest)
             .Include(i => i.FieldJob)
             .Include(i => i.FieldAssembly)
             .Include(i => i.ReportedByUser)
@@ -86,7 +86,7 @@ public class IssueRepository : IIssueRepository
     public async Task<IEnumerable<Issue>> GetByResolvedByAsync(int resolvedBy)
     {
         return await _context.Issues
-            .Include(i => i.PickRequest)
+            .Include(i => i.LoadRequest)
             .Include(i => i.FieldJob)
             .Include(i => i.FieldAssembly)
             .Include(i => i.ReportedByUser)

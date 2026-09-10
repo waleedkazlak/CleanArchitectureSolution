@@ -23,7 +23,7 @@ public class CreateIssueCommandHandler : IRequestHandler<CreateIssueCommand, lon
 
         var issue = new Domain.Entities.Issue
         {
-            PickRequestId = request.PickRequestId,
+            LoadRequestId = request.LoadRequestId,
             FieldJobId = request.FieldJobId,
             FieldAssemblyId = request.FieldAssemblyId,
             IssueType = request.IssueType,

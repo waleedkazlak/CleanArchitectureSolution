@@ -46,17 +46,17 @@ public static class DatabaseSeeder
             await SeedOrdersAsync(context);
             await SeedOrderLinesAsync(context);
 
-            // 9. PickRequests, PickRequestLines, PickRequestParts
-            await SeedPickRequestsAsync(context);
-            await SeedPickRequestLinesAsync(context);
-            await SeedPickRequestPartsAsync(context);
+            // 9. LoadRequests, LoadRequestLines, LoadRequestParts
+            await SeedLoadRequestsAsync(context);
+            await SeedLoadRequestLinesAsync(context);
+            await SeedLoadRequestPartsAsync(context);
 
-            // 10. Picks
-            await SeedPicksAsync(context);
+            // 10. Loads
+            await SeedLoadsAsync(context);
 
-            // 11. VehicleLoads & VehicleLoadItems
-            await SeedVehicleLoadsAsync(context);
-            await SeedVehicleLoadItemsAsync(context);
+            // 11. VehicleOffloads & VehicleOffloadItems
+            await SeedVehicleOffloadsAsync(context);
+            await SeedVehicleOffloadItemsAsync(context);
 
             // 12. FieldJobs & FieldAssemblies
             await SeedFieldJobsAsync(context);
@@ -69,7 +69,6 @@ public static class DatabaseSeeder
             await SeedScreensAsync(context);
             await SeedRolePermissionsAsync(context);
         }
-
         catch (Exception ex)
         {
             throw new InvalidOperationException("Error occurred while seeding the database", ex);
@@ -305,7 +304,6 @@ public static class DatabaseSeeder
     }
 
     private static async Task SeedCategoriesAsync(CleanSampleDbContext context)
-
     {
         if (await context.Categories.AnyAsync()) return;
 
@@ -664,9 +662,9 @@ public static class DatabaseSeeder
         await context.SaveChangesAsync();
     }
 
-    private static async Task SeedPickRequestsAsync(CleanSampleDbContext context)
+    private static async Task SeedLoadRequestsAsync(CleanSampleDbContext context)
     {
-        if (await context.PickRequests.AnyAsync()) return;
+        if (await context.LoadRequests.AnyAsync()) return;
 
         var order = await context.Orders.FirstOrDefaultAsync();
         var client = await context.Clients.FirstOrDefaultAsync();
@@ -677,11 +675,11 @@ public static class DatabaseSeeder
 
         if (client == null) return;
 
-        var pickRequests = new List<PickRequest>
+        var loadRequests = new List<LoadRequest>
         {
-            new PickRequest
+            new LoadRequest
             {
-                RequestNumber = "PR-2026-0001",
+                RequestNumber = "LR-2026-0001",
                 OrderId = order?.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
@@ -691,31 +689,31 @@ public static class DatabaseSeeder
                 Status = "Created",
                 DestinationAddress = "100 Innovation Way, Suite 400",
                 DestinationCity = "New York",
-                Description = "Pick request for Order ORD-2026-0001 workstation batch",
+                Description = "Load request for Order ORD-2026-0001 workstation batch",
                 DriverId = driver?.Id,
                 VehicleId = vehicle?.Id,
                 Verified = false
             },
-            new PickRequest
+            new LoadRequest
             {
-                RequestNumber = "PR-2026-0002",
+                RequestNumber = "LR-2026-0002",
                 OrderId = order?.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
                 RequestedBy = requester?.Id,
                 RequestDate = DateTime.UtcNow.AddDays(-2),
                 ExecutionDate = DateTime.UtcNow.AddDays(2),
-                Status = "Picking",
+                Status = "Loading",
                 DestinationAddress = "250 Freight Terminal Blvd",
                 DestinationCity = "Chicago",
-                Description = "Pick request for field assembly equipment",
+                Description = "Load request for field assembly equipment",
                 DriverId = driver?.Id,
                 VehicleId = vehicle?.Id,
                 Verified = false
             },
-            new PickRequest
+            new LoadRequest
             {
-                RequestNumber = "PR-2026-0003",
+                RequestNumber = "LR-2026-0003",
                 OrderId = order?.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
@@ -725,170 +723,170 @@ public static class DatabaseSeeder
                 Status = "Completed",
                 DestinationAddress = "88 Industrial Parkway",
                 DestinationCity = "Houston",
-                Description = "Pick request for emergency maintenance replenishment",
+                Description = "Load request for emergency maintenance replenishment",
                 DriverId = driver?.Id,
                 VehicleId = vehicle?.Id,
                 Verified = true
             }
         };
 
-        await context.PickRequests.AddRangeAsync(pickRequests);
+        await context.LoadRequests.AddRangeAsync(loadRequests);
         await context.SaveChangesAsync();
     }
 
-    private static async Task SeedPickRequestLinesAsync(CleanSampleDbContext context)
+    private static async Task SeedLoadRequestLinesAsync(CleanSampleDbContext context)
     {
-        if (await context.PickRequestLines.AnyAsync()) return;
+        if (await context.LoadRequestLines.AnyAsync()) return;
 
-        var pickRequests = await context.PickRequests.ToListAsync();
+        var loadRequests = await context.LoadRequests.ToListAsync();
         var variants = await context.ProductVariants.Take(2).ToListAsync();
 
-        if (!pickRequests.Any() || !variants.Any()) return;
+        if (!loadRequests.Any() || !variants.Any()) return;
 
-        var lines = new List<PickRequestLine>();
+        var lines = new List<LoadRequestLine>();
 
-        foreach (var pr in pickRequests)
+        foreach (var lr in loadRequests)
         {
             foreach (var variant in variants)
             {
-                lines.Add(new PickRequestLine
+                lines.Add(new LoadRequestLine
                 {
-                    PickRequestId = pr.Id,
+                    LoadRequestId = lr.Id,
                     ProductVariantId = variant.Id,
                     Quantity = 4
                 });
             }
         }
 
-        await context.PickRequestLines.AddRangeAsync(lines);
+        await context.LoadRequestLines.AddRangeAsync(lines);
         await context.SaveChangesAsync();
     }
 
-    private static async Task SeedPickRequestPartsAsync(CleanSampleDbContext context)
+    private static async Task SeedLoadRequestPartsAsync(CleanSampleDbContext context)
     {
-        if (await context.PickRequestParts.AnyAsync()) return;
+        if (await context.LoadRequestParts.AnyAsync()) return;
 
-        var prLines = await context.PickRequestLines.Include(l => l.PickRequest).ToListAsync();
+        var lrLines = await context.LoadRequestLines.Include(l => l.LoadRequest).ToListAsync();
         var parts = await context.Parts.Take(3).ToListAsync();
 
-        if (!prLines.Any() || !parts.Any()) return;
+        if (!lrLines.Any() || !parts.Any()) return;
 
-        var prParts = new List<PickRequestPart>();
+        var lrParts = new List<LoadRequestPart>();
 
-        foreach (var line in prLines)
+        foreach (var line in lrLines)
         {
             foreach (var part in parts)
             {
-                prParts.Add(new PickRequestPart
+                lrParts.Add(new LoadRequestPart
                 {
-                    PickRequestId = line.PickRequestId,
-                    PickRequestLineId = line.Id,
+                    LoadRequestId = line.LoadRequestId,
+                    LoadRequestLineId = line.Id,
                     PartId = part.Id,
                     RequiredQuantity = line.Quantity * 2.0m,
-                    PickedQuantity = line.Quantity * 2.0m,
-                    Status = "Picked",
+                    LoadedQuantity = line.Quantity * 2.0m,
+                    Status = "Loaded",
                     CreatedAt = DateTime.UtcNow
                 });
             }
         }
 
-        await context.PickRequestParts.AddRangeAsync(prParts);
+        await context.LoadRequestParts.AddRangeAsync(lrParts);
         await context.SaveChangesAsync();
     }
 
-    private static async Task SeedPicksAsync(CleanSampleDbContext context)
+    private static async Task SeedLoadsAsync(CleanSampleDbContext context)
     {
-        if (await context.Picks.AnyAsync()) return;
+        if (await context.Loads.AnyAsync()) return;
 
-        var prParts = await context.PickRequestParts.Take(5).ToListAsync();
-        var picker = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("tech")) ?? await context.Users.FirstOrDefaultAsync();
+        var lrParts = await context.LoadRequestParts.Take(5).ToListAsync();
+        var loader = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("tech")) ?? await context.Users.FirstOrDefaultAsync();
         var driver = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("driver")) ?? await context.Users.FirstOrDefaultAsync();
         var vehicle = await context.Vehicles.FirstOrDefaultAsync();
 
-        if (!prParts.Any()) return;
+        if (!lrParts.Any()) return;
 
-        var picks = new List<Pick>();
+        var loads = new List<Load>();
         int index = 1;
 
-        foreach (var prPart in prParts)
+        foreach (var lrPart in lrParts)
         {
-            picks.Add(new Pick
+            loads.Add(new Load
             {
-                PickRequestId = prPart.PickRequestId,
-                PickRequestPartId = prPart.Id,
-                PartId = prPart.PartId,
-                Barcode = $"PICK-BC-{index:D4}",
-                Quantity = prPart.RequiredQuantity,
-                PickedBy = picker?.Id,
+                LoadRequestId = lrPart.LoadRequestId,
+                LoadRequestPartId = lrPart.Id,
+                PartId = lrPart.PartId,
+                Barcode = $"LOAD-BC-{index:D4}",
+                Quantity = lrPart.RequiredQuantity,
+                LoadedBy = loader?.Id,
                 DriverId = driver?.Id,
                 VehicleId = vehicle?.Id,
-                PickDate = DateTime.UtcNow,
-                Status = "Picked",
-                Notes = $"Completed bin pick #{index}"
+                LoadDate = DateTime.UtcNow,
+                Status = "Loaded",
+                Notes = $"Completed bin load #{index}"
             });
             index++;
         }
 
-        await context.Picks.AddRangeAsync(picks);
+        await context.Loads.AddRangeAsync(loads);
         await context.SaveChangesAsync();
     }
 
-    private static async Task SeedVehicleLoadsAsync(CleanSampleDbContext context)
+    private static async Task SeedVehicleOffloadsAsync(CleanSampleDbContext context)
     {
-        if (await context.VehicleLoads.AnyAsync()) return;
+        if (await context.VehicleOffloads.AnyAsync()) return;
 
-        var pickRequest = await context.PickRequests.FirstOrDefaultAsync();
+        var loadRequest = await context.LoadRequests.FirstOrDefaultAsync();
         var vehicle = await context.Vehicles.FirstOrDefaultAsync();
         var driver = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("driver")) ?? await context.Users.FirstOrDefaultAsync();
         var supervisor = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("supervisor")) ?? await context.Users.FirstOrDefaultAsync();
 
-        if (pickRequest == null || vehicle == null || driver == null) return;
+        if (loadRequest == null || vehicle == null || driver == null) return;
 
-        var loads = new List<VehicleLoad>
+        var offloads = new List<VehicleOffload>
         {
-            new VehicleLoad
+            new VehicleOffload
             {
-                PickRequestId = pickRequest.Id,
+                LoadRequestId = loadRequest.Id,
                 VehicleId = vehicle.Id,
                 DriverId = driver.Id,
-                LoadDate = DateTime.UtcNow,
-                Status = "Loaded",
+                OffloadDate = DateTime.UtcNow,
+                Status = "Offloaded",
                 Verified = true,
                 VerifiedBy = supervisor?.Id,
                 VerifiedAt = DateTime.UtcNow,
-                Notes = "Loaded pallets verified against Manifest"
+                Notes = "Offloaded pallets verified against Manifest"
             }
         };
 
-        await context.VehicleLoads.AddRangeAsync(loads);
+        await context.VehicleOffloads.AddRangeAsync(offloads);
         await context.SaveChangesAsync();
     }
 
-    private static async Task SeedVehicleLoadItemsAsync(CleanSampleDbContext context)
+    private static async Task SeedVehicleOffloadItemsAsync(CleanSampleDbContext context)
     {
-        if (await context.VehicleLoadItems.AnyAsync()) return;
+        if (await context.VehicleOffloadItems.AnyAsync()) return;
 
-        var vehicleLoad = await context.VehicleLoads.FirstOrDefaultAsync();
-        var picks = await context.Picks.Take(3).ToListAsync();
+        var vehicleOffload = await context.VehicleOffloads.FirstOrDefaultAsync();
+        var loads = await context.Loads.Take(3).ToListAsync();
 
-        if (vehicleLoad == null || !picks.Any()) return;
+        if (vehicleOffload == null || !loads.Any()) return;
 
-        var items = new List<VehicleLoadItem>();
+        var items = new List<VehicleOffloadItem>();
 
-        foreach (var pick in picks)
+        foreach (var load in loads)
         {
-            items.Add(new VehicleLoadItem
+            items.Add(new VehicleOffloadItem
             {
-                VehicleLoadId = vehicleLoad.Id,
-                PickId = pick.Id,
-                PartId = pick.PartId,
-                Barcode = pick.Barcode,
-                Quantity = pick.Quantity,
-                LoadedAt = DateTime.UtcNow
+                VehicleOffloadId = vehicleOffload.Id,
+                LoadId = load.Id,
+                PartId = load.PartId,
+                Barcode = load.Barcode,
+                Quantity = load.Quantity,
+                OffloadedAt = DateTime.UtcNow
             });
         }
 
-        await context.VehicleLoadItems.AddRangeAsync(items);
+        await context.VehicleOffloadItems.AddRangeAsync(items);
         await context.SaveChangesAsync();
     }
 
@@ -896,20 +894,20 @@ public static class DatabaseSeeder
     {
         if (await context.FieldJobs.AnyAsync()) return;
 
-        var pickRequest = await context.PickRequests.FirstOrDefaultAsync();
+        var loadRequest = await context.LoadRequests.FirstOrDefaultAsync();
         var client = await context.Clients.FirstOrDefaultAsync();
         var clientLocation = await context.ClientLocations.FirstOrDefaultAsync();
         var technician = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("tech")) ?? await context.Users.FirstOrDefaultAsync();
         var supervisor = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("supervisor")) ?? await context.Users.FirstOrDefaultAsync();
 
-        if (pickRequest == null || client == null) return;
+        if (loadRequest == null || client == null) return;
 
         var jobs = new List<FieldJob>
         {
             new FieldJob
             {
                 JobNumber = "JOB-2026-0001",
-                PickRequestId = pickRequest.Id,
+                LoadRequestId = loadRequest.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
                 TechnicianId = technician?.Id,
@@ -924,7 +922,7 @@ public static class DatabaseSeeder
             new FieldJob
             {
                 JobNumber = "JOB-2026-0002",
-                PickRequestId = pickRequest.Id,
+                LoadRequestId = loadRequest.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
                 TechnicianId = technician?.Id,
@@ -992,7 +990,7 @@ public static class DatabaseSeeder
     {
         if (await context.Issues.AnyAsync()) return;
 
-        var pickRequest = await context.PickRequests.FirstOrDefaultAsync();
+        var loadRequest = await context.LoadRequests.FirstOrDefaultAsync();
         var fieldJob = await context.FieldJobs.FirstOrDefaultAsync();
         var fieldAssembly = await context.FieldAssemblies.FirstOrDefaultAsync();
         var reporter = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("tech")) ?? await context.Users.FirstOrDefaultAsync();
@@ -1002,7 +1000,7 @@ public static class DatabaseSeeder
         {
             new Issue
             {
-                PickRequestId = pickRequest?.Id,
+                LoadRequestId = loadRequest?.Id,
                 FieldJobId = fieldJob?.Id,
                 FieldAssemblyId = fieldAssembly?.Id,
                 IssueType = "Component Defect",
@@ -1017,11 +1015,11 @@ public static class DatabaseSeeder
             },
             new Issue
             {
-                PickRequestId = pickRequest?.Id,
+                LoadRequestId = loadRequest?.Id,
                 FieldJobId = fieldJob?.Id,
                 FieldAssemblyId = null,
                 IssueType = "Delivery Delay",
-                Description = "Traffic congestion on highway caused 30-minute delay in pick request delivery.",
+                Description = "Traffic congestion on highway caused 30-minute delay in load request delivery.",
                 Severity = "Low",
                 Status = "Open",
                 ReportedBy = reporter?.Id,
@@ -1060,11 +1058,11 @@ public static class DatabaseSeeder
             new Screen { Code = "CLIENT_LOCATIONS", Name = "Client Locations", Module = "Sales", Description = "Manage client delivery sites" },
             new Screen { Code = "ORDERS", Name = "Sales Orders", Module = "Sales", Description = "Manage sales orders and lines" },
 
-            new Screen { Code = "PICK_REQUESTS", Name = "Pick Requests", Module = "Warehouse", Description = "Manage warehouse pick allocations" },
-            new Screen { Code = "PICKS", Name = "Picks Scanning", Module = "Warehouse", Description = "Barcode pick scanning and logging" },
+            new Screen { Code = "LOAD_REQUESTS", Name = "Load Requests", Module = "Warehouse", Description = "Manage warehouse load allocations" },
+            new Screen { Code = "LOADS", Name = "Loads Scanning", Module = "Warehouse", Description = "Barcode load scanning and logging" },
 
             new Screen { Code = "VEHICLES", Name = "Vehicles", Module = "Logistics", Description = "Fleet vehicle tracking" },
-            new Screen { Code = "VEHICLE_LOADS", Name = "Vehicle Loads", Module = "Logistics", Description = "Manage truck loading manifests" },
+            new Screen { Code = "VEHICLE_OFFLOADS", Name = "Vehicle Offloads", Module = "Logistics", Description = "Manage truck offloading manifests" },
 
             new Screen { Code = "FIELD_JOBS", Name = "Field Jobs", Module = "Operations", Description = "Manage field service work orders" },
             new Screen { Code = "FIELD_ASSEMBLIES", Name = "Field Assemblies", Module = "Operations", Description = "Manage on-site product assemblies" },
@@ -1156,14 +1154,14 @@ public static class DatabaseSeeder
             // Driver: Logistics & Issues
             if (driverRole != null)
             {
-                var isDriverScreen = screen.Code is "VEHICLES" or "VEHICLE_LOADS" or "ISSUES";
+                var isDriverScreen = screen.Code is "VEHICLES" or "VEHICLE_OFFLOADS" or "ISSUES";
                 permissions.Add(new RolePermission
                 {
                     RoleId = driverRole.Id,
                     ScreenId = screen.Id,
                     CanView = isDriverScreen,
                     CanCreate = screen.Code == "ISSUES",
-                    CanUpdate = screen.Code is "VEHICLE_LOADS" or "ISSUES",
+                    CanUpdate = screen.Code is "VEHICLE_OFFLOADS" or "ISSUES",
                     CanDelete = false
                 });
             }

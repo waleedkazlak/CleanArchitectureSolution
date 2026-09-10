@@ -4,7 +4,7 @@ namespace CleanSample.Application.Commands.Issue;
 
 public class CreateIssueCommand : IRequest<long>
 {
-    public long? PickRequestId { get; set; }
+    public long? LoadRequestId { get; set; }
     public long? FieldJobId { get; set; }
     public long? FieldAssemblyId { get; set; }
     public string IssueType { get; set; } = string.Empty;

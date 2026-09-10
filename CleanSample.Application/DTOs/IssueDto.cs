@@ -3,8 +3,8 @@ namespace CleanSample.Application.DTOs;
 public class IssueDto
 {
     public long Id { get; set; }
-    public long? PickRequestId { get; set; }
-    public string? PickRequestNumber { get; set; }
+    public long? LoadRequestId { get; set; }
+    public string? LoadRequestNumber { get; set; }
     public long? FieldJobId { get; set; }
     public string? FieldJobNumber { get; set; }
     public long? FieldAssemblyId { get; set; }
