@@ -131,27 +131,49 @@ public class ProductBOMController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new product BOM
+    /// Create or update product BOM records (supports single item or list of items)
     /// </summary>
-    /// <param name="command">Product BOM creation command</param>
-    /// <returns>Created product BOM id</returns>
+    /// <param name="command">Product BOM creation/update command</param>
+    /// <returns>List of created/updated product BOMs</returns>
     [HttpPost]
     [RequirePermission("PRODUCT_BOM", PermissionAction.Create)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<APIBaseResponse<int>>> Create([FromBody] CreateProductBOMCommand command)
+    public async Task<ActionResult<APIBaseResponse<List<ProductBOMDto>>>> Create([FromBody] CreateProductBOMCommand command)
     {
-        _logger.LogInformation("User {User} creating new product BOM for variant: {VariantId}, part: {PartId}",
-            User.Identity?.Name, command?.ProductVariantId, command?.PartId);
+        _logger.LogInformation("User {User} creating/updating product BOMs", User.Identity?.Name);
 
         var result = await _mediator.Send(command);
 
-        return CreatedAtAction(nameof(GetById), new { id = result },
-            new APIBaseResponse<int>()
-                .SetSuccess(result, "Product BOM created successfully"));
+        return Ok(new APIBaseResponse<List<ProductBOMDto>>()
+            .SetSuccess(result, result.Count, "Product BOMs processed successfully"));
+    }
+
+    /// <summary>
+    /// Batch create or update product BOMs from a list of items
+    /// </summary>
+    /// <param name="items">List of Product BOM items to create or update</param>
+    /// <returns>List of created/updated product BOMs</returns>
+    [HttpPost("batch")]
+    [RequirePermission("PRODUCT_BOM", PermissionAction.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<APIBaseResponse<List<ProductBOMDto>>>> Batch([FromBody] List<CreateProductBOMItemDto> items)
+    {
+        _logger.LogInformation("User {User} batch creating/updating {Count} product BOMs", User.Identity?.Name, items?.Count ?? 0);
+
+        var command = new CreateProductBOMCommand(items ?? new List<CreateProductBOMItemDto>());
+        var result = await _mediator.Send(command);
+
+        return Ok(new APIBaseResponse<List<ProductBOMDto>>()
+            .SetSuccess(result, result.Count, "Product BOMs processed successfully"));
     }
 
     /// <summary>
