@@ -1036,47 +1036,64 @@ public static class DatabaseSeeder
 
     private static async Task SeedScreensAsync(CleanSampleDbContext context)
     {
-        if (await context.Screens.AnyAsync()) return;
-
-        var screens = new List<Screen>
+        var screensCount = await context.Screens.CountAsync();
+        if (screensCount == 0)
         {
-            new Screen { Code = "USERS", Name = "Users Management", Module = "Administration", Description = "Manage system users and active states" },
-            new Screen { Code = "ROLES", Name = "Roles & Permissions", Module = "Administration", Description = "Configure roles and screen access rights" },
-            new Screen { Code = "SCREENS", Name = "System Screens", Module = "Administration", Description = "Manage system screen registry" },
+            var screens = new List<Screen>
+            {
+                new Screen { Code = "USERS", Name = "Users Management", Module = "Administration", Description = "Manage system users and active states" },
+                new Screen { Code = "ROLES", Name = "Roles", Module = "Administration", Description = "Configure roles and access rights" },
+                new Screen { Code = "ROLE_PERMISSIONS", Name = "Role Permissions", Module = "Administration", Description = "Configure role access rights and screen permissions" },
+                new Screen { Code = "SCREENS", Name = "System Screens", Module = "Administration", Description = "Manage system screen registry" },
 
-            new Screen { Code = "CATEGORIES", Name = "Categories", Module = "Master Data", Description = "Manage item categories" },
-            new Screen { Code = "COLORS", Name = "Colors", Module = "Master Data", Description = "Manage item colors" },
-            new Screen { Code = "MATERIALS", Name = "Materials", Module = "Master Data", Description = "Manage item materials" },
-            new Screen { Code = "DESIGNS", Name = "Designs", Module = "Master Data", Description = "Manage item designs" },
+                new Screen { Code = "CATEGORIES", Name = "Categories", Module = "Master Data", Description = "Manage item categories" },
+                new Screen { Code = "COLORS", Name = "Colors", Module = "Master Data", Description = "Manage item colors" },
+                new Screen { Code = "MATERIALS", Name = "Materials", Module = "Master Data", Description = "Manage item materials" },
+                new Screen { Code = "DESIGNS", Name = "Designs", Module = "Master Data", Description = "Manage item designs" },
 
-            new Screen { Code = "PRODUCTS", Name = "Products Catalog", Module = "Inventory", Description = "Manage master products catalog" },
-            new Screen { Code = "PRODUCT_VARIANTS", Name = "Product Variants", Module = "Inventory", Description = "Manage product SKUs and barcodes" },
-            new Screen { Code = "PARTS", Name = "Parts & Components", Module = "Inventory", Description = "Manage raw parts inventory" },
-            new Screen { Code = "PRODUCT_BOM", Name = "Product BOM", Module = "Inventory", Description = "Manage bill of materials composition" },
+                new Screen { Code = "PRODUCTS", Name = "Products Catalog", Module = "Inventory", Description = "Manage master products catalog" },
+                new Screen { Code = "PRODUCT_VARIANTS", Name = "Product Variants", Module = "Inventory", Description = "Manage product SKUs and barcodes" },
+                new Screen { Code = "PARTS", Name = "Parts & Components", Module = "Inventory", Description = "Manage raw parts inventory" },
+                new Screen { Code = "PRODUCT_BOM", Name = "Product BOM", Module = "Inventory", Description = "Manage bill of materials composition" },
 
-            new Screen { Code = "CLIENTS", Name = "Clients", Module = "Sales", Description = "Manage client accounts" },
-            new Screen { Code = "CLIENT_LOCATIONS", Name = "Client Locations", Module = "Sales", Description = "Manage client delivery sites" },
-            new Screen { Code = "ORDERS", Name = "Sales Orders", Module = "Sales", Description = "Manage sales orders and lines" },
+                new Screen { Code = "CLIENTS", Name = "Clients", Module = "Sales", Description = "Manage client accounts" },
+                new Screen { Code = "CLIENT_LOCATIONS", Name = "Client Locations", Module = "Sales", Description = "Manage client delivery sites" },
+                new Screen { Code = "ORDERS", Name = "Sales Orders", Module = "Sales", Description = "Manage sales orders and lines" },
 
-            new Screen { Code = "LOAD_REQUESTS", Name = "Load Requests", Module = "Warehouse", Description = "Manage warehouse load allocations" },
-            new Screen { Code = "LOADS", Name = "Loads Scanning", Module = "Warehouse", Description = "Barcode load scanning and logging" },
+                new Screen { Code = "LOAD_REQUESTS", Name = "Load Requests", Module = "Warehouse", Description = "Manage warehouse load allocations" },
+                new Screen { Code = "LOADS", Name = "Loads Scanning", Module = "Warehouse", Description = "Barcode load scanning and logging" },
 
-            new Screen { Code = "VEHICLES", Name = "Vehicles", Module = "Logistics", Description = "Fleet vehicle tracking" },
-            new Screen { Code = "VEHICLE_OFFLOADS", Name = "Vehicle Offloads", Module = "Logistics", Description = "Manage truck offloading manifests" },
+                new Screen { Code = "VEHICLES", Name = "Vehicles", Module = "Logistics", Description = "Fleet vehicle tracking" },
+                new Screen { Code = "VEHICLE_OFFLOADS", Name = "Vehicle Offloads", Module = "Logistics", Description = "Manage truck offloading manifests" },
 
-            new Screen { Code = "FIELD_JOBS", Name = "Field Jobs", Module = "Operations", Description = "Manage field service work orders" },
-            new Screen { Code = "FIELD_ASSEMBLIES", Name = "Field Assemblies", Module = "Operations", Description = "Manage on-site product assemblies" },
-            new Screen { Code = "ISSUES", Name = "Issue Tracking", Module = "Operations", Description = "Incident reporting and defect logging" }
-        };
+                new Screen { Code = "FIELD_JOBS", Name = "Field Jobs", Module = "Operations", Description = "Manage field service work orders" },
+                new Screen { Code = "FIELD_ASSEMBLIES", Name = "Field Assemblies", Module = "Operations", Description = "Manage on-site product assemblies" },
+                new Screen { Code = "ISSUES", Name = "Issue Tracking", Module = "Operations", Description = "Incident reporting and defect logging" }
+            };
 
-        await context.Screens.AddRangeAsync(screens);
-        await context.SaveChangesAsync();
+            await context.Screens.AddRangeAsync(screens);
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            // Ensure ROLE_PERMISSIONS screen exists even if database already has screens
+            if (!await context.Screens.AnyAsync(s => s.Code == "ROLE_PERMISSIONS"))
+            {
+                context.Screens.Add(new Screen
+                {
+                    Code = "ROLE_PERMISSIONS",
+                    Name = "Role Permissions",
+                    Module = "Administration",
+                    Description = "Configure role access rights and screen permissions",
+                    IsActive = true
+                });
+                await context.SaveChangesAsync();
+            }
+        }
     }
 
     private static async Task SeedRolePermissionsAsync(CleanSampleDbContext context)
     {
-        if (await context.RolePermissions.AnyAsync()) return;
-
         var roles = await context.Roles.ToListAsync();
         var screens = await context.Screens.ToListAsync();
 
@@ -1087,102 +1104,130 @@ public static class DatabaseSeeder
         var driverRole = roles.FirstOrDefault(r => r.Name == "Driver");
         var userRole = roles.FirstOrDefault(r => r.Name == "User");
 
-        var permissions = new List<RolePermission>();
-
-        foreach (var screen in screens)
+        var permissionsCount = await context.RolePermissions.CountAsync();
+        if (permissionsCount == 0)
         {
-            // Admin: Full access to everything
-            if (adminRole != null)
+            var permissions = new List<RolePermission>();
+
+            foreach (var screen in screens)
             {
-                permissions.Add(new RolePermission
+                // Admin: Full access to everything
+                if (adminRole != null)
                 {
-                    RoleId = adminRole.Id,
-                    ScreenId = screen.Id,
-                    CanView = true,
-                    CanCreate = true,
-                    CanUpdate = true,
-                    CanDelete = true
-                });
+                    permissions.Add(new RolePermission
+                    {
+                        RoleId = adminRole.Id,
+                        ScreenId = screen.Id,
+                        CanView = true,
+                        CanCreate = true,
+                        CanUpdate = true,
+                        CanDelete = true
+                    });
+                }
+
+                // Manager: View everything, Create/Update on non-admin
+                if (managerRole != null)
+                {
+                    var isAdministration = screen.Module == "Administration";
+                    permissions.Add(new RolePermission
+                    {
+                        RoleId = managerRole.Id,
+                        ScreenId = screen.Id,
+                        CanView = true,
+                        CanCreate = !isAdministration,
+                        CanUpdate = !isAdministration,
+                        CanDelete = screen.Module == "Sales" || screen.Module == "Inventory"
+                    });
+                }
+
+                // Supervisor: Full on Operations & Warehouse & Logistics
+                if (supervisorRole != null)
+                {
+                    var isOpsOrLogistics = screen.Module is "Operations" or "Logistics" or "Warehouse";
+                    permissions.Add(new RolePermission
+                    {
+                        RoleId = supervisorRole.Id,
+                        ScreenId = screen.Id,
+                        CanView = isOpsOrLogistics || screen.Module == "Inventory",
+                        CanCreate = isOpsOrLogistics,
+                        CanUpdate = isOpsOrLogistics,
+                        CanDelete = screen.Module == "Operations"
+                    });
+                }
+
+                // Technician: Operations & Inventory
+                if (technicianRole != null)
+                {
+                    var isTechScreen = screen.Code is "FIELD_JOBS" or "FIELD_ASSEMBLIES" or "ISSUES" or "PRODUCTS" or "PRODUCT_VARIANTS" or "PARTS";
+                    var canUpdate = screen.Code is "FIELD_ASSEMBLIES" or "ISSUES";
+                    permissions.Add(new RolePermission
+                    {
+                        RoleId = technicianRole.Id,
+                        ScreenId = screen.Id,
+                        CanView = isTechScreen,
+                        CanCreate = screen.Code is "ISSUES" or "FIELD_ASSEMBLIES",
+                        CanUpdate = canUpdate,
+                        CanDelete = false
+                    });
+                }
+
+                // Driver: Logistics & Issues
+                if (driverRole != null)
+                {
+                    var isDriverScreen = screen.Code is "VEHICLES" or "VEHICLE_OFFLOADS" or "ISSUES";
+                    permissions.Add(new RolePermission
+                    {
+                        RoleId = driverRole.Id,
+                        ScreenId = screen.Id,
+                        CanView = isDriverScreen,
+                        CanCreate = screen.Code == "ISSUES",
+                        CanUpdate = screen.Code is "VEHICLE_OFFLOADS" or "ISSUES",
+                        CanDelete = false
+                    });
+                }
+
+                // User: View only on Products, Orders, Categories
+                if (userRole != null)
+                {
+                    var isUserScreen = screen.Code is "PRODUCTS" or "CATEGORIES" or "ORDERS";
+                    permissions.Add(new RolePermission
+                    {
+                        RoleId = userRole.Id,
+                        ScreenId = screen.Id,
+                        CanView = isUserScreen,
+                        CanCreate = false,
+                        CanUpdate = false,
+                        CanDelete = false
+                    });
+                }
             }
 
-            // Manager: View everything, Create/Update on non-admin
-            if (managerRole != null)
+            await context.RolePermissions.AddRangeAsync(permissions);
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            // Ensure Admin role has full permission for ROLE_PERMISSIONS screen
+            var rolePermissionsScreen = screens.FirstOrDefault(s => s.Code == "ROLE_PERMISSIONS");
+            if (rolePermissionsScreen != null && adminRole != null)
             {
-                var isAdministration = screen.Module == "Administration";
-                permissions.Add(new RolePermission
-                {
-                    RoleId = managerRole.Id,
-                    ScreenId = screen.Id,
-                    CanView = true,
-                    CanCreate = !isAdministration,
-                    CanUpdate = !isAdministration,
-                    CanDelete = screen.Module == "Sales" || screen.Module == "Inventory"
-                });
-            }
+                var existingAdminPermission = await context.RolePermissions
+                    .FirstOrDefaultAsync(rp => rp.RoleId == adminRole.Id && rp.ScreenId == rolePermissionsScreen.Id);
 
-            // Supervisor: Full on Operations & Warehouse & Logistics
-            if (supervisorRole != null)
-            {
-                var isOpsOrLogistics = screen.Module is "Operations" or "Logistics" or "Warehouse";
-                permissions.Add(new RolePermission
+                if (existingAdminPermission == null)
                 {
-                    RoleId = supervisorRole.Id,
-                    ScreenId = screen.Id,
-                    CanView = isOpsOrLogistics || screen.Module == "Inventory",
-                    CanCreate = isOpsOrLogistics,
-                    CanUpdate = isOpsOrLogistics,
-                    CanDelete = screen.Module == "Operations"
-                });
-            }
-
-            // Technician: Operations & Inventory
-            if (technicianRole != null)
-            {
-                var isTechScreen = screen.Code is "FIELD_JOBS" or "FIELD_ASSEMBLIES" or "ISSUES" or "PRODUCTS" or "PRODUCT_VARIANTS" or "PARTS";
-                var canUpdate = screen.Code is "FIELD_ASSEMBLIES" or "ISSUES";
-                permissions.Add(new RolePermission
-                {
-                    RoleId = technicianRole.Id,
-                    ScreenId = screen.Id,
-                    CanView = isTechScreen,
-                    CanCreate = screen.Code is "ISSUES" or "FIELD_ASSEMBLIES",
-                    CanUpdate = canUpdate,
-                    CanDelete = false
-                });
-            }
-
-            // Driver: Logistics & Issues
-            if (driverRole != null)
-            {
-                var isDriverScreen = screen.Code is "VEHICLES" or "VEHICLE_OFFLOADS" or "ISSUES";
-                permissions.Add(new RolePermission
-                {
-                    RoleId = driverRole.Id,
-                    ScreenId = screen.Id,
-                    CanView = isDriverScreen,
-                    CanCreate = screen.Code == "ISSUES",
-                    CanUpdate = screen.Code is "VEHICLE_OFFLOADS" or "ISSUES",
-                    CanDelete = false
-                });
-            }
-
-            // User: View only on Products, Orders, Categories
-            if (userRole != null)
-            {
-                var isUserScreen = screen.Code is "PRODUCTS" or "CATEGORIES" or "ORDERS";
-                permissions.Add(new RolePermission
-                {
-                    RoleId = userRole.Id,
-                    ScreenId = screen.Id,
-                    CanView = isUserScreen,
-                    CanCreate = false,
-                    CanUpdate = false,
-                    CanDelete = false
-                });
+                    context.RolePermissions.Add(new RolePermission
+                    {
+                        RoleId = adminRole.Id,
+                        ScreenId = rolePermissionsScreen.Id,
+                        CanView = true,
+                        CanCreate = true,
+                        CanUpdate = true,
+                        CanDelete = true
+                    });
+                    await context.SaveChangesAsync();
+                }
             }
         }
-
-        await context.RolePermissions.AddRangeAsync(permissions);
-        await context.SaveChangesAsync();
     }
 }

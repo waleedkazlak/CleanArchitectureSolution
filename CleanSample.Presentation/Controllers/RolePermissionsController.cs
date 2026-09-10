@@ -34,7 +34,7 @@ public class RolePermissionsController : ControllerBase
     /// Get full permission matrix for a specific role
     /// </summary>
     [HttpGet("by-role/{roleId}")]
-    [RequirePermission("ROLES", PermissionAction.View)]
+    [RequirePermission("ROLE_PERMISSIONS", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<APIBaseResponse<RolePermissionMatrixDto>>> GetByRoleId(int roleId)
@@ -90,7 +90,7 @@ public class RolePermissionsController : ControllerBase
     /// Batch update/save role permissions matrix
     /// </summary>
     [HttpPost("batch-update")]
-    [RequirePermission("ROLES", PermissionAction.Update)]
+    [RequirePermission("ROLE_PERMISSIONS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<APIBaseResponse<bool>>> BatchUpdate([FromBody] BatchUpdateRolePermissionsDto request)
@@ -103,7 +103,7 @@ public class RolePermissionsController : ControllerBase
     /// Set or update a single screen permission for a role
     /// </summary>
     [HttpPut]
-    [RequirePermission("ROLES", PermissionAction.Update)]
+    [RequirePermission("ROLE_PERMISSIONS", PermissionAction.Update)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<APIBaseResponse<RolePermissionDto>>> SetPermission([FromBody] SetRoleScreenPermissionCommand command)
@@ -116,7 +116,7 @@ public class RolePermissionsController : ControllerBase
     /// Delete a role permission record
     /// </summary>
     [HttpDelete("{id}")]
-    [RequirePermission("ROLES", PermissionAction.Delete)]
+    [RequirePermission("ROLE_PERMISSIONS", PermissionAction.Delete)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<APIBaseResponse<bool>>> Delete(int id)
