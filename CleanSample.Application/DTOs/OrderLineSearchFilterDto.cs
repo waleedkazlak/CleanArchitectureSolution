@@ -6,7 +6,7 @@ public class OrderLineSearchFilterDto
     public int PageSize { get; set; } = 10;
     public string? SearchTerm { get; set; }
     public long? OrderId { get; set; }
-    public int? ProductVariantId { get; set; }
+    public int? ProductId { get; set; }
     public int? MinQuantity { get; set; }
     public int? MaxQuantity { get; set; }
     public string? SortBy { get; set; } = "CreatedAt";

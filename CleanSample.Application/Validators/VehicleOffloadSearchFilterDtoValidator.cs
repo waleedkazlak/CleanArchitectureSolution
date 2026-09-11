@@ -5,7 +5,7 @@ namespace CleanSample.Application.Validators;
 
 public class VehicleOffloadSearchFilterDtoValidator : AbstractValidator<VehicleOffloadSearchFilterDto>
 {
-    private readonly string[] _validSortFields = { "OffloadDate", "LoadRequestId", "VehicleId", "DriverId", "Status", "CreatedAt" };
+    private readonly string[] _validSortFields = { "OffloadDate", "LoadRequestId", "PartId", "VehicleId", "DriverId", "Barcode", "Status", "CreatedAt" };
     private readonly string[] _validSortDirections = { "asc", "desc" };
 
     public VehicleOffloadSearchFilterDtoValidator()
@@ -27,6 +27,10 @@ public class VehicleOffloadSearchFilterDtoValidator : AbstractValidator<VehicleO
             .GreaterThan(0).WithMessage("Load request ID must be greater than 0")
             .When(x => x.LoadRequestId.HasValue);
 
+        RuleFor(x => x.PartId)
+            .GreaterThan(0).WithMessage("Part ID must be greater than 0")
+            .When(x => x.PartId.HasValue);
+
         RuleFor(x => x.VehicleId)
             .GreaterThan(0).WithMessage("Vehicle ID must be greater than 0")
             .When(x => x.VehicleId.HasValue);
@@ -34,6 +38,10 @@ public class VehicleOffloadSearchFilterDtoValidator : AbstractValidator<VehicleO
         RuleFor(x => x.DriverId)
             .GreaterThan(0).WithMessage("Driver ID must be greater than 0")
             .When(x => x.DriverId.HasValue);
+
+        RuleFor(x => x.Barcode)
+            .MaximumLength(100).WithMessage("Barcode cannot exceed 100 characters")
+            .When(x => !string.IsNullOrWhiteSpace(x.Barcode));
 
         RuleFor(x => x.Status)
             .MaximumLength(50).WithMessage("Status cannot exceed 50 characters")

@@ -24,8 +24,10 @@ public class CreateVehicleOffloadCommandHandler : IRequestHandler<CreateVehicleO
         var vehicleOffload = new Domain.Entities.VehicleOffload
         {
             LoadRequestId = request.LoadRequestId,
+            PartId = request.PartId,
             VehicleId = request.VehicleId,
             DriverId = request.DriverId,
+            Barcode = request.Barcode,
             OffloadDate = request.OffloadDate ?? DateTime.UtcNow,
             Status = string.IsNullOrWhiteSpace(request.Status) ? "Offloading" : request.Status,
             Verified = request.Verified,
@@ -35,29 +37,10 @@ public class CreateVehicleOffloadCommandHandler : IRequestHandler<CreateVehicleO
             CreatedAt = DateTime.UtcNow
         };
 
-        if (request.VehicleOffloadItems != null && request.VehicleOffloadItems.Any())
-        {
-            foreach (var item in request.VehicleOffloadItems)
-            {
-                var offloadItem = new VehicleOffloadItem
-                {
-                    LoadId = item.LoadId,
-                    PartId = item.PartId,
-                    Barcode = item.Barcode,
-                    Quantity = item.Quantity,
-                    OffloadedAt = item.OffloadedAt ?? DateTime.UtcNow,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                vehicleOffload.VehicleOffloadItems.Add(offloadItem);
-            }
-        }
-
         await _unitOfWork.VehicleOffloads.AddAsync(vehicleOffload);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Successfully created VehicleOffload with ID: {VehicleOffloadId} and {ItemCount} items",
-            vehicleOffload.Id, vehicleOffload.VehicleOffloadItems.Count);
+        _logger.LogInformation("Successfully created VehicleOffload with ID: {VehicleOffloadId}", vehicleOffload.Id);
 
         return vehicleOffload.Id;
     }

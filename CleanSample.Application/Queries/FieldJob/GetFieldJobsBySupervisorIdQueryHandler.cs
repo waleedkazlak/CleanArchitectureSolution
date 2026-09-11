@@ -20,9 +20,7 @@ public class GetFieldJobsBySupervisorIdQueryHandler : IRequestHandler<GetFieldJo
         return jobs.Select(fj => new FieldJobDto
         {
             Id = fj.Id,
-            JobNumber = fj.JobNumber,
             LoadRequestId = fj.LoadRequestId,
-            LoadRequestNumber = fj.LoadRequest?.RequestNumber,
             ClientId = fj.ClientId,
             ClientName = fj.Client?.Name,
             ClientLocationId = fj.ClientLocationId,

@@ -33,15 +33,15 @@ public class GetProductBOMsWithFilterQueryHandler : IRequestHandler<GetProductBO
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             productBoms = productBoms.Where(pb =>
-                (pb.ProductVariant != null && pb.ProductVariant.Code.ToLower().Contains(searchTermLower)) ||
+                (pb.Product != null && pb.Product.Name.ToLower().Contains(searchTermLower)) ||
                 (pb.Part != null && pb.Part.Code.ToLower().Contains(searchTermLower)) ||
                 (pb.Part != null && pb.Part.Name.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
-        if (filter.ProductVariantId.HasValue)
+        if (filter.ProductId.HasValue)
         {
-            productBoms = productBoms.Where(pb => pb.ProductVariantId == filter.ProductVariantId.Value).ToList();
+            productBoms = productBoms.Where(pb => pb.ProductId == filter.ProductId.Value).ToList();
         }
 
         if (filter.PartId.HasValue)
@@ -71,8 +71,8 @@ public class GetProductBOMsWithFilterQueryHandler : IRequestHandler<GetProductBO
         var dtos = paginatedItems.Select(pb => new ProductBOMDto
         {
             Id = pb.Id,
-            ProductVariantId = pb.ProductVariantId,
-            ProductVariantCode = pb.ProductVariant?.Code,
+            ProductId = pb.ProductId,
+            ProductName = pb.Product?.Name,
             PartId = pb.PartId,
             PartCode = pb.Part?.Code,
             PartName = pb.Part?.Name,
@@ -96,13 +96,25 @@ public class GetProductBOMsWithFilterQueryHandler : IRequestHandler<GetProductBO
 
         return (sortBy?.ToLower()) switch
         {
-            "productvariantid" => isDescending
-                ? items.OrderByDescending(x => x.ProductVariantId).ToList()
-                : items.OrderBy(x => x.ProductVariantId).ToList(),
+            "productid" => isDescending
+                ? items.OrderByDescending(x => x.ProductId).ToList()
+                : items.OrderBy(x => x.ProductId).ToList(),
+
+            "productname" => isDescending
+                ? items.OrderByDescending(x => x.Product?.Name).ToList()
+                : items.OrderBy(x => x.Product?.Name).ToList(),
 
             "partid" => isDescending
                 ? items.OrderByDescending(x => x.PartId).ToList()
                 : items.OrderBy(x => x.PartId).ToList(),
+
+            "partcode" => isDescending
+                ? items.OrderByDescending(x => x.Part?.Code).ToList()
+                : items.OrderBy(x => x.Part?.Code).ToList(),
+
+            "partname" => isDescending
+                ? items.OrderByDescending(x => x.Part?.Name).ToList()
+                : items.OrderBy(x => x.Part?.Name).ToList(),
 
             "quantity" => isDescending
                 ? items.OrderByDescending(x => x.Quantity).ToList()

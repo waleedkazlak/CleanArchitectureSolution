@@ -6,7 +6,7 @@ namespace CleanSample.Application.Commands.ProductBOM;
 public class CreateProductBOMCommand : IRequest<List<ProductBOMDto>>
 {
     public int? Id { get; set; }
-    public int ProductVariantId { get; set; }
+    public int ProductId { get; set; }
     public int PartId { get; set; }
     public decimal Quantity { get; set; }
 
@@ -21,9 +21,9 @@ public class CreateProductBOMCommand : IRequest<List<ProductBOMDto>>
         Items = items ?? new List<CreateProductBOMItemDto>();
     }
 
-    public CreateProductBOMCommand(int productVariantId, int partId, decimal quantity, int? id = null)
+    public CreateProductBOMCommand(int productId, int partId, decimal quantity, int? id = null)
     {
-        ProductVariantId = productVariantId;
+        ProductId = productId;
         PartId = partId;
         Quantity = quantity;
         Id = id;

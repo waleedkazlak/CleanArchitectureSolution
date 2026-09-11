@@ -5,7 +5,6 @@ namespace CleanSample.Domain.Interfaces;
 public interface IFieldJobRepository
 {
     Task<FieldJob?> GetByIdAsync(long id);
-    Task<FieldJob?> GetByJobNumberAsync(string jobNumber);
     Task<IEnumerable<FieldJob>> GetAllAsync();
     Task<IEnumerable<FieldJob>> GetByLoadRequestIdAsync(long loadRequestId);
     Task<IEnumerable<FieldJob>> GetByClientIdAsync(int clientId);

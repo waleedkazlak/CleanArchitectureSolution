@@ -25,7 +25,6 @@ public class GetDesignByIdQueryHandler : IRequestHandler<GetDesignByIdQuery, Des
         {
             Id = design.Id,
             Name = design.Name,
-            Code = design.Code,
             Description = design.Description,
             CreatedAt = design.CreatedAt,
             UpdatedAt = design.UpdatedAt

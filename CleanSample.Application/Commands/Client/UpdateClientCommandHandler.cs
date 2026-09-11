@@ -20,7 +20,6 @@ public class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, b
             return false;
         }
 
-        client.Code = request.Code;
         client.Name = request.Name;
         client.Phone = request.Phone;
         client.Mobile = request.Mobile;

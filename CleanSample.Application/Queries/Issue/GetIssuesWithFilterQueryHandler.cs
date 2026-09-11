@@ -38,8 +38,6 @@ public class GetIssuesWithFilterQueryHandler : IRequestHandler<GetIssuesWithFilt
                 i.Severity.ToLower().Contains(searchTermLower) ||
                 i.Status.ToLower().Contains(searchTermLower) ||
                 (i.ResolutionNotes != null && i.ResolutionNotes.ToLower().Contains(searchTermLower)) ||
-                (i.LoadRequest != null && i.LoadRequest.RequestNumber.ToLower().Contains(searchTermLower)) ||
-                (i.FieldJob != null && i.FieldJob.JobNumber.ToLower().Contains(searchTermLower)) ||
                 (i.ReportedByUser != null && i.ReportedByUser.FullName.ToLower().Contains(searchTermLower)) ||
                 (i.ResolvedByUser != null && i.ResolvedByUser.FullName.ToLower().Contains(searchTermLower))
             ).ToList();
@@ -111,9 +109,7 @@ public class GetIssuesWithFilterQueryHandler : IRequestHandler<GetIssuesWithFilt
         {
             Id = i.Id,
             LoadRequestId = i.LoadRequestId,
-            LoadRequestNumber = i.LoadRequest?.RequestNumber,
             FieldJobId = i.FieldJobId,
-            FieldJobNumber = i.FieldJob?.JobNumber,
             FieldAssemblyId = i.FieldAssemblyId,
             IssueType = i.IssueType,
             Description = i.Description,

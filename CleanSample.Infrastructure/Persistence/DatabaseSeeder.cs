@@ -1,4 +1,5 @@
 using CleanSample.Domain.Entities;
+using CleanSample.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanSample.Infrastructure.Persistence;
@@ -27,9 +28,8 @@ public static class DatabaseSeeder
             await SeedMaterialsAsync(context);
             await SeedDesignsAsync(context);
 
-            // 4. Products & ProductVariants
+            // 4. Products
             await SeedProductsAsync(context);
-            await SeedProductVariantsAsync(context);
 
             // 5. Parts & ProductBOM
             await SeedPartsAsync(context);
@@ -51,12 +51,11 @@ public static class DatabaseSeeder
             await SeedLoadRequestLinesAsync(context);
             await SeedLoadRequestPartsAsync(context);
 
-            // 10. Loads
-            await SeedLoadsAsync(context);
+            // 10. VehicleLoads
+            await SeedVehicleLoadsAsync(context);
 
-            // 11. VehicleOffloads & VehicleOffloadItems
+            // 11. VehicleOffloads
             await SeedVehicleOffloadsAsync(context);
-            await SeedVehicleOffloadItemsAsync(context);
 
             // 12. FieldJobs & FieldAssemblies
             await SeedFieldJobsAsync(context);
@@ -361,10 +360,10 @@ public static class DatabaseSeeder
 
         var designs = new List<Design>
         {
-            new Design { Name = "Modern Minimalist", Code = "MOD-MIN", Description = "Clean lines and sleek form factor" },
-            new Design { Name = "Industrial Rugged", Code = "IND-RUG", Description = "Reinforced corners and shock resistance" },
-            new Design { Name = "Ergonomic Pro", Code = "ERG-PRO", Description = "Designed for high comfort and prolonged usage" },
-            new Design { Name = "Compact Slim", Code = "CMP-SLM", Description = "Ultra-thin portable profile" }
+            new Design { Name = "Modern Minimalist", Description = "Clean lines and sleek form factor" },
+            new Design { Name = "Industrial Rugged", Description = "Reinforced corners and shock resistance" },
+            new Design { Name = "Ergonomic Pro", Description = "Designed for high comfort and prolonged usage" },
+            new Design { Name = "Compact Slim", Description = "Ultra-thin portable profile" }
         };
 
         await context.Designs.AddRangeAsync(designs);
@@ -382,57 +381,70 @@ public static class DatabaseSeeder
             await context.SaveChangesAsync();
         }
 
-        var products = new List<Product>
-        {
-            new Product { Name = "Pro Laptop 15", Description = "Flagship 15-inch development workstation", Price = 1499.99m, Stock = 50, CategoryId = category.Id },
-            new Product { Name = "Smart Phone X", Description = "5G enterprise smartphone", Price = 899.99m, Stock = 100, CategoryId = category.Id },
-            new Product { Name = "Industrial Tablet", Description = "Rugged waterproof tablet for field technicians", Price = 649.99m, Stock = 75, CategoryId = category.Id },
-            new Product { Name = "UltraWide Monitor", Description = "34-inch curved productivity monitor", Price = 599.99m, Stock = 40, CategoryId = category.Id },
-            new Product { Name = "Mechanical Keyboard", Description = "RGB wireless mechanical keyboard", Price = 129.99m, Stock = 200, CategoryId = category.Id }
-        };
-
-        await context.Products.AddRangeAsync(products);
-        await context.SaveChangesAsync();
-    }
-
-    private static async Task SeedProductVariantsAsync(CleanSampleDbContext context)
-    {
-        if (await context.ProductVariants.AnyAsync()) return;
-
-        var products = await context.Products.Take(5).ToListAsync();
-        if (!products.Any()) return;
-
         var colors = await context.Colors.Take(3).ToListAsync();
         var materials = await context.Materials.Take(3).ToListAsync();
         var designs = await context.Designs.Take(2).ToListAsync();
 
-        var variants = new List<ProductVariant>();
-        int index = 1;
-
-        foreach (var prod in products)
+        var products = new List<Product>
         {
-            for (int i = 0; i < Math.Min(2, colors.Count); i++)
+            new Product
             {
-                var color = colors[i];
-                var material = materials.ElementAtOrDefault(i) ?? materials.FirstOrDefault();
-                var design = designs.ElementAtOrDefault(i % designs.Count) ?? designs.FirstOrDefault();
-
-                variants.Add(new ProductVariant
-                {
-                    ProductId = prod.Id,
-                    ColorId = color?.Id,
-                    MaterialId = material?.Id,
-                    DesignId = design?.Id,
-                    Code = $"VAR-{prod.Id}-{index:D3}",
-                    Barcode = $"890123456{index:D3}",
-                    Description = $"{prod.Name} - {color?.Name ?? "Standard"} / {material?.Name ?? "Standard"}",
-                    IsActive = true
-                });
-                index++;
+                CategoryId = category.Id,
+                ColorId = colors.ElementAtOrDefault(0)?.Id,
+                MaterialId = materials.ElementAtOrDefault(0)?.Id,
+                DesignId = designs.ElementAtOrDefault(0)?.Id,
+                Name = "Pro Laptop 15",
+                Barcode = "890123456001",
+                Description = "Pro Laptop 15 - Development Workstation",
+                IsActive = true
+            },
+            new Product
+            {
+                CategoryId = category.Id,
+                ColorId = colors.ElementAtOrDefault(1)?.Id,
+                MaterialId = materials.ElementAtOrDefault(1)?.Id,
+                DesignId = designs.ElementAtOrDefault(1)?.Id,
+                Name = "Smart Phone X",
+                Barcode = "890123456002",
+                Description = "Smart Phone X - 5G Enterprise",
+                IsActive = true
+            },
+            new Product
+            {
+                CategoryId = category.Id,
+                ColorId = colors.ElementAtOrDefault(2)?.Id,
+                MaterialId = materials.ElementAtOrDefault(2)?.Id,
+                DesignId = designs.ElementAtOrDefault(0)?.Id,
+                Name = "Industrial Tablet",
+                Barcode = "890123456003",
+                Description = "Industrial Tablet - Field Rugged",
+                IsActive = true
+            },
+            new Product
+            {
+                CategoryId = category.Id,
+                ColorId = colors.ElementAtOrDefault(0)?.Id,
+                MaterialId = materials.ElementAtOrDefault(0)?.Id,
+                DesignId = designs.ElementAtOrDefault(1)?.Id,
+                Name = "UltraWide Monitor",
+                Barcode = "890123456004",
+                Description = "UltraWide Monitor - 34 Inch Productivity",
+                IsActive = true
+            },
+            new Product
+            {
+                CategoryId = category.Id,
+                ColorId = colors.ElementAtOrDefault(1)?.Id,
+                MaterialId = materials.ElementAtOrDefault(1)?.Id,
+                DesignId = designs.ElementAtOrDefault(0)?.Id,
+                Name = "Mechanical Keyboard",
+                Barcode = "890123456005",
+                Description = "Mechanical Keyboard - RGB Wireless",
+                IsActive = true
             }
-        }
+        };
 
-        await context.ProductVariants.AddRangeAsync(variants);
+        await context.Products.AddRangeAsync(products);
         await context.SaveChangesAsync();
     }
 
@@ -460,22 +472,22 @@ public static class DatabaseSeeder
     {
         if (await context.ProductBOMs.AnyAsync()) return;
 
-        var variants = await context.ProductVariants.Take(5).ToListAsync();
+        var products = await context.Products.Take(5).ToListAsync();
         var parts = await context.Parts.ToListAsync();
 
-        if (!variants.Any() || !parts.Any()) return;
+        if (!products.Any() || !parts.Any()) return;
 
         var boms = new List<ProductBOM>();
 
-        foreach (var variant in variants)
+        foreach (var product in products)
         {
-            // Assign 3-5 parts per variant
+            // Assign 3-5 parts per product
             for (int i = 0; i < Math.Min(4, parts.Count); i++)
             {
                 var part = parts[i];
                 boms.Add(new ProductBOM
                 {
-                    ProductVariantId = variant.Id,
+                    ProductId = product.Id,
                     PartId = part.Id,
                     Quantity = (i % 2 == 0) ? 1.0m : 2.0m
                 });
@@ -510,7 +522,6 @@ public static class DatabaseSeeder
         {
             new Client
             {
-                Code = "CL-TECH-01",
                 Name = "Apex Technology Solutions",
                 Phone = "1-800-555-0199",
                 Mobile = "555-111-2222",
@@ -521,7 +532,6 @@ public static class DatabaseSeeder
             },
             new Client
             {
-                Code = "CL-GLOB-02",
                 Name = "Global Logistics Network",
                 Phone = "1-800-555-0288",
                 Mobile = "555-333-4444",
@@ -532,7 +542,6 @@ public static class DatabaseSeeder
             },
             new Client
             {
-                Code = "CL-NEXUS-03",
                 Name = "Nexus Industrial Corp",
                 Phone = "1-800-555-0377",
                 Mobile = "555-555-6666",
@@ -602,7 +611,6 @@ public static class DatabaseSeeder
         {
             new Order
             {
-                OrderNumber = "ORD-2026-0001",
                 ClientId = client1.Id,
                 OrderDate = DateTime.UtcNow.AddDays(-5),
                 RequiredDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10)),
@@ -611,7 +619,6 @@ public static class DatabaseSeeder
             },
             new Order
             {
-                OrderNumber = "ORD-2026-0002",
                 ClientId = client1.Id,
                 OrderDate = DateTime.UtcNow.AddDays(-2),
                 RequiredDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(15)),
@@ -620,7 +627,6 @@ public static class DatabaseSeeder
             },
             new Order
             {
-                OrderNumber = "ORD-2026-0003",
                 ClientId = client1.Id,
                 OrderDate = DateTime.UtcNow.AddDays(-1),
                 RequiredDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)),
@@ -638,22 +644,22 @@ public static class DatabaseSeeder
         if (await context.OrderLines.AnyAsync()) return;
 
         var orders = await context.Orders.ToListAsync();
-        var variants = await context.ProductVariants.Take(3).ToListAsync();
+        var products = await context.Products.Take(3).ToListAsync();
 
-        if (!orders.Any() || !variants.Any()) return;
+        if (!orders.Any() || !products.Any()) return;
 
         var orderLines = new List<OrderLine>();
 
         foreach (var order in orders)
         {
-            foreach (var variant in variants)
+            foreach (var product in products)
             {
                 orderLines.Add(new OrderLine
                 {
                     OrderId = order.Id,
-                    ProductVariantId = variant.Id,
+                    ProductId = product.Id,
                     Quantity = 5,
-                    Notes = $"Line item for {variant.Code}"
+                    Notes = $"Line item for {product.Name}"
                 });
             }
         }
@@ -679,31 +685,29 @@ public static class DatabaseSeeder
         {
             new LoadRequest
             {
-                RequestNumber = "LR-2026-0001",
                 OrderId = order?.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
                 RequestedBy = requester?.Id,
                 RequestDate = DateTime.UtcNow.AddDays(-3),
                 ExecutionDate = DateTime.UtcNow.AddDays(1),
-                Status = "Created",
+                Status = LoadRequestStatus.New,
                 DestinationAddress = "100 Innovation Way, Suite 400",
                 DestinationCity = "New York",
-                Description = "Load request for Order ORD-2026-0001 workstation batch",
+                Description = "Load request for Order workstation batch",
                 DriverId = driver?.Id,
                 VehicleId = vehicle?.Id,
                 Verified = false
             },
             new LoadRequest
             {
-                RequestNumber = "LR-2026-0002",
                 OrderId = order?.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
                 RequestedBy = requester?.Id,
                 RequestDate = DateTime.UtcNow.AddDays(-2),
                 ExecutionDate = DateTime.UtcNow.AddDays(2),
-                Status = "Loading",
+                Status = LoadRequestStatus.Loading,
                 DestinationAddress = "250 Freight Terminal Blvd",
                 DestinationCity = "Chicago",
                 Description = "Load request for field assembly equipment",
@@ -713,14 +717,13 @@ public static class DatabaseSeeder
             },
             new LoadRequest
             {
-                RequestNumber = "LR-2026-0003",
                 OrderId = order?.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
                 RequestedBy = requester?.Id,
                 RequestDate = DateTime.UtcNow.AddDays(-1),
                 ExecutionDate = DateTime.UtcNow.AddDays(3),
-                Status = "Completed",
+                Status = LoadRequestStatus.Completed,
                 DestinationAddress = "88 Industrial Parkway",
                 DestinationCity = "Houston",
                 Description = "Load request for emergency maintenance replenishment",
@@ -739,20 +742,20 @@ public static class DatabaseSeeder
         if (await context.LoadRequestLines.AnyAsync()) return;
 
         var loadRequests = await context.LoadRequests.ToListAsync();
-        var variants = await context.ProductVariants.Take(2).ToListAsync();
+        var products = await context.Products.Take(2).ToListAsync();
 
-        if (!loadRequests.Any() || !variants.Any()) return;
+        if (!loadRequests.Any() || !products.Any()) return;
 
         var lines = new List<LoadRequestLine>();
 
         foreach (var lr in loadRequests)
         {
-            foreach (var variant in variants)
+            foreach (var product in products)
             {
                 lines.Add(new LoadRequestLine
                 {
                     LoadRequestId = lr.Id,
-                    ProductVariantId = variant.Id,
+                    ProductId = product.Id,
                     Quantity = 4
                 });
             }
@@ -794,9 +797,9 @@ public static class DatabaseSeeder
         await context.SaveChangesAsync();
     }
 
-    private static async Task SeedLoadsAsync(CleanSampleDbContext context)
+    private static async Task SeedVehicleLoadsAsync(CleanSampleDbContext context)
     {
-        if (await context.Loads.AnyAsync()) return;
+        if (await context.VehicleLoads.AnyAsync()) return;
 
         var lrParts = await context.LoadRequestParts.Take(5).ToListAsync();
         var loader = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("tech")) ?? await context.Users.FirstOrDefaultAsync();
@@ -805,15 +808,14 @@ public static class DatabaseSeeder
 
         if (!lrParts.Any()) return;
 
-        var loads = new List<Load>();
+        var loads = new List<VehicleLoad>();
         int index = 1;
 
         foreach (var lrPart in lrParts)
         {
-            loads.Add(new Load
+            loads.Add(new VehicleLoad
             {
                 LoadRequestId = lrPart.LoadRequestId,
-                LoadRequestPartId = lrPart.Id,
                 PartId = lrPart.PartId,
                 Barcode = $"LOAD-BC-{index:D4}",
                 Quantity = lrPart.RequiredQuantity,
@@ -827,7 +829,7 @@ public static class DatabaseSeeder
             index++;
         }
 
-        await context.Loads.AddRangeAsync(loads);
+        await context.VehicleLoads.AddRangeAsync(loads);
         await context.SaveChangesAsync();
     }
 
@@ -839,16 +841,19 @@ public static class DatabaseSeeder
         var vehicle = await context.Vehicles.FirstOrDefaultAsync();
         var driver = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("driver")) ?? await context.Users.FirstOrDefaultAsync();
         var supervisor = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("supervisor")) ?? await context.Users.FirstOrDefaultAsync();
+        var part = await context.Parts.FirstOrDefaultAsync();
 
-        if (loadRequest == null || vehicle == null || driver == null) return;
+        if (loadRequest == null || vehicle == null || driver == null || part == null) return;
 
         var offloads = new List<VehicleOffload>
         {
             new VehicleOffload
             {
                 LoadRequestId = loadRequest.Id,
+                PartId = part.Id,
                 VehicleId = vehicle.Id,
                 DriverId = driver.Id,
+                Barcode = "VO-BC-0001",
                 OffloadDate = DateTime.UtcNow,
                 Status = "Offloaded",
                 Verified = true,
@@ -859,34 +864,6 @@ public static class DatabaseSeeder
         };
 
         await context.VehicleOffloads.AddRangeAsync(offloads);
-        await context.SaveChangesAsync();
-    }
-
-    private static async Task SeedVehicleOffloadItemsAsync(CleanSampleDbContext context)
-    {
-        if (await context.VehicleOffloadItems.AnyAsync()) return;
-
-        var vehicleOffload = await context.VehicleOffloads.FirstOrDefaultAsync();
-        var loads = await context.Loads.Take(3).ToListAsync();
-
-        if (vehicleOffload == null || !loads.Any()) return;
-
-        var items = new List<VehicleOffloadItem>();
-
-        foreach (var load in loads)
-        {
-            items.Add(new VehicleOffloadItem
-            {
-                VehicleOffloadId = vehicleOffload.Id,
-                LoadId = load.Id,
-                PartId = load.PartId,
-                Barcode = load.Barcode,
-                Quantity = load.Quantity,
-                OffloadedAt = DateTime.UtcNow
-            });
-        }
-
-        await context.VehicleOffloadItems.AddRangeAsync(items);
         await context.SaveChangesAsync();
     }
 
@@ -906,7 +883,6 @@ public static class DatabaseSeeder
         {
             new FieldJob
             {
-                JobNumber = "JOB-2026-0001",
                 LoadRequestId = loadRequest.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
@@ -921,7 +897,6 @@ public static class DatabaseSeeder
             },
             new FieldJob
             {
-                JobNumber = "JOB-2026-0002",
                 LoadRequestId = loadRequest.Id,
                 ClientId = client.Id,
                 ClientLocationId = clientLocation?.Id,
@@ -945,18 +920,18 @@ public static class DatabaseSeeder
         if (await context.FieldAssemblies.AnyAsync()) return;
 
         var job = await context.FieldJobs.FirstOrDefaultAsync();
-        var variant = await context.ProductVariants.FirstOrDefaultAsync();
+        var product = await context.Products.FirstOrDefaultAsync();
         var technician = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("tech")) ?? await context.Users.FirstOrDefaultAsync();
         var supervisor = await context.Users.FirstOrDefaultAsync(u => u.UserName.Contains("supervisor")) ?? await context.Users.FirstOrDefaultAsync();
 
-        if (job == null || variant == null) return;
+        if (job == null || product == null) return;
 
         var assemblies = new List<FieldAssembly>
         {
             new FieldAssembly
             {
                 FieldJobId = job.Id,
-                ProductVariantId = variant.Id,
+                ProductId = product.Id,
                 ProductBarcode = "SN-ASM-2026-001",
                 Quantity = 1,
                 AssemblyDate = DateTime.UtcNow,
@@ -970,7 +945,7 @@ public static class DatabaseSeeder
             new FieldAssembly
             {
                 FieldJobId = job.Id,
-                ProductVariantId = variant.Id,
+                ProductId = product.Id,
                 ProductBarcode = "SN-ASM-2026-002",
                 Quantity = 1,
                 AssemblyDate = null,
@@ -1052,7 +1027,6 @@ public static class DatabaseSeeder
                 new Screen { Code = "DESIGNS", Name = "Designs", Module = "Master Data", Description = "Manage item designs" },
 
                 new Screen { Code = "PRODUCTS", Name = "Products Catalog", Module = "Inventory", Description = "Manage master products catalog" },
-                new Screen { Code = "PRODUCT_VARIANTS", Name = "Product Variants", Module = "Inventory", Description = "Manage product SKUs and barcodes" },
                 new Screen { Code = "PARTS", Name = "Parts & Components", Module = "Inventory", Description = "Manage raw parts inventory" },
                 new Screen { Code = "PRODUCT_BOM", Name = "Product BOM", Module = "Inventory", Description = "Manage bill of materials composition" },
 
@@ -1061,7 +1035,7 @@ public static class DatabaseSeeder
                 new Screen { Code = "ORDERS", Name = "Sales Orders", Module = "Sales", Description = "Manage sales orders and lines" },
 
                 new Screen { Code = "LOAD_REQUESTS", Name = "Load Requests", Module = "Warehouse", Description = "Manage warehouse load allocations" },
-                new Screen { Code = "LOADS", Name = "Loads Scanning", Module = "Warehouse", Description = "Barcode load scanning and logging" },
+                new Screen { Code = "VEHICLE_LOADS", Name = "Vehicle Loads", Module = "Warehouse", Description = "Vehicle load scanning and logging" },
 
                 new Screen { Code = "VEHICLES", Name = "Vehicles", Module = "Logistics", Description = "Fleet vehicle tracking" },
                 new Screen { Code = "VEHICLE_OFFLOADS", Name = "Vehicle Offloads", Module = "Logistics", Description = "Manage truck offloading manifests" },
@@ -1158,7 +1132,7 @@ public static class DatabaseSeeder
                 // Technician: Operations & Inventory
                 if (technicianRole != null)
                 {
-                    var isTechScreen = screen.Code is "FIELD_JOBS" or "FIELD_ASSEMBLIES" or "ISSUES" or "PRODUCTS" or "PRODUCT_VARIANTS" or "PARTS";
+                    var isTechScreen = screen.Code is "FIELD_JOBS" or "FIELD_ASSEMBLIES" or "ISSUES" or "PRODUCTS" or "PARTS";
                     var canUpdate = screen.Code is "FIELD_ASSEMBLIES" or "ISSUES";
                     permissions.Add(new RolePermission
                     {
@@ -1170,6 +1144,7 @@ public static class DatabaseSeeder
                         CanDelete = false
                     });
                 }
+
 
                 // Driver: Logistics & Issues
                 if (driverRole != null)

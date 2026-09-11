@@ -26,12 +26,12 @@ public class CreateProductBOMCommandHandler : IRequestHandler<CreateProductBOMCo
         {
             itemsToProcess.AddRange(request.Items);
         }
-        else if (request.ProductVariantId > 0 && request.PartId > 0)
+        else if (request.ProductId > 0 && request.PartId > 0)
         {
             itemsToProcess.Add(new CreateProductBOMItemDto
             {
                 Id = request.Id,
-                ProductVariantId = request.ProductVariantId,
+                ProductId = request.ProductId,
                 PartId = request.PartId,
                 Quantity = request.Quantity
             });
@@ -57,16 +57,16 @@ public class CreateProductBOMCommandHandler : IRequestHandler<CreateProductBOMCo
                 existing = await _unitOfWork.ProductBOMs.GetByIdAsync(item.Id.Value);
             }
 
-            // 2. If not found by Id, check if a record with the same (ProductVariantId, PartId) already exists
+            // 2. If not found by Id, check if a record with the same (ProductId, PartId) already exists
             if (existing == null)
             {
-                existing = await _unitOfWork.ProductBOMs.GetByVariantAndPartIdAsync(item.ProductVariantId, item.PartId);
+                existing = await _unitOfWork.ProductBOMs.GetByProductAndPartIdAsync(item.ProductId, item.PartId);
             }
 
             if (existing != null)
             {
                 // Update existing record
-                existing.ProductVariantId = item.ProductVariantId;
+                existing.ProductId = item.ProductId;
                 existing.PartId = item.PartId;
                 existing.Quantity = item.Quantity;
                 existing.UpdatedAt = DateTime.UtcNow;
@@ -80,7 +80,7 @@ public class CreateProductBOMCommandHandler : IRequestHandler<CreateProductBOMCo
                 // Create new record
                 var newBom = new Domain.Entities.ProductBOM
                 {
-                    ProductVariantId = item.ProductVariantId,
+                    ProductId = item.ProductId,
                     PartId = item.PartId,
                     Quantity = item.Quantity,
                     CreatedAt = DateTime.UtcNow
@@ -104,8 +104,8 @@ public class CreateProductBOMCommandHandler : IRequestHandler<CreateProductBOMCo
                 resultDtos.Add(new ProductBOMDto
                 {
                     Id = fullBom.Id,
-                    ProductVariantId = fullBom.ProductVariantId,
-                    ProductVariantCode = fullBom.ProductVariant?.Code,
+                    ProductId = fullBom.ProductId,
+                    ProductName = fullBom.Product?.Name,
                     PartId = fullBom.PartId,
                     PartCode = fullBom.Part?.Code,
                     PartName = fullBom.Part?.Name,

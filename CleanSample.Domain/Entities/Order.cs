@@ -2,7 +2,6 @@ namespace CleanSample.Domain.Entities;
 
 public class Order : BaseEntity<long>
 {
-    public string OrderNumber { get; set; } = null!;
     public int ClientId { get; set; }
     public Client Client { get; set; } = null!;
 

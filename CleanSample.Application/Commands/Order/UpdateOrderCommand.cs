@@ -6,7 +6,6 @@ namespace CleanSample.Application.Commands.Order;
 public class UpdateOrderCommand : IRequest<bool>
 {
     public long Id { get; set; }
-    public string OrderNumber { get; set; } = null!;
     public int ClientId { get; set; }
     public DateTime OrderDate { get; set; }
     public DateOnly? RequiredDate { get; set; }

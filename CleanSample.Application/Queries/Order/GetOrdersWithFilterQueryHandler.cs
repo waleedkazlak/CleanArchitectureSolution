@@ -33,17 +33,10 @@ public class GetOrdersWithFilterQueryHandler : IRequestHandler<GetOrdersWithFilt
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             orders = orders.Where(o =>
-                o.OrderNumber.ToLower().Contains(searchTermLower) ||
                 (o.Client != null && o.Client.Name.ToLower().Contains(searchTermLower)) ||
                 o.Status.ToLower().Contains(searchTermLower) ||
                 (o.Notes != null && o.Notes.ToLower().Contains(searchTermLower))
             ).ToList();
-        }
-
-        if (!string.IsNullOrWhiteSpace(filter.OrderNumber))
-        {
-            var orderNumberLower = filter.OrderNumber.ToLower();
-            orders = orders.Where(o => o.OrderNumber.ToLower().Contains(orderNumberLower)).ToList();
         }
 
         if (filter.ClientId.HasValue)
@@ -79,7 +72,6 @@ public class GetOrdersWithFilterQueryHandler : IRequestHandler<GetOrdersWithFilt
         var dtos = paginatedItems.Select(o => new OrderDto
         {
             Id = o.Id,
-            OrderNumber = o.OrderNumber,
             ClientId = o.ClientId,
             ClientName = o.Client?.Name,
             OrderDate = o.OrderDate,
@@ -92,9 +84,8 @@ public class GetOrdersWithFilterQueryHandler : IRequestHandler<GetOrdersWithFilt
             {
                 Id = ol.Id,
                 OrderId = ol.OrderId,
-                OrderNumber = o.OrderNumber,
-                ProductVariantId = ol.ProductVariantId,
-                ProductVariantCode = ol.ProductVariant?.Code,
+                ProductId = ol.ProductId,
+                ProductName = ol.Product?.Name,
                 Quantity = ol.Quantity,
                 Notes = ol.Notes,
                 CreatedAt = ol.CreatedAt,
@@ -117,9 +108,6 @@ public class GetOrdersWithFilterQueryHandler : IRequestHandler<GetOrdersWithFilt
 
         return (sortBy?.ToLower()) switch
         {
-            "ordernumber" => isDescending
-                ? items.OrderByDescending(x => x.OrderNumber).ToList()
-                : items.OrderBy(x => x.OrderNumber).ToList(),
 
             "clientid" => isDescending
                 ? items.OrderByDescending(x => x.ClientId).ToList()

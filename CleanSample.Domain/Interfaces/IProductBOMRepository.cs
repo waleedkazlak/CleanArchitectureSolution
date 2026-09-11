@@ -6,8 +6,8 @@ public interface IProductBOMRepository
 {
     Task<ProductBOM?> GetByIdAsync(int id);
     Task<IEnumerable<ProductBOM>> GetAllAsync();
-    Task<IEnumerable<ProductBOM>> GetByProductVariantIdAsync(int productVariantId);
-    Task<ProductBOM?> GetByVariantAndPartIdAsync(int productVariantId, int partId);
+    Task<IEnumerable<ProductBOM>> GetByProductIdAsync(int productId);
+    Task<ProductBOM?> GetByProductAndPartIdAsync(int productId, int partId);
     Task<int> AddAsync(ProductBOM productBom);
     Task<List<ProductBOM>> AddRangeAsync(IEnumerable<ProductBOM> productBoms);
     Task UpdateAsync(ProductBOM productBom);

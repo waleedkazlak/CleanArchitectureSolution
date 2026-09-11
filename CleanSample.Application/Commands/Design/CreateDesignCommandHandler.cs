@@ -17,7 +17,6 @@ public class CreateDesignCommandHandler : IRequestHandler<CreateDesignCommand, i
         var design = new CleanSample.Domain.Entities.Design
         {
             Name = request.Name,
-            Code = request.Code,
             Description = request.Description
         };
 

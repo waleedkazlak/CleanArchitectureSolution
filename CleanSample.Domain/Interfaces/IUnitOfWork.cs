@@ -35,10 +35,6 @@ public interface IUnitOfWork : IDisposable
     /// </summary>
     IDesignRepository Designs { get; }
 
-    /// <summary>
-    /// ProductVariant repository instance
-    /// </summary>
-    IProductVariantRepository ProductVariants { get; }
 
     /// <summary>
     /// Part repository instance
@@ -86,19 +82,14 @@ public interface IUnitOfWork : IDisposable
     ILoadRequestPartRepository LoadRequestParts { get; }
 
     /// <summary>
-    /// Load repository instance
+    /// VehicleLoad repository instance
     /// </summary>
-    ILoadRepository Loads { get; }
+    IVehicleLoadRepository VehicleLoads { get; }
 
     /// <summary>
     /// VehicleOffload repository instance
     /// </summary>
     IVehicleOffloadRepository VehicleOffloads { get; }
-
-    /// <summary>
-    /// VehicleOffloadItem repository instance
-    /// </summary>
-    IVehicleOffloadItemRepository VehicleOffloadItems { get; }
 
     /// <summary>
     /// FieldJob repository instance

@@ -21,7 +21,6 @@ public class UpdateDesignCommandHandler : IRequestHandler<UpdateDesignCommand, b
         }
 
         design.Name = request.Name;
-        design.Code = request.Code;
         design.Description = request.Description;
         design.UpdatedAt = DateTime.UtcNow;
 

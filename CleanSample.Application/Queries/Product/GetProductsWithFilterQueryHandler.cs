@@ -24,8 +24,8 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
         var filter = request.Filter;
 
         _logger.LogInformation(
-            "Handling GetProductsWithFilterQuery - Page: {PageNumber}, PageSize: {PageSize}, Search: {SearchTerm}, MinPrice: {MinPrice}, MaxPrice: {MaxPrice}",
-            filter.PageNumber, filter.PageSize, filter.SearchTerm, filter.MinPrice, filter.MaxPrice);
+            "Handling GetProductsWithFilterQuery - Page: {PageNumber}, PageSize: {PageSize}, Search: {SearchTerm}",
+            filter.PageNumber, filter.PageSize, filter.SearchTerm);
 
         // Validate pagination parameters
         var pageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
@@ -40,23 +40,21 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
             var searchTermLower = filter.SearchTerm.ToLower();
             products = products.Where(p =>
                 p.Name.ToLower().Contains(searchTermLower) ||
-                p.Description.ToLower().Contains(searchTermLower)
+                (p.Barcode != null && p.Barcode.ToLower().Contains(searchTermLower)) ||
+                (p.Description != null && p.Description.ToLower().Contains(searchTermLower))
             ).ToList();
 
             _logger.LogInformation("Applied search filter '{SearchTerm}', found {Count} products", filter.SearchTerm, products.Count());
         }
 
-        // Apply price filter
-        if (filter.MinPrice.HasValue)
+        if (!string.IsNullOrWhiteSpace(filter.Name))
         {
-            products = products.Where(p => p.Price >= filter.MinPrice.Value).ToList();
-            _logger.LogInformation("Applied minimum price filter {MinPrice}", filter.MinPrice);
+            products = products.Where(p => p.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
-        if (filter.MaxPrice.HasValue)
+        if (!string.IsNullOrWhiteSpace(filter.Barcode))
         {
-            products = products.Where(p => p.Price <= filter.MaxPrice.Value).ToList();
-            _logger.LogInformation("Applied maximum price filter {MaxPrice}", filter.MaxPrice);
+            products = products.Where(p => p.Barcode != null && p.Barcode.Contains(filter.Barcode, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         // Apply active status filter
@@ -66,18 +64,26 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
             _logger.LogInformation("Applied active status filter {IsActive}", filter.IsActive);
         }
 
-        // Apply stock filter
-        if (filter.MinStock.HasValue)
-        {
-            products = products.Where(p => p.Stock >= filter.MinStock.Value).ToList();
-            _logger.LogInformation("Applied minimum stock filter {MinStock}", filter.MinStock);
-        }
-
         // Apply category filter
         if (filter.CategoryId.HasValue)
         {
             products = products.Where(p => p.CategoryId == filter.CategoryId.Value).ToList();
             _logger.LogInformation("Applied category filter {CategoryId}", filter.CategoryId);
+        }
+
+        if (filter.ColorId.HasValue)
+        {
+            products = products.Where(p => p.ColorId == filter.ColorId.Value).ToList();
+        }
+
+        if (filter.MaterialId.HasValue)
+        {
+            products = products.Where(p => p.MaterialId == filter.MaterialId.Value).ToList();
+        }
+
+        if (filter.DesignId.HasValue)
+        {
+            products = products.Where(p => p.DesignId == filter.DesignId.Value).ToList();
         }
 
         // Apply sorting
@@ -94,11 +100,17 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
         var productDtos = paginatedProducts.Select(p => new ProductDto
         {
             Id = p.Id,
-            Name = p.Name,
-            Description = p.Description,
-            Price = p.Price,
-            Stock = p.Stock,
             CategoryId = p.CategoryId,
+            CategoryName = p.Category?.Name,
+            ColorId = p.ColorId,
+            ColorName = p.Color?.Name,
+            MaterialId = p.MaterialId,
+            MaterialName = p.Material?.Name,
+            DesignId = p.DesignId,
+            DesignName = p.Design?.Name,
+            Name = p.Name,
+            Barcode = p.Barcode,
+            Description = p.Description,
             IsActive = p.IsActive,
             CreatedAt = p.CreatedAt,
             UpdatedAt = p.UpdatedAt
@@ -127,13 +139,13 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
                 ? products.OrderByDescending(p => p.Name).ToList()
                 : products.OrderBy(p => p.Name).ToList(),
 
-            "price" => isDescending
-                ? products.OrderByDescending(p => p.Price).ToList()
-                : products.OrderBy(p => p.Price).ToList(),
+            "barcode" => isDescending
+                ? products.OrderByDescending(p => p.Barcode).ToList()
+                : products.OrderBy(p => p.Barcode).ToList(),
 
-            "stock" => isDescending
-                ? products.OrderByDescending(p => p.Stock).ToList()
-                : products.OrderBy(p => p.Stock).ToList(),
+            "categoryid" => isDescending
+                ? products.OrderByDescending(p => p.CategoryId).ToList()
+                : products.OrderBy(p => p.CategoryId).ToList(),
 
             "createdat" => isDescending
                 ? products.OrderByDescending(p => p.CreatedAt).ToList()

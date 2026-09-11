@@ -17,7 +17,7 @@ public class FieldAssemblyRepository : IFieldAssemblyRepository
     {
         return await _context.FieldAssemblies
             .Include(f => f.FieldJob)
-            .Include(f => f.ProductVariant)
+            .Include(f => f.Product)
             .Include(f => f.Technician)
             .Include(f => f.Supervisor)
             .FirstOrDefaultAsync(f => f.Id == id);
@@ -27,7 +27,7 @@ public class FieldAssemblyRepository : IFieldAssemblyRepository
     {
         return await _context.FieldAssemblies
             .Include(f => f.FieldJob)
-            .Include(f => f.ProductVariant)
+            .Include(f => f.Product)
             .Include(f => f.Technician)
             .Include(f => f.Supervisor)
             .ToListAsync();
@@ -37,21 +37,21 @@ public class FieldAssemblyRepository : IFieldAssemblyRepository
     {
         return await _context.FieldAssemblies
             .Include(f => f.FieldJob)
-            .Include(f => f.ProductVariant)
+            .Include(f => f.Product)
             .Include(f => f.Technician)
             .Include(f => f.Supervisor)
             .Where(f => f.FieldJobId == fieldJobId)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<FieldAssembly>> GetByProductVariantIdAsync(int productVariantId)
+    public async Task<IEnumerable<FieldAssembly>> GetByProductIdAsync(int productId)
     {
         return await _context.FieldAssemblies
             .Include(f => f.FieldJob)
-            .Include(f => f.ProductVariant)
+            .Include(f => f.Product)
             .Include(f => f.Technician)
             .Include(f => f.Supervisor)
-            .Where(f => f.ProductVariantId == productVariantId)
+            .Where(f => f.ProductId == productId)
             .ToListAsync();
     }
 
@@ -59,7 +59,7 @@ public class FieldAssemblyRepository : IFieldAssemblyRepository
     {
         return await _context.FieldAssemblies
             .Include(f => f.FieldJob)
-            .Include(f => f.ProductVariant)
+            .Include(f => f.Product)
             .Include(f => f.Technician)
             .Include(f => f.Supervisor)
             .Where(f => f.TechnicianId == technicianId)
@@ -70,7 +70,7 @@ public class FieldAssemblyRepository : IFieldAssemblyRepository
     {
         return await _context.FieldAssemblies
             .Include(f => f.FieldJob)
-            .Include(f => f.ProductVariant)
+            .Include(f => f.Product)
             .Include(f => f.Technician)
             .Include(f => f.Supervisor)
             .Where(f => f.SupervisorId == supervisorId)

@@ -5,7 +5,7 @@ namespace CleanSample.Application.Validators;
 
 public class OrderLineSearchFilterDtoValidator : AbstractValidator<OrderLineSearchFilterDto>
 {
-    private readonly string[] _validSortFields = { "OrderId", "ProductVariantId", "Quantity", "CreatedAt" };
+    private readonly string[] _validSortFields = { "OrderId", "ProductId", "Quantity", "CreatedAt" };
     private readonly string[] _validSortDirections = { "asc", "desc" };
 
     public OrderLineSearchFilterDtoValidator()
@@ -27,9 +27,9 @@ public class OrderLineSearchFilterDtoValidator : AbstractValidator<OrderLineSear
             .GreaterThan(0).WithMessage("Order ID must be greater than 0")
             .When(x => x.OrderId.HasValue);
 
-        RuleFor(x => x.ProductVariantId)
-            .GreaterThan(0).WithMessage("Product variant ID must be greater than 0")
-            .When(x => x.ProductVariantId.HasValue);
+        RuleFor(x => x.ProductId)
+            .GreaterThan(0).WithMessage("Product ID must be greater than 0")
+            .When(x => x.ProductId.HasValue);
 
         RuleFor(x => x.MinQuantity)
             .GreaterThanOrEqualTo(0).WithMessage("Min quantity must be greater than or equal to 0")
@@ -38,11 +38,6 @@ public class OrderLineSearchFilterDtoValidator : AbstractValidator<OrderLineSear
         RuleFor(x => x.MaxQuantity)
             .GreaterThanOrEqualTo(0).WithMessage("Max quantity must be greater than or equal to 0")
             .When(x => x.MaxQuantity.HasValue);
-
-        RuleFor(x => x)
-            .Must(x => !x.MinQuantity.HasValue || !x.MaxQuantity.HasValue || x.MinQuantity.Value <= x.MaxQuantity.Value)
-            .WithMessage("Min quantity cannot be greater than max quantity")
-            .When(x => x.MinQuantity.HasValue && x.MaxQuantity.HasValue);
 
         RuleFor(x => x.SortBy)
             .Must(sortBy => _validSortFields.Contains(sortBy, StringComparer.OrdinalIgnoreCase))

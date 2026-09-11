@@ -25,9 +25,7 @@ public class GetIssueByIdQueryHandler : IRequestHandler<GetIssueByIdQuery, Issue
         {
             Id = issue.Id,
             LoadRequestId = issue.LoadRequestId,
-            LoadRequestNumber = issue.LoadRequest?.RequestNumber,
             FieldJobId = issue.FieldJobId,
-            FieldJobNumber = issue.FieldJob?.JobNumber,
             FieldAssemblyId = issue.FieldAssemblyId,
             IssueType = issue.IssueType,
             Description = issue.Description,

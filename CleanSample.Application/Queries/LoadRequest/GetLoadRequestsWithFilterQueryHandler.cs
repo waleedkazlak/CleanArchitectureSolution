@@ -33,8 +33,6 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             loadRequests = loadRequests.Where(p =>
-                p.RequestNumber.ToLower().Contains(searchTermLower) ||
-                (p.Order != null && p.Order.OrderNumber.ToLower().Contains(searchTermLower)) ||
                 (p.Client != null && p.Client.Name.ToLower().Contains(searchTermLower)) ||
                 (p.ClientLocation != null && p.ClientLocation.Name.ToLower().Contains(searchTermLower)) ||
                 (p.Requester != null && p.Requester.FullName.ToLower().Contains(searchTermLower)) ||
@@ -43,14 +41,8 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
                 (p.DestinationAddress != null && p.DestinationAddress.ToLower().Contains(searchTermLower)) ||
                 (p.DestinationCity != null && p.DestinationCity.ToLower().Contains(searchTermLower)) ||
                 (p.Description != null && p.Description.ToLower().Contains(searchTermLower)) ||
-                p.Status.ToLower().Contains(searchTermLower)
+                p.Status.ToString().ToLower().Contains(searchTermLower)
             ).ToList();
-        }
-
-        if (!string.IsNullOrWhiteSpace(filter.RequestNumber))
-        {
-            var requestNumberLower = filter.RequestNumber.ToLower();
-            loadRequests = loadRequests.Where(p => p.RequestNumber.ToLower().Contains(requestNumberLower)).ToList();
         }
 
         if (filter.OrderId.HasValue)
@@ -83,10 +75,9 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
             loadRequests = loadRequests.Where(p => p.VehicleId == filter.VehicleId.Value).ToList();
         }
 
-        if (!string.IsNullOrWhiteSpace(filter.Status))
+        if (filter.Status.HasValue)
         {
-            var statusLower = filter.Status.ToLower();
-            loadRequests = loadRequests.Where(p => p.Status.ToLower().Contains(statusLower)).ToList();
+            loadRequests = loadRequests.Where(p => p.Status == filter.Status.Value).ToList();
         }
 
         if (filter.Verified.HasValue)
@@ -116,9 +107,7 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
         var dtos = paginatedItems.Select(p => new LoadRequestDto
         {
             Id = p.Id,
-            RequestNumber = p.RequestNumber,
             OrderId = p.OrderId,
-            OrderNumber = p.Order?.OrderNumber,
             ClientId = p.ClientId,
             ClientName = p.Client?.Name,
             ClientLocationId = p.ClientLocationId,
@@ -143,9 +132,8 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
             {
                 Id = l.Id,
                 LoadRequestId = l.LoadRequestId,
-                RequestNumber = p.RequestNumber,
-                ProductVariantId = l.ProductVariantId,
-                ProductVariantCode = l.ProductVariant?.Code,
+                ProductId = l.ProductId,
+                ProductName = l.Product?.Name,
                 Quantity = l.Quantity,
                 CreatedAt = l.CreatedAt,
                 UpdatedAt = l.UpdatedAt,
@@ -195,9 +183,6 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
 
         return (sortBy?.ToLower()) switch
         {
-            "requestnumber" => isDescending
-                ? items.OrderByDescending(x => x.RequestNumber).ToList()
-                : items.OrderBy(x => x.RequestNumber).ToList(),
 
             "clientid" => isDescending
                 ? items.OrderByDescending(x => x.ClientId).ToList()

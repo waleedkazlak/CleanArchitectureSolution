@@ -24,9 +24,7 @@ public class GetFieldJobByIdQueryHandler : IRequestHandler<GetFieldJobByIdQuery,
         return new FieldJobDto
         {
             Id = fj.Id,
-            JobNumber = fj.JobNumber,
             LoadRequestId = fj.LoadRequestId,
-            LoadRequestNumber = fj.LoadRequest?.RequestNumber,
             ClientId = fj.ClientId,
             ClientName = fj.Client?.Name,
             ClientLocationId = fj.ClientLocationId,

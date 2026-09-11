@@ -15,5 +15,4 @@ public class LoadRequestPart : BaseEntity<long>
     public decimal LoadedQuantity { get; set; } = 0;
 
     public string Status { get; set; } = "Pending";
-    public ICollection<Load> Loads { get; set; } = new List<Load>();
 }

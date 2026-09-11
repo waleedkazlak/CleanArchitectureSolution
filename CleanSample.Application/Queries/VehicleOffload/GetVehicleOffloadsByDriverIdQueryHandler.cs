@@ -21,12 +21,15 @@ public class GetVehicleOffloadsByDriverIdQueryHandler : IRequestHandler<GetVehic
         {
             Id = vo.Id,
             LoadRequestId = vo.LoadRequestId,
-            RequestNumber = vo.LoadRequest?.RequestNumber,
+            PartId = vo.PartId,
+            PartCode = vo.Part?.Code,
+            PartName = vo.Part?.Name,
             VehicleId = vo.VehicleId,
             VehicleNumber = vo.Vehicle?.VehicleNumber,
             PlateNumber = vo.Vehicle?.PlateNumber,
             DriverId = vo.DriverId,
             DriverName = vo.Driver?.FullName,
+            Barcode = vo.Barcode,
             OffloadDate = vo.OffloadDate,
             Status = vo.Status,
             Verified = vo.Verified,
@@ -35,21 +38,7 @@ public class GetVehicleOffloadsByDriverIdQueryHandler : IRequestHandler<GetVehic
             VerifiedAt = vo.VerifiedAt,
             Notes = vo.Notes,
             CreatedAt = vo.CreatedAt,
-            UpdatedAt = vo.UpdatedAt,
-            VehicleOffloadItems = vo.VehicleOffloadItems?.Select(i => new VehicleOffloadItemDto
-            {
-                Id = i.Id,
-                VehicleOffloadId = i.VehicleOffloadId,
-                LoadId = i.LoadId,
-                PartId = i.PartId,
-                PartCode = i.Part?.Code,
-                PartName = i.Part?.Name,
-                Barcode = i.Barcode,
-                Quantity = i.Quantity,
-                OffloadedAt = i.OffloadedAt,
-                CreatedAt = i.CreatedAt,
-                UpdatedAt = i.UpdatedAt
-            }).ToList() ?? new List<VehicleOffloadItemDto>()
+            UpdatedAt = vo.UpdatedAt
         });
     }
 }

@@ -13,7 +13,6 @@ public class UnitOfWork : IUnitOfWork
     private readonly IColorRepository _colorRepository;
     private readonly IMaterialRepository _materialRepository;
     private readonly IDesignRepository _designRepository;
-    private readonly IProductVariantRepository _productVariantRepository;
     private readonly IPartRepository _partRepository;
     private readonly IProductBOMRepository _productBOMRepository;
     private readonly IClientRepository _clientRepository;
@@ -23,9 +22,8 @@ public class UnitOfWork : IUnitOfWork
     private readonly ILoadRequestRepository _loadRequestRepository;
     private readonly ILoadRequestLineRepository _loadRequestLineRepository;
     private readonly ILoadRequestPartRepository _loadRequestPartRepository;
-    private readonly ILoadRepository _loadRepository;
+    private readonly IVehicleLoadRepository _vehicleLoadRepository;
     private readonly IVehicleOffloadRepository _vehicleOffloadRepository;
-    private readonly IVehicleOffloadItemRepository _vehicleOffloadItemRepository;
     private readonly IFieldJobRepository _fieldJobRepository;
     private readonly IFieldAssemblyRepository _fieldAssemblyRepository;
     private readonly IIssueRepository _issueRepository;
@@ -44,7 +42,6 @@ public class UnitOfWork : IUnitOfWork
         IColorRepository colorRepository,
         IMaterialRepository materialRepository,
         IDesignRepository designRepository,
-        IProductVariantRepository productVariantRepository,
         IPartRepository partRepository,
         IProductBOMRepository productBOMRepository,
         IClientRepository clientRepository,
@@ -54,9 +51,8 @@ public class UnitOfWork : IUnitOfWork
         ILoadRequestRepository loadRequestRepository,
         ILoadRequestLineRepository loadRequestLineRepository,
         ILoadRequestPartRepository loadRequestPartRepository,
-        ILoadRepository loadRepository,
+        IVehicleLoadRepository vehicleLoadRepository,
         IVehicleOffloadRepository vehicleOffloadRepository,
-        IVehicleOffloadItemRepository vehicleOffloadItemRepository,
         IFieldJobRepository fieldJobRepository,
         IFieldAssemblyRepository fieldAssemblyRepository,
         IIssueRepository issueRepository,
@@ -73,7 +69,6 @@ public class UnitOfWork : IUnitOfWork
         _colorRepository = colorRepository;
         _materialRepository = materialRepository;
         _designRepository = designRepository;
-        _productVariantRepository = productVariantRepository;
         _partRepository = partRepository;
         _productBOMRepository = productBOMRepository;
         _clientRepository = clientRepository;
@@ -83,9 +78,8 @@ public class UnitOfWork : IUnitOfWork
         _loadRequestRepository = loadRequestRepository;
         _loadRequestLineRepository = loadRequestLineRepository;
         _loadRequestPartRepository = loadRequestPartRepository;
-        _loadRepository = loadRepository;
+        _vehicleLoadRepository = vehicleLoadRepository;
         _vehicleOffloadRepository = vehicleOffloadRepository;
-        _vehicleOffloadItemRepository = vehicleOffloadItemRepository;
         _fieldJobRepository = fieldJobRepository;
         _fieldAssemblyRepository = fieldAssemblyRepository;
         _issueRepository = issueRepository;
@@ -125,11 +119,6 @@ public class UnitOfWork : IUnitOfWork
     /// Gets the design repository instance
     /// </summary>
     public IDesignRepository Designs => _designRepository;
-
-    /// <summary>
-    /// Gets the product variant repository instance
-    /// </summary>
-    public IProductVariantRepository ProductVariants => _productVariantRepository;
 
     /// <summary>
     /// Gets the part repository instance
@@ -177,19 +166,14 @@ public class UnitOfWork : IUnitOfWork
     public ILoadRequestPartRepository LoadRequestParts => _loadRequestPartRepository;
 
     /// <summary>
-    /// Gets the load repository instance
+    /// Gets the vehicle load repository instance
     /// </summary>
-    public ILoadRepository Loads => _loadRepository;
+    public IVehicleLoadRepository VehicleLoads => _vehicleLoadRepository;
 
     /// <summary>
     /// Gets the vehicle offload repository instance
     /// </summary>
     public IVehicleOffloadRepository VehicleOffloads => _vehicleOffloadRepository;
-
-    /// <summary>
-    /// Gets the vehicle offload item repository instance
-    /// </summary>
-    public IVehicleOffloadItemRepository VehicleOffloadItems => _vehicleOffloadItemRepository;
 
     /// <summary>
     /// Gets the field job repository instance

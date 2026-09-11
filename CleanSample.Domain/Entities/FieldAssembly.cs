@@ -5,8 +5,8 @@ public class FieldAssembly : BaseEntity<long>
     public long FieldJobId { get; set; }
     public FieldJob FieldJob { get; set; } = null!;
 
-    public int ProductVariantId { get; set; }
-    public ProductVariant ProductVariant { get; set; } = null!;
+    public int ProductId { get; set; }
+    public Product Product { get; set; } = null!;
 
     public string? ProductBarcode { get; set; }
 

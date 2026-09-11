@@ -6,8 +6,10 @@ public class VehicleOffloadSearchFilterDto
     public int PageSize { get; set; } = 10;
     public string? SearchTerm { get; set; }
     public long? LoadRequestId { get; set; }
+    public int? PartId { get; set; }
     public int? VehicleId { get; set; }
     public int? DriverId { get; set; }
+    public string? Barcode { get; set; }
     public string? Status { get; set; }
     public bool? Verified { get; set; }
     public int? VerifiedBy { get; set; }

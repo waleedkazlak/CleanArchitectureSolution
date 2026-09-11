@@ -17,16 +17,18 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
         if (product == null)
             return false;
 
-        product.Name = request.Name;
-        product.Description = request.Description;
-        product.Price = request.Price;
-        product.Stock = request.Stock;
         product.CategoryId = request.CategoryId;
+        product.ColorId = request.ColorId;
+        product.MaterialId = request.MaterialId;
+        product.DesignId = request.DesignId;
+        product.Name = request.Name;
+        product.Barcode = request.Barcode;
+        product.Description = request.Description;
         product.IsActive = request.IsActive;
         product.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.Products.UpdateAsync(product);
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return true;
     }

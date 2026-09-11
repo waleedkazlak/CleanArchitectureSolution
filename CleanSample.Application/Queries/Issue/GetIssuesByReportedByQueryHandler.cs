@@ -21,9 +21,7 @@ public class GetIssuesByReportedByQueryHandler : IRequestHandler<GetIssuesByRepo
         {
             Id = i.Id,
             LoadRequestId = i.LoadRequestId,
-            LoadRequestNumber = i.LoadRequest?.RequestNumber,
             FieldJobId = i.FieldJobId,
-            FieldJobNumber = i.FieldJob?.JobNumber,
             FieldAssemblyId = i.FieldAssemblyId,
             IssueType = i.IssueType,
             Description = i.Description,

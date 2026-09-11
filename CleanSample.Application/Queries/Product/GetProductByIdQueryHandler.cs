@@ -37,11 +37,17 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, P
             var productDto = new ProductDto
             {
                 Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                Stock = product.Stock,
                 CategoryId = product.CategoryId,
+                CategoryName = product.Category?.Name,
+                ColorId = product.ColorId,
+                ColorName = product.Color?.Name,
+                MaterialId = product.MaterialId,
+                MaterialName = product.Material?.Name,
+                DesignId = product.DesignId,
+                DesignName = product.Design?.Name,
+                Name = product.Name,
+                Barcode = product.Barcode,
+                Description = product.Description,
                 IsActive = product.IsActive,
                 CreatedAt = product.CreatedAt,
                 UpdatedAt = product.UpdatedAt

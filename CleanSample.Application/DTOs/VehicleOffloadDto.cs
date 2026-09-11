@@ -4,12 +4,15 @@ public class VehicleOffloadDto
 {
     public long Id { get; set; }
     public long LoadRequestId { get; set; }
-    public string? RequestNumber { get; set; }
+    public int PartId { get; set; }
+    public string? PartCode { get; set; }
+    public string? PartName { get; set; }
     public int VehicleId { get; set; }
     public string? VehicleNumber { get; set; }
     public string? PlateNumber { get; set; }
     public int DriverId { get; set; }
     public string? DriverName { get; set; }
+    public string? Barcode { get; set; }
     public DateTime OffloadDate { get; set; }
     public string Status { get; set; } = "Offloading";
     public bool Verified { get; set; } = false;
@@ -19,6 +22,4 @@ public class VehicleOffloadDto
     public string? Notes { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-
-    public List<VehicleOffloadItemDto> VehicleOffloadItems { get; set; } = new();
 }

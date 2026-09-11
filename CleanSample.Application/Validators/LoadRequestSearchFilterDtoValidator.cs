@@ -5,7 +5,7 @@ namespace CleanSample.Application.Validators;
 
 public class LoadRequestSearchFilterDtoValidator : AbstractValidator<LoadRequestSearchFilterDto>
 {
-    private readonly string[] _validSortFields = { "RequestNumber", "ClientId", "OrderId", "RequestDate", "ExecutionDate", "Status", "CreatedAt" };
+    private readonly string[] _validSortFields = { "ClientId", "OrderId", "RequestDate", "ExecutionDate", "Status", "CreatedAt" };
     private readonly string[] _validSortDirections = { "asc", "desc" };
 
     public LoadRequestSearchFilterDtoValidator()
@@ -22,10 +22,6 @@ public class LoadRequestSearchFilterDtoValidator : AbstractValidator<LoadRequest
         RuleFor(x => x.SearchTerm)
             .MaximumLength(255).WithMessage("Search term cannot exceed 255 characters")
             .When(x => !string.IsNullOrWhiteSpace(x.SearchTerm));
-
-        RuleFor(x => x.RequestNumber)
-            .MaximumLength(50).WithMessage("Request number cannot exceed 50 characters")
-            .When(x => !string.IsNullOrWhiteSpace(x.RequestNumber));
 
         RuleFor(x => x.OrderId)
             .GreaterThan(0).WithMessage("Order ID must be greater than 0")
@@ -52,8 +48,8 @@ public class LoadRequestSearchFilterDtoValidator : AbstractValidator<LoadRequest
             .When(x => x.VehicleId.HasValue);
 
         RuleFor(x => x.Status)
-            .MaximumLength(50).WithMessage("Status cannot exceed 50 characters")
-            .When(x => !string.IsNullOrWhiteSpace(x.Status));
+            .IsInEnum().WithMessage("Status must be a valid LoadRequestStatus value.")
+            .When(x => x.Status.HasValue);
 
         RuleFor(x => x.SortBy)
             .Must(sortBy => _validSortFields.Contains(sortBy, StringComparer.OrdinalIgnoreCase))

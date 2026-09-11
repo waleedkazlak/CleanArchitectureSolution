@@ -18,13 +18,13 @@ public class CreateFieldAssemblyCommandHandler : IRequestHandler<CreateFieldAsse
 
     public async Task<long> Handle(CreateFieldAssemblyCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling CreateFieldAssemblyCommand for FieldJobId: {FieldJobId}, ProductVariantId: {ProductVariantId}",
-            request.FieldJobId, request.ProductVariantId);
+        _logger.LogInformation("Handling CreateFieldAssemblyCommand for FieldJobId: {FieldJobId}, ProductId: {ProductId}",
+            request.FieldJobId, request.ProductId);
 
         var fieldAssembly = new Domain.Entities.FieldAssembly
         {
             FieldJobId = request.FieldJobId,
-            ProductVariantId = request.ProductVariantId,
+            ProductId = request.ProductId,
             ProductBarcode = request.ProductBarcode,
             Quantity = request.Quantity,
             AssemblyDate = request.AssemblyDate,

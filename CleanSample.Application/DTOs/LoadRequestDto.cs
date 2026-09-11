@@ -1,12 +1,11 @@
+using CleanSample.Domain.Enums;
+
 namespace CleanSample.Application.DTOs;
 
 public class LoadRequestDto
 {
     public long Id { get; set; }
-    public string RequestNumber { get; set; } = null!;
-
     public long? OrderId { get; set; }
-    public string? OrderNumber { get; set; }
 
     public int ClientId { get; set; }
     public string? ClientName { get; set; }
@@ -20,7 +19,8 @@ public class LoadRequestDto
     public DateTime RequestDate { get; set; }
     public DateTime? ExecutionDate { get; set; }
 
-    public string Status { get; set; } = "Created";
+    public LoadRequestStatus Status { get; set; } = LoadRequestStatus.New;
+    public string StatusName => Status.ToString();
 
     public string? DestinationAddress { get; set; }
     public string? DestinationCity { get; set; }

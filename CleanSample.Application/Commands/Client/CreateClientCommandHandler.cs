@@ -16,7 +16,6 @@ public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, i
     {
         var client = new CleanSample.Domain.Entities.Client
         {
-            Code = request.Code,
             Name = request.Name,
             Phone = request.Phone,
             Mobile = request.Mobile,

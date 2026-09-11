@@ -131,26 +131,49 @@ public class ClientLocationsController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new client location
+    /// Create or update client locations (supports single item or list of items)
     /// </summary>
-    /// <param name="command">Client location creation command</param>
-    /// <returns>Created client location id</returns>
+    /// <param name="command">Client location creation/update command</param>
+    /// <returns>List of created/updated client locations</returns>
     [HttpPost]
     [RequirePermission("CLIENT_LOCATIONS", PermissionAction.Create)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<APIBaseResponse<int>>> Create([FromBody] CreateClientLocationCommand command)
+    public async Task<ActionResult<APIBaseResponse<List<ClientLocationDto>>>> Create([FromBody] CreateClientLocationCommand command)
     {
-        _logger.LogInformation("User {User} creating new client location: {LocationName}", User.Identity?.Name, command?.Name);
+        _logger.LogInformation("User {User} creating/updating client locations", User.Identity?.Name);
 
         var result = await _mediator.Send(command);
 
-        return CreatedAtAction(nameof(GetById), new { id = result },
-            new APIBaseResponse<int>()
-                .SetSuccess(result, "Client location created successfully"));
+        return Ok(new APIBaseResponse<List<ClientLocationDto>>()
+            .SetSuccess(result, result.Count, "Client locations processed successfully"));
+    }
+
+    /// <summary>
+    /// Batch create or update client locations from a list of items
+    /// </summary>
+    /// <param name="items">List of client location items to create or update</param>
+    /// <returns>List of created/updated client locations</returns>
+    [HttpPost("batch")]
+    [RequirePermission("CLIENT_LOCATIONS", PermissionAction.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<APIBaseResponse<List<ClientLocationDto>>>> Batch([FromBody] List<CreateClientLocationItemDto> items)
+    {
+        _logger.LogInformation("User {User} batch creating/updating {Count} client locations", User.Identity?.Name, items?.Count ?? 0);
+
+        var command = new CreateClientLocationCommand(items ?? new List<CreateClientLocationItemDto>());
+        var result = await _mediator.Send(command);
+
+        return Ok(new APIBaseResponse<List<ClientLocationDto>>()
+            .SetSuccess(result, result.Count, "Client locations processed successfully"));
     }
 
     /// <summary>

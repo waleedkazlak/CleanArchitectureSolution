@@ -17,8 +17,8 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
         if (product == null)
             return false;
 
-        product.IsDeleted = true;
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.Products.DeleteAsync(product.Id);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return true;
     }

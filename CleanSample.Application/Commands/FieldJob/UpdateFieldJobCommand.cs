@@ -5,7 +5,6 @@ namespace CleanSample.Application.Commands.FieldJob;
 public class UpdateFieldJobCommand : IRequest<bool>
 {
     public long Id { get; set; }
-    public string JobNumber { get; set; } = string.Empty;
     public long LoadRequestId { get; set; }
     public int ClientId { get; set; }
     public int? ClientLocationId { get; set; }

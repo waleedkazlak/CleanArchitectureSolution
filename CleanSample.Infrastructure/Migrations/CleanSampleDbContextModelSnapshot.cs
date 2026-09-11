@@ -74,10 +74,6 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -224,10 +220,6 @@ namespace CleanSample.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -246,11 +238,6 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_Designs_Code")
-                        .HasFilter("[Code] IS NOT NULL");
 
                     b.HasIndex("Name")
                         .IsUnique()
@@ -287,7 +274,7 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("ProductVariantId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -322,8 +309,8 @@ namespace CleanSample.Infrastructure.Migrations
                     b.HasIndex("FieldJobId")
                         .HasDatabaseName("IX_FieldAssemblies_FieldJobId");
 
-                    b.HasIndex("ProductVariantId")
-                        .HasDatabaseName("IX_FieldAssemblies_ProductVariantId");
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_FieldAssemblies_ProductId");
 
                     b.HasIndex("SupervisorId");
 
@@ -357,11 +344,6 @@ namespace CleanSample.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<string>("JobNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<long>("LoadRequestId")
                         .HasColumnType("bigint");
@@ -405,10 +387,6 @@ namespace CleanSample.Infrastructure.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ClientLocationId");
-
-                    b.HasIndex("JobNumber")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_FieldJobs_JobNumber");
 
                     b.HasIndex("LoadRequestId")
                         .HasDatabaseName("IX_FieldJobs_LoadRequestId");
@@ -509,89 +487,6 @@ namespace CleanSample.Infrastructure.Migrations
                     b.ToTable("Issues", (string)null);
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.Load", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("LoadId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Barcode")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<int?>("DriverId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("LoadDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<long>("LoadRequestId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("LoadRequestPartId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("LoadedBy")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Quantity")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Loaded");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Barcode")
-                        .HasDatabaseName("IX_Loads_Barcode");
-
-                    b.HasIndex("DriverId");
-
-                    b.HasIndex("LoadRequestId")
-                        .HasDatabaseName("IX_Loads_LoadRequestId");
-
-                    b.HasIndex("LoadRequestPartId");
-
-                    b.HasIndex("LoadedBy");
-
-                    b.HasIndex("PartId");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("Loads", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Loads_Quantity", "[Quantity] > 0");
-                        });
-                });
-
             modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequest", b =>
                 {
                     b.Property<long>("Id")
@@ -638,20 +533,13 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
-                    b.Property<string>("RequestNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int?>("RequestedBy")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
+                    b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Created");
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -675,10 +563,6 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.HasIndex("OrderId")
                         .HasDatabaseName("IX_LoadRequests_OrderId");
-
-                    b.HasIndex("RequestNumber")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_LoadRequests_RequestNumber");
 
                     b.HasIndex("RequestedBy");
 
@@ -707,7 +591,7 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Property<long>("LoadRequestId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("ProductVariantId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -720,7 +604,7 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.HasIndex("LoadRequestId");
 
-                    b.HasIndex("ProductVariantId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("LoadRequestLines", null, t =>
                         {
@@ -850,11 +734,6 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
-                    b.Property<string>("OrderNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateOnly?>("RequiredDate")
                         .HasColumnType("date");
 
@@ -872,10 +751,6 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.HasIndex("ClientId")
                         .HasDatabaseName("IX_Orders_ClientId");
-
-                    b.HasIndex("OrderNumber")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_Orders_OrderNumber");
 
                     b.ToTable("Orders", (string)null);
                 });
@@ -901,7 +776,7 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("ProductVariantId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -915,8 +790,8 @@ namespace CleanSample.Infrastructure.Migrations
                     b.HasIndex("OrderId")
                         .HasDatabaseName("IX_OrderLines_OrderId");
 
-                    b.HasIndex("ProductVariantId")
-                        .HasDatabaseName("IX_OrderLines_ProductVariantId");
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_OrderLines_ProductId");
 
                     b.ToTable("OrderLines", null, t =>
                         {
@@ -987,113 +862,12 @@ namespace CleanSample.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("Products", (string)null);
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.ProductBOM", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ProductBOMId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<int>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductVariantId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Quantity")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PartId")
-                        .HasDatabaseName("IX_ProductBOM_PartId");
-
-                    b.HasIndex("ProductVariantId")
-                        .HasDatabaseName("IX_ProductBOM_ProductVariantId");
-
-                    b.HasIndex("ProductVariantId", "PartId")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_ProductBOM_Variant_Part");
-
-                    b.ToTable("ProductBOM", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_ProductBOM_Quantity", "[Quantity] > 0");
-                        });
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.ProductVariant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ProductVariantId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Barcode")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("ColorId")
                         .HasColumnType("int");
@@ -1118,8 +892,10 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Property<int?>("MaterialId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1128,12 +904,10 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.HasIndex("Barcode")
                         .IsUnique()
-                        .HasDatabaseName("UQ_ProductVariants_Barcode")
+                        .HasDatabaseName("UQ_Products_Barcode")
                         .HasFilter("[Barcode] IS NOT NULL");
 
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_ProductVariants_Code");
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("ColorId");
 
@@ -1141,9 +915,52 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.HasIndex("MaterialId");
 
-                    b.HasIndex("ProductId");
+                    b.ToTable("Products", (string)null);
+                });
 
-                    b.ToTable("ProductVariants", (string)null);
+            modelBuilder.Entity("CleanSample.Domain.Entities.ProductBOM", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ProductBOMId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PartId")
+                        .HasDatabaseName("IX_ProductBOM_PartId");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_ProductBOM_ProductId");
+
+                    b.HasIndex("ProductId", "PartId")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_ProductBOM_Product_Part");
+
+                    b.ToTable("ProductBOM", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ProductBOM_Quantity", "[Quantity] > 0");
+                        });
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.Role", b =>
@@ -1409,6 +1226,84 @@ namespace CleanSample.Infrastructure.Migrations
                     b.ToTable("Vehicles", (string)null);
                 });
 
+            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleLoad", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("LoadId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Barcode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LoadDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<long>("LoadRequestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("LoadedBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Loaded");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Barcode")
+                        .HasDatabaseName("IX_VehicleLoads_Barcode");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("LoadRequestId")
+                        .HasDatabaseName("IX_VehicleLoads_LoadRequestId");
+
+                    b.HasIndex("LoadedBy");
+
+                    b.HasIndex("PartId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("VehicleLoads", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_VehicleLoads_Quantity", "[Quantity] > 0");
+                        });
+                });
+
             modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffload", b =>
                 {
                     b.Property<long>("Id")
@@ -1417,6 +1312,10 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasColumnName("VehicleOffloadId");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Barcode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -1437,6 +1336,9 @@ namespace CleanSample.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -1464,69 +1366,22 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Barcode")
+                        .HasDatabaseName("IX_VehicleOffloads_Barcode");
+
                     b.HasIndex("DriverId");
 
                     b.HasIndex("LoadRequestId")
                         .HasDatabaseName("IX_VehicleOffloads_LoadRequestId");
+
+                    b.HasIndex("PartId")
+                        .HasDatabaseName("IX_VehicleOffloads_PartId");
 
                     b.HasIndex("VehicleId");
 
                     b.HasIndex("VerifiedBy");
 
                     b.ToTable("VehicleOffloads", (string)null);
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffloadItem", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("VehicleOffloadItemId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Barcode")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<long?>("LoadId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("OffloadedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<int>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Quantity")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("VehicleOffloadId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LoadId");
-
-                    b.HasIndex("PartId");
-
-                    b.HasIndex("VehicleOffloadId");
-
-                    b.ToTable("VehicleOffloadItems", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_VehicleOffloadItems_Quantity", "[Quantity] > 0");
-                        });
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.ClientLocation", b =>
@@ -1550,12 +1405,12 @@ namespace CleanSample.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_FieldAssemblies_FieldJobs");
 
-                    b.HasOne("CleanSample.Domain.Entities.ProductVariant", "ProductVariant")
+                    b.HasOne("CleanSample.Domain.Entities.Product", "Product")
                         .WithMany("FieldAssemblies")
-                        .HasForeignKey("ProductVariantId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_FieldAssemblies_ProductVariants");
+                        .HasConstraintName("FK_FieldAssemblies_Products");
 
                     b.HasOne("CleanSample.Domain.Entities.User", "Supervisor")
                         .WithMany()
@@ -1571,7 +1426,7 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.Navigation("FieldJob");
 
-                    b.Navigation("ProductVariant");
+                    b.Navigation("Product");
 
                     b.Navigation("Supervisor");
 
@@ -1666,59 +1521,6 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("ResolvedByUser");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.Load", b =>
-                {
-                    b.HasOne("CleanSample.Domain.Entities.User", "Driver")
-                        .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_Loads_Driver");
-
-                    b.HasOne("CleanSample.Domain.Entities.LoadRequest", "LoadRequest")
-                        .WithMany("Loads")
-                        .HasForeignKey("LoadRequestId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Loads_LoadRequests");
-
-                    b.HasOne("CleanSample.Domain.Entities.LoadRequestPart", "LoadRequestPart")
-                        .WithMany("Loads")
-                        .HasForeignKey("LoadRequestPartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_Loads_LoadRequestParts");
-
-                    b.HasOne("CleanSample.Domain.Entities.User", "Loader")
-                        .WithMany()
-                        .HasForeignKey("LoadedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_Loads_LoadedBy");
-
-                    b.HasOne("CleanSample.Domain.Entities.Part", "Part")
-                        .WithMany()
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Loads_Parts");
-
-                    b.HasOne("CleanSample.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_Loads_Vehicle");
-
-                    b.Navigation("Driver");
-
-                    b.Navigation("LoadRequest");
-
-                    b.Navigation("LoadRequestPart");
-
-                    b.Navigation("Loader");
-
-                    b.Navigation("Part");
-
-                    b.Navigation("Vehicle");
-                });
-
             modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequest", b =>
                 {
                     b.HasOne("CleanSample.Domain.Entities.Client", "Client")
@@ -1780,16 +1582,16 @@ namespace CleanSample.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_LoadRequestLines_LoadRequests");
 
-                    b.HasOne("CleanSample.Domain.Entities.ProductVariant", "ProductVariant")
+                    b.HasOne("CleanSample.Domain.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductVariantId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_LoadRequestLines_ProductVariants");
+                        .HasConstraintName("FK_LoadRequestLines_Products");
 
                     b.Navigation("LoadRequest");
 
-                    b.Navigation("ProductVariant");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequestPart", b =>
@@ -1843,16 +1645,16 @@ namespace CleanSample.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_OrderLines_Orders");
 
-                    b.HasOne("CleanSample.Domain.Entities.ProductVariant", "ProductVariant")
+                    b.HasOne("CleanSample.Domain.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductVariantId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_OrderLines_ProductVariants");
+                        .HasConstraintName("FK_OrderLines_Products");
 
                     b.Navigation("Order");
 
-                    b.Navigation("ProductVariant");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.Product", b =>
@@ -1861,9 +1663,34 @@ namespace CleanSample.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_Products_Categories");
+
+                    b.HasOne("CleanSample.Domain.Entities.Color", "Color")
+                        .WithMany()
+                        .HasForeignKey("ColorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Products_Colors");
+
+                    b.HasOne("CleanSample.Domain.Entities.Design", "Design")
+                        .WithMany()
+                        .HasForeignKey("DesignId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Products_Designs");
+
+                    b.HasOne("CleanSample.Domain.Entities.Material", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Products_Materials");
 
                     b.Navigation("Category");
+
+                    b.Navigation("Color");
+
+                    b.Navigation("Design");
+
+                    b.Navigation("Material");
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.ProductBOM", b =>
@@ -1875,50 +1702,14 @@ namespace CleanSample.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_ProductBOM_Parts");
 
-                    b.HasOne("CleanSample.Domain.Entities.ProductVariant", "ProductVariant")
-                        .WithMany()
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_ProductBOM_ProductVariants");
-
-                    b.Navigation("Part");
-
-                    b.Navigation("ProductVariant");
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.ProductVariant", b =>
-                {
-                    b.HasOne("CleanSample.Domain.Entities.Color", "Color")
-                        .WithMany()
-                        .HasForeignKey("ColorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_ProductVariants_Colors");
-
-                    b.HasOne("CleanSample.Domain.Entities.Design", "Design")
-                        .WithMany()
-                        .HasForeignKey("DesignId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_ProductVariants_Designs");
-
-                    b.HasOne("CleanSample.Domain.Entities.Material", "Material")
-                        .WithMany()
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_ProductVariants_Materials");
-
                     b.HasOne("CleanSample.Domain.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_ProductVariants_Products");
+                        .HasConstraintName("FK_ProductBOM_Products");
 
-                    b.Navigation("Color");
-
-                    b.Navigation("Design");
-
-                    b.Navigation("Material");
+                    b.Navigation("Part");
 
                     b.Navigation("Product");
                 });
@@ -1955,6 +1746,51 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleLoad", b =>
+                {
+                    b.HasOne("CleanSample.Domain.Entities.User", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_VehicleLoads_Driver");
+
+                    b.HasOne("CleanSample.Domain.Entities.LoadRequest", "LoadRequest")
+                        .WithMany("VehicleLoads")
+                        .HasForeignKey("LoadRequestId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_VehicleLoads_LoadRequests");
+
+                    b.HasOne("CleanSample.Domain.Entities.User", "Loader")
+                        .WithMany()
+                        .HasForeignKey("LoadedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_VehicleLoads_LoadedBy");
+
+                    b.HasOne("CleanSample.Domain.Entities.Part", "Part")
+                        .WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_VehicleLoads_Parts");
+
+                    b.HasOne("CleanSample.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_VehicleLoads_Vehicle");
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("LoadRequest");
+
+                    b.Navigation("Loader");
+
+                    b.Navigation("Part");
+
+                    b.Navigation("Vehicle");
+                });
+
             modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffload", b =>
                 {
                     b.HasOne("CleanSample.Domain.Entities.User", "Driver")
@@ -1970,6 +1806,13 @@ namespace CleanSample.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("FK_VehicleOffloads_LoadRequests");
+
+                    b.HasOne("CleanSample.Domain.Entities.Part", "Part")
+                        .WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_VehicleOffloads_Parts");
 
                     b.HasOne("CleanSample.Domain.Entities.Vehicle", "Vehicle")
                         .WithMany()
@@ -1988,38 +1831,11 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.Navigation("LoadRequest");
 
+                    b.Navigation("Part");
+
                     b.Navigation("Vehicle");
 
                     b.Navigation("Verifier");
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffloadItem", b =>
-                {
-                    b.HasOne("CleanSample.Domain.Entities.Load", "Load")
-                        .WithMany("VehicleOffloadItems")
-                        .HasForeignKey("LoadId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_VehicleOffloadItems_Loads");
-
-                    b.HasOne("CleanSample.Domain.Entities.Part", "Part")
-                        .WithMany()
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_VehicleOffloadItems_Parts");
-
-                    b.HasOne("CleanSample.Domain.Entities.VehicleOffload", "VehicleOffload")
-                        .WithMany("VehicleOffloadItems")
-                        .HasForeignKey("VehicleOffloadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_VehicleOffloadItems_VehicleOffloads");
-
-                    b.Navigation("Load");
-
-                    b.Navigation("Part");
-
-                    b.Navigation("VehicleOffload");
                 });
 
             modelBuilder.Entity("CleanSample.Domain.Entities.Client", b =>
@@ -2044,11 +1860,6 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("Issues");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.Load", b =>
-                {
-                    b.Navigation("VehicleOffloadItems");
-                });
-
             modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequest", b =>
                 {
                     b.Navigation("FieldJobs");
@@ -2059,7 +1870,7 @@ namespace CleanSample.Infrastructure.Migrations
 
                     b.Navigation("LoadRequestParts");
 
-                    b.Navigation("Loads");
+                    b.Navigation("VehicleLoads");
 
                     b.Navigation("VehicleOffloads");
                 });
@@ -2069,17 +1880,12 @@ namespace CleanSample.Infrastructure.Migrations
                     b.Navigation("LoadRequestParts");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.LoadRequestPart", b =>
-                {
-                    b.Navigation("Loads");
-                });
-
             modelBuilder.Entity("CleanSample.Domain.Entities.Order", b =>
                 {
                     b.Navigation("OrderLines");
                 });
 
-            modelBuilder.Entity("CleanSample.Domain.Entities.ProductVariant", b =>
+            modelBuilder.Entity("CleanSample.Domain.Entities.Product", b =>
                 {
                     b.Navigation("FieldAssemblies");
                 });
@@ -2092,11 +1898,6 @@ namespace CleanSample.Infrastructure.Migrations
             modelBuilder.Entity("CleanSample.Domain.Entities.Screen", b =>
                 {
                     b.Navigation("RolePermissions");
-                });
-
-            modelBuilder.Entity("CleanSample.Domain.Entities.VehicleOffload", b =>
-                {
-                    b.Navigation("VehicleOffloadItems");
                 });
 #pragma warning restore 612, 618
         }

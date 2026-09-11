@@ -33,8 +33,7 @@ public class GetOrderLinesWithFilterQueryHandler : IRequestHandler<GetOrderLines
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             orderLines = orderLines.Where(ol =>
-                (ol.Order != null && ol.Order.OrderNumber.ToLower().Contains(searchTermLower)) ||
-                (ol.ProductVariant != null && ol.ProductVariant.Code.ToLower().Contains(searchTermLower)) ||
+                (ol.Product != null && ol.Product.Name.ToLower().Contains(searchTermLower)) ||
                 (ol.Notes != null && ol.Notes.ToLower().Contains(searchTermLower))
             ).ToList();
         }
@@ -44,9 +43,9 @@ public class GetOrderLinesWithFilterQueryHandler : IRequestHandler<GetOrderLines
             orderLines = orderLines.Where(ol => ol.OrderId == filter.OrderId.Value).ToList();
         }
 
-        if (filter.ProductVariantId.HasValue)
+        if (filter.ProductId.HasValue)
         {
-            orderLines = orderLines.Where(ol => ol.ProductVariantId == filter.ProductVariantId.Value).ToList();
+            orderLines = orderLines.Where(ol => ol.ProductId == filter.ProductId.Value).ToList();
         }
 
         if (filter.MinQuantity.HasValue)
@@ -72,9 +71,8 @@ public class GetOrderLinesWithFilterQueryHandler : IRequestHandler<GetOrderLines
         {
             Id = ol.Id,
             OrderId = ol.OrderId,
-            OrderNumber = ol.Order?.OrderNumber,
-            ProductVariantId = ol.ProductVariantId,
-            ProductVariantCode = ol.ProductVariant?.Code,
+            ProductId = ol.ProductId,
+            ProductName = ol.Product?.Name,
             Quantity = ol.Quantity,
             Notes = ol.Notes,
             CreatedAt = ol.CreatedAt,
@@ -100,9 +98,9 @@ public class GetOrderLinesWithFilterQueryHandler : IRequestHandler<GetOrderLines
                 ? items.OrderByDescending(x => x.OrderId).ToList()
                 : items.OrderBy(x => x.OrderId).ToList(),
 
-            "productvariantid" => isDescending
-                ? items.OrderByDescending(x => x.ProductVariantId).ToList()
-                : items.OrderBy(x => x.ProductVariantId).ToList(),
+            "productid" => isDescending
+                ? items.OrderByDescending(x => x.ProductId).ToList()
+                : items.OrderBy(x => x.ProductId).ToList(),
 
             "quantity" => isDescending
                 ? items.OrderByDescending(x => x.Quantity).ToList()

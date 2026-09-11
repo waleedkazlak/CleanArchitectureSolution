@@ -3,9 +3,7 @@ namespace CleanSample.Application.DTOs;
 public class FieldJobDto
 {
     public long Id { get; set; }
-    public string JobNumber { get; set; } = string.Empty;
     public long LoadRequestId { get; set; }
-    public string? LoadRequestNumber { get; set; }
     public int ClientId { get; set; }
     public string? ClientName { get; set; }
     public int? ClientLocationId { get; set; }

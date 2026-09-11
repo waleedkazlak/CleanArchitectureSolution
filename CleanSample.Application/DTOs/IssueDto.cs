@@ -4,9 +4,7 @@ public class IssueDto
 {
     public long Id { get; set; }
     public long? LoadRequestId { get; set; }
-    public string? LoadRequestNumber { get; set; }
     public long? FieldJobId { get; set; }
-    public string? FieldJobNumber { get; set; }
     public long? FieldAssemblyId { get; set; }
     public string IssueType { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;

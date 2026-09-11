@@ -33,7 +33,6 @@ public class GetClientsWithFilterQueryHandler : IRequestHandler<GetClientsWithFi
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             clients = clients.Where(c =>
-                (c.Code != null && c.Code.ToLower().Contains(searchTermLower)) ||
                 c.Name.ToLower().Contains(searchTermLower) ||
                 (c.Phone != null && c.Phone.ToLower().Contains(searchTermLower)) ||
                 (c.Mobile != null && c.Mobile.ToLower().Contains(searchTermLower)) ||
@@ -41,12 +40,6 @@ public class GetClientsWithFilterQueryHandler : IRequestHandler<GetClientsWithFi
                 (c.Address != null && c.Address.ToLower().Contains(searchTermLower)) ||
                 (c.City != null && c.City.ToLower().Contains(searchTermLower))
             ).ToList();
-        }
-
-        if (!string.IsNullOrWhiteSpace(filter.Code))
-        {
-            var codeLower = filter.Code.ToLower();
-            clients = clients.Where(c => c.Code != null && c.Code.ToLower().Contains(codeLower)).ToList();
         }
 
         if (!string.IsNullOrWhiteSpace(filter.Name))
@@ -91,7 +84,6 @@ public class GetClientsWithFilterQueryHandler : IRequestHandler<GetClientsWithFi
         var dtos = paginatedClients.Select(c => new ClientDto
         {
             Id = c.Id,
-            Code = c.Code,
             Name = c.Name,
             Phone = c.Phone,
             Mobile = c.Mobile,
@@ -118,10 +110,6 @@ public class GetClientsWithFilterQueryHandler : IRequestHandler<GetClientsWithFi
 
         return (sortBy?.ToLower()) switch
         {
-            "code" => isDescending
-                ? clients.OrderByDescending(c => c.Code).ToList()
-                : clients.OrderBy(c => c.Code).ToList(),
-
             "name" => isDescending
                 ? clients.OrderByDescending(c => c.Name).ToList()
                 : clients.OrderBy(c => c.Name).ToList(),

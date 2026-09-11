@@ -17,7 +17,6 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, lon
     {
         var order = new CleanSample.Domain.Entities.Order
         {
-            OrderNumber = request.OrderNumber,
             ClientId = request.ClientId,
             OrderDate = request.OrderDate ?? DateTime.UtcNow,
             RequiredDate = request.RequiredDate,
@@ -25,7 +24,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, lon
             Notes = request.Notes,
             OrderLines = request.OrderLines.Select(l => new CleanSample.Domain.Entities.OrderLine
             {
-                ProductVariantId = l.ProductVariantId,
+                ProductId = l.ProductId,
                 Quantity = l.Quantity,
                 Notes = l.Notes,
                 CreatedAt = DateTime.UtcNow

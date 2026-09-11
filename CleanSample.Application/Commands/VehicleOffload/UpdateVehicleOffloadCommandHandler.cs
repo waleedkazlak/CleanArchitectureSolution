@@ -28,8 +28,10 @@ public class UpdateVehicleOffloadCommandHandler : IRequestHandler<UpdateVehicleO
         }
 
         existingOffload.LoadRequestId = request.LoadRequestId;
+        existingOffload.PartId = request.PartId;
         existingOffload.VehicleId = request.VehicleId;
         existingOffload.DriverId = request.DriverId;
+        existingOffload.Barcode = request.Barcode;
         if (request.OffloadDate.HasValue)
         {
             existingOffload.OffloadDate = request.OffloadDate.Value;
@@ -43,56 +45,6 @@ public class UpdateVehicleOffloadCommandHandler : IRequestHandler<UpdateVehicleO
         existingOffload.VerifiedAt = request.Verified ? (request.VerifiedAt ?? DateTime.UtcNow) : null;
         existingOffload.Notes = request.Notes;
         existingOffload.UpdatedAt = DateTime.UtcNow;
-
-        // Synchronize VehicleOffloadItems
-        var inputItems = request.VehicleOffloadItems ?? new List<DTOs.VehicleOffloadItemInputDto>();
-        var existingItems = existingOffload.VehicleOffloadItems.ToList();
-
-        var inputItemIds = inputItems.Where(i => i.Id.HasValue && i.Id.Value > 0).Select(i => i.Id!.Value).ToHashSet();
-        var itemsToDelete = existingItems.Where(e => !inputItemIds.Contains(e.Id)).ToList();
-
-        foreach (var itemToDelete in itemsToDelete)
-        {
-            existingOffload.VehicleOffloadItems.Remove(itemToDelete);
-            await _unitOfWork.VehicleOffloadItems.DeleteAsync(itemToDelete.Id);
-        }
-
-        foreach (var inputItem in inputItems)
-        {
-            if (inputItem.Id.HasValue && inputItem.Id.Value > 0)
-            {
-                var existingItem = existingItems.FirstOrDefault(e => e.Id == inputItem.Id.Value);
-                if (existingItem != null)
-                {
-                    existingItem.LoadId = inputItem.LoadId;
-                    existingItem.PartId = inputItem.PartId;
-                    existingItem.Barcode = inputItem.Barcode;
-                    existingItem.Quantity = inputItem.Quantity;
-                    if (inputItem.OffloadedAt.HasValue)
-                    {
-                        existingItem.OffloadedAt = inputItem.OffloadedAt.Value;
-                    }
-                    existingItem.UpdatedAt = DateTime.UtcNow;
-                    await _unitOfWork.VehicleOffloadItems.UpdateAsync(existingItem);
-                }
-            }
-            else
-            {
-                var newItem = new VehicleOffloadItem
-                {
-                    VehicleOffloadId = existingOffload.Id,
-                    LoadId = inputItem.LoadId,
-                    PartId = inputItem.PartId,
-                    Barcode = inputItem.Barcode,
-                    Quantity = inputItem.Quantity,
-                    OffloadedAt = inputItem.OffloadedAt ?? DateTime.UtcNow,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                existingOffload.VehicleOffloadItems.Add(newItem);
-                await _unitOfWork.VehicleOffloadItems.AddAsync(newItem);
-            }
-        }
 
         await _unitOfWork.VehicleOffloads.UpdateAsync(existingOffload);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

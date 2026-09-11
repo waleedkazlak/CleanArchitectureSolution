@@ -110,24 +110,25 @@ public class ProductBOMController : ControllerBase
     }
 
     /// <summary>
-    /// Get all product BOMs for a specific product variant
+    /// Get all product BOMs for a specific product
     /// </summary>
-    /// <param name="productVariantId">Product variant id</param>
+    /// <param name="productId">Product id</param>
     /// <returns>List of product BOMs</returns>
-    [HttpGet("variant/{productVariantId}")]
+    [HttpGet("by-product/{productId}")]
+    [HttpGet("product/{productId}")]
     [RequirePermission("PRODUCT_BOM", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<APIBaseResponse<IEnumerable<ProductBOMDto>>>> GetByVariantId([FromRoute] int productVariantId)
+    public async Task<ActionResult<APIBaseResponse<IEnumerable<ProductBOMDto>>>> GetByProductId([FromRoute] int productId)
     {
-        _logger.LogInformation("User {User} fetching product BOMs for variant: {ProductVariantId}", User.Identity?.Name, productVariantId);
+        _logger.LogInformation("User {User} fetching product BOMs for product: {ProductId}", User.Identity?.Name, productId);
 
-        var query = new GetProductBOMsByVariantIdQuery(productVariantId);
+        var query = new GetProductBOMsByProductIdQuery(productId);
         var result = await _mediator.Send(query);
 
         return Ok(new APIBaseResponse<IEnumerable<ProductBOMDto>>()
-            .SetSuccess(result, "Product BOMs for variant retrieved successfully"));
+            .SetSuccess(result, "Product BOMs for product retrieved successfully"));
     }
 
     /// <summary>

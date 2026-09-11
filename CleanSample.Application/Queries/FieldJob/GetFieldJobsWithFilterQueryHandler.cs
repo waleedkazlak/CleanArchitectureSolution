@@ -33,8 +33,6 @@ public class GetFieldJobsWithFilterQueryHandler : IRequestHandler<GetFieldJobsWi
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             jobs = jobs.Where(fj =>
-                fj.JobNumber.ToLower().Contains(searchTermLower) ||
-                (fj.LoadRequest != null && fj.LoadRequest.RequestNumber.ToLower().Contains(searchTermLower)) ||
                 (fj.Client != null && fj.Client.Name.ToLower().Contains(searchTermLower)) ||
                 (fj.ClientLocation != null && fj.ClientLocation.Name.ToLower().Contains(searchTermLower)) ||
                 (fj.Technician != null && fj.Technician.FullName.ToLower().Contains(searchTermLower)) ||
@@ -42,12 +40,6 @@ public class GetFieldJobsWithFilterQueryHandler : IRequestHandler<GetFieldJobsWi
                 (fj.Notes != null && fj.Notes.ToLower().Contains(searchTermLower)) ||
                 fj.Status.ToLower().Contains(searchTermLower)
             ).ToList();
-        }
-
-        if (!string.IsNullOrWhiteSpace(filter.JobNumber))
-        {
-            var jobNumLower = filter.JobNumber.ToLower();
-            jobs = jobs.Where(fj => fj.JobNumber.ToLower().Contains(jobNumLower)).ToList();
         }
 
         if (filter.LoadRequestId.HasValue)
@@ -108,9 +100,7 @@ public class GetFieldJobsWithFilterQueryHandler : IRequestHandler<GetFieldJobsWi
         var dtos = paginatedItems.Select(fj => new FieldJobDto
         {
             Id = fj.Id,
-            JobNumber = fj.JobNumber,
             LoadRequestId = fj.LoadRequestId,
-            LoadRequestNumber = fj.LoadRequest?.RequestNumber,
             ClientId = fj.ClientId,
             ClientName = fj.Client?.Name,
             ClientLocationId = fj.ClientLocationId,
@@ -145,9 +135,6 @@ public class GetFieldJobsWithFilterQueryHandler : IRequestHandler<GetFieldJobsWi
 
         return (sortBy?.ToLower()) switch
         {
-            "jobnumber" => isDescending
-                ? items.OrderByDescending(x => x.JobNumber).ToList()
-                : items.OrderBy(x => x.JobNumber).ToList(),
 
             "scheduleddate" => isDescending
                 ? items.OrderByDescending(x => x.ScheduledDate).ToList()

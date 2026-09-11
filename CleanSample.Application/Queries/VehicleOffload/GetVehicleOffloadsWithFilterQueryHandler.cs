@@ -33,10 +33,11 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             offloads = offloads.Where(v =>
-                (v.LoadRequest != null && v.LoadRequest.RequestNumber.ToLower().Contains(searchTermLower)) ||
-                (v.Vehicle != null && (v.Vehicle.VehicleNumber.ToLower().Contains(searchTermLower) || v.Vehicle.PlateNumber.ToLower().Contains(searchTermLower))) ||
+                (v.Part != null && (v.Part.Code.ToLower().Contains(searchTermLower) || v.Part.Name.ToLower().Contains(searchTermLower))) ||
+                (v.Vehicle != null && (v.Vehicle.VehicleNumber.ToLower().Contains(searchTermLower) || (v.Vehicle.PlateNumber != null && v.Vehicle.PlateNumber.ToLower().Contains(searchTermLower)))) ||
                 (v.Driver != null && v.Driver.FullName.ToLower().Contains(searchTermLower)) ||
                 (v.Verifier != null && v.Verifier.FullName.ToLower().Contains(searchTermLower)) ||
+                (v.Barcode != null && v.Barcode.ToLower().Contains(searchTermLower)) ||
                 (v.Notes != null && v.Notes.ToLower().Contains(searchTermLower)) ||
                 v.Status.ToLower().Contains(searchTermLower)
             ).ToList();
@@ -47,6 +48,11 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
             offloads = offloads.Where(v => v.LoadRequestId == filter.LoadRequestId.Value).ToList();
         }
 
+        if (filter.PartId.HasValue)
+        {
+            offloads = offloads.Where(v => v.PartId == filter.PartId.Value).ToList();
+        }
+
         if (filter.VehicleId.HasValue)
         {
             offloads = offloads.Where(v => v.VehicleId == filter.VehicleId.Value).ToList();
@@ -55,6 +61,12 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
         if (filter.DriverId.HasValue)
         {
             offloads = offloads.Where(v => v.DriverId == filter.DriverId.Value).ToList();
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.Barcode))
+        {
+            var barcodeLower = filter.Barcode.ToLower();
+            offloads = offloads.Where(v => v.Barcode != null && v.Barcode.ToLower().Contains(barcodeLower)).ToList();
         }
 
         if (!string.IsNullOrWhiteSpace(filter.Status))
@@ -96,12 +108,15 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
         {
             Id = vo.Id,
             LoadRequestId = vo.LoadRequestId,
-            RequestNumber = vo.LoadRequest?.RequestNumber,
+            PartId = vo.PartId,
+            PartCode = vo.Part?.Code,
+            PartName = vo.Part?.Name,
             VehicleId = vo.VehicleId,
             VehicleNumber = vo.Vehicle?.VehicleNumber,
             PlateNumber = vo.Vehicle?.PlateNumber,
             DriverId = vo.DriverId,
             DriverName = vo.Driver?.FullName,
+            Barcode = vo.Barcode,
             OffloadDate = vo.OffloadDate,
             Status = vo.Status,
             Verified = vo.Verified,
@@ -110,21 +125,7 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
             VerifiedAt = vo.VerifiedAt,
             Notes = vo.Notes,
             CreatedAt = vo.CreatedAt,
-            UpdatedAt = vo.UpdatedAt,
-            VehicleOffloadItems = vo.VehicleOffloadItems?.Select(i => new VehicleOffloadItemDto
-            {
-                Id = i.Id,
-                VehicleOffloadId = i.VehicleOffloadId,
-                LoadId = i.LoadId,
-                PartId = i.PartId,
-                PartCode = i.Part?.Code,
-                PartName = i.Part?.Name,
-                Barcode = i.Barcode,
-                Quantity = i.Quantity,
-                OffloadedAt = i.OffloadedAt,
-                CreatedAt = i.CreatedAt,
-                UpdatedAt = i.UpdatedAt
-            }).ToList() ?? new List<VehicleOffloadItemDto>()
+            UpdatedAt = vo.UpdatedAt
         }).ToList();
 
         return new PaginatedResultDto<VehicleOffloadDto>
@@ -150,6 +151,10 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
                 ? items.OrderByDescending(x => x.LoadRequestId).ToList()
                 : items.OrderBy(x => x.LoadRequestId).ToList(),
 
+            "partid" => isDescending
+                ? items.OrderByDescending(x => x.PartId).ToList()
+                : items.OrderBy(x => x.PartId).ToList(),
+
             "vehicleid" => isDescending
                 ? items.OrderByDescending(x => x.VehicleId).ToList()
                 : items.OrderBy(x => x.VehicleId).ToList(),
@@ -157,6 +162,10 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
             "driverid" => isDescending
                 ? items.OrderByDescending(x => x.DriverId).ToList()
                 : items.OrderBy(x => x.DriverId).ToList(),
+
+            "barcode" => isDescending
+                ? items.OrderByDescending(x => x.Barcode).ToList()
+                : items.OrderBy(x => x.Barcode).ToList(),
 
             "status" => isDescending
                 ? items.OrderByDescending(x => x.Status).ToList()

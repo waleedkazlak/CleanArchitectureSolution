@@ -7,9 +7,6 @@ public class CreateClientCommandValidator : AbstractValidator<CreateClientComman
 {
     public CreateClientCommandValidator()
     {
-        RuleFor(x => x.Code)
-            .MaximumLength(50).WithMessage("Client code cannot exceed 50 characters.");
-
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Client name is required.")
             .MaximumLength(250).WithMessage("Client name cannot exceed 250 characters.");

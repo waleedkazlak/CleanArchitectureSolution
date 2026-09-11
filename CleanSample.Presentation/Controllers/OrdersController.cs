@@ -1,7 +1,9 @@
 using CleanSample.Application.Commands.Order;
+using CleanSample.Application.Commands.OrderLine;
 using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.Order;
+using CleanSample.Application.Queries.OrderLine;
 using CleanSample.Presentation.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -144,7 +146,7 @@ public class OrdersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<long>>> Create([FromBody] CreateOrderCommand command)
     {
-        _logger.LogInformation("User {User} creating new order: {OrderNumber}", User.Identity?.Name, command?.OrderNumber);
+        _logger.LogInformation("User {User} creating new order", User.Identity?.Name);
 
         var result = await _mediator.Send(command);
 
@@ -217,5 +219,128 @@ public class OrdersController : ControllerBase
 
         return Ok(new APIBaseResponse<bool>()
             .SetSuccess(true, "Order deleted successfully"));
+    }
+
+    /// <summary>
+    /// Get all lines for a specific order
+    /// </summary>
+    /// <param name="id">Order id</param>
+    /// <returns>List of order lines</returns>
+    [HttpGet("{id}/lines")]
+    [RequirePermission("ORDERS", PermissionAction.View)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<APIBaseResponse<IEnumerable<OrderLineDto>>>> GetOrderLinesByOrderId([FromRoute] long id)
+    {
+        _logger.LogInformation("User {User} fetching lines for order: {OrderId}", User.Identity?.Name, id);
+
+        var query = new GetOrderLinesByOrderIdQuery(id);
+        var result = await _mediator.Send(query);
+
+        return Ok(new APIBaseResponse<IEnumerable<OrderLineDto>>()
+            .SetSuccess(result, "Order lines retrieved successfully"));
+    }
+
+    /// <summary>
+    /// Create or update order lines for an order (supports single item or list of items)
+    /// </summary>
+    /// <param name="id">Order id</param>
+    /// <param name="command">Order line creation/update command</param>
+    /// <returns>List of created/updated order lines</returns>
+    [HttpPost("{id}/lines")]
+    [RequirePermission("ORDERS", PermissionAction.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<APIBaseResponse<List<OrderLineDto>>>> CreateOrderLines(
+        [FromRoute] long id,
+        [FromBody] CreateOrderLineCommand command)
+    {
+        _logger.LogInformation("User {User} creating/updating lines for order {OrderId}", User.Identity?.Name, id);
+
+        if (command.Items != null && command.Items.Any())
+        {
+            foreach (var item in command.Items)
+            {
+                if (item.OrderId <= 0)
+                {
+                    item.OrderId = id;
+                }
+            }
+        }
+        else if (command.OrderId <= 0)
+        {
+            command.OrderId = id;
+        }
+
+        var result = await _mediator.Send(command);
+
+        return Ok(new APIBaseResponse<List<OrderLineDto>>()
+            .SetSuccess(result, result.Count, "Order lines processed successfully"));
+    }
+
+    /// <summary>
+    /// Batch create or update order lines for a specific order from a list of items
+    /// </summary>
+    /// <param name="id">Order id</param>
+    /// <param name="items">List of order line items to create or update</param>
+    /// <returns>List of created/updated order lines</returns>
+    [HttpPost("{id}/lines/batch")]
+    [RequirePermission("ORDERS", PermissionAction.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<APIBaseResponse<List<OrderLineDto>>>> BatchOrderLinesForOrder(
+        [FromRoute] long id,
+        [FromBody] List<CreateOrderLineItemDto> items)
+    {
+        _logger.LogInformation("User {User} batch creating/updating {Count} lines for order {OrderId}", User.Identity?.Name, items?.Count ?? 0, id);
+
+        if (items != null)
+        {
+            foreach (var item in items)
+            {
+                if (item.OrderId <= 0)
+                {
+                    item.OrderId = id;
+                }
+            }
+        }
+
+        var command = new CreateOrderLineCommand(items ?? new List<CreateOrderLineItemDto>());
+        var result = await _mediator.Send(command);
+
+        return Ok(new APIBaseResponse<List<OrderLineDto>>()
+            .SetSuccess(result, result.Count, "Order lines processed successfully"));
+    }
+
+    /// <summary>
+    /// Batch create or update order lines from a list of items
+    /// </summary>
+    /// <param name="items">List of order line items to create or update</param>
+    /// <returns>List of created/updated order lines</returns>
+    [HttpPost("lines/batch")]
+    [RequirePermission("ORDERS", PermissionAction.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<APIBaseResponse<List<OrderLineDto>>>> BatchOrderLines(
+        [FromBody] List<CreateOrderLineItemDto> items)
+    {
+        _logger.LogInformation("User {User} batch creating/updating {Count} order lines", User.Identity?.Name, items?.Count ?? 0);
+
+        var command = new CreateOrderLineCommand(items ?? new List<CreateOrderLineItemDto>());
+        var result = await _mediator.Send(command);
+
+        return Ok(new APIBaseResponse<List<OrderLineDto>>()
+            .SetSuccess(result, result.Count, "Order lines processed successfully"));
     }
 }

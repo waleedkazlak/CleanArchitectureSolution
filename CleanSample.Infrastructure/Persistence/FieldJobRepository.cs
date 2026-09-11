@@ -24,16 +24,6 @@ public class FieldJobRepository : IFieldJobRepository
             .FirstOrDefaultAsync(f => f.Id == id);
     }
 
-    public async Task<FieldJob?> GetByJobNumberAsync(string jobNumber)
-    {
-        return await _context.FieldJobs
-            .Include(f => f.LoadRequest)
-            .Include(f => f.Client)
-            .Include(f => f.ClientLocation)
-            .Include(f => f.Technician)
-            .Include(f => f.Supervisor)
-            .FirstOrDefaultAsync(f => f.JobNumber == jobNumber);
-    }
 
     public async Task<IEnumerable<FieldJob>> GetAllAsync()
     {

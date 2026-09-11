@@ -26,9 +26,8 @@ public class GetOrderLinesByOrderIdQueryHandler : IRequestHandler<GetOrderLinesB
         {
             Id = ol.Id,
             OrderId = ol.OrderId,
-            OrderNumber = ol.Order?.OrderNumber,
-            ProductVariantId = ol.ProductVariantId,
-            ProductVariantCode = ol.ProductVariant?.Code,
+            ProductId = ol.ProductId,
+            ProductName = ol.Product?.Name,
             Quantity = ol.Quantity,
             Notes = ol.Notes,
             CreatedAt = ol.CreatedAt,

@@ -4,7 +4,6 @@ namespace CleanSample.Application.Commands.Client;
 
 public class CreateClientCommand : IRequest<int>
 {
-    public string? Code { get; set; }
     public string Name { get; set; } = null!;
     public string? Phone { get; set; }
     public string? Mobile { get; set; }

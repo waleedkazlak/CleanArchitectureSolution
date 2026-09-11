@@ -1,4 +1,5 @@
 using CleanSample.Domain.Entities;
+using CleanSample.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanSample.Infrastructure.Persistence;
@@ -47,10 +48,6 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<Design> Designs { get; set; }
 
-    /// <summary>
-    /// ProductVariants DbSet
-    /// </summary>
-    public DbSet<ProductVariant> ProductVariants { get; set; }
 
     /// <summary>
     /// Parts DbSet
@@ -98,19 +95,14 @@ public class CleanSampleDbContext : DbContext
     public DbSet<LoadRequestPart> LoadRequestParts { get; set; }
 
     /// <summary>
-    /// Loads DbSet
+    /// VehicleLoads DbSet
     /// </summary>
-    public DbSet<Load> Loads { get; set; }
+    public DbSet<VehicleLoad> VehicleLoads { get; set; }
 
     /// <summary>
     /// VehicleOffloads DbSet
     /// </summary>
     public DbSet<VehicleOffload> VehicleOffloads { get; set; }
-
-    /// <summary>
-    /// VehicleOffloadItems DbSet
-    /// </summary>
-    public DbSet<VehicleOffloadItem> VehicleOffloadItems { get; set; }
 
     /// <summary>
     /// FieldJobs DbSet
@@ -155,32 +147,52 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("ProductId");
 
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(255);
-
-            entity.Property(e => e.Description)
-                .HasMaxLength(1000);
-
-            entity.Property(e => e.Price)
-                .HasPrecision(18, 2);
-
             entity.Property(e => e.CategoryId)
                 .IsRequired();
 
             entity.HasOne(e => e.Category)
                 .WithMany()
                 .HasForeignKey(e => e.CategoryId)
+                .HasConstraintName("FK_Products_Categories")
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false);
+            entity.HasOne(e => e.Color)
+                .WithMany()
+                .HasForeignKey(e => e.ColorId)
+                .HasConstraintName("FK_Products_Colors")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Material)
+                .WithMany()
+                .HasForeignKey(e => e.MaterialId)
+                .HasConstraintName("FK_Products_Materials")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Design)
+                .WithMany()
+                .HasForeignKey(e => e.DesignId)
+                .HasConstraintName("FK_Products_Designs")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.Barcode)
+                .HasMaxLength(100);
+
+            entity.HasIndex(e => e.Barcode)
+                .IsUnique()
+                .HasDatabaseName("UQ_Products_Barcode");
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
 
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
 
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("SYSUTCDATETIME()");
 
             // Add table name
             entity.ToTable("Products");
@@ -377,13 +389,6 @@ public class CleanSampleDbContext : DbContext
                 .IsUnique()
                 .HasDatabaseName("UQ_Designs_Name");
 
-            entity.Property(e => e.Code)
-                .HasMaxLength(50);
-
-            entity.HasIndex(e => e.Code)
-                .IsUnique()
-                .HasDatabaseName("UQ_Designs_Code");
-
             entity.Property(e => e.Description)
                 .HasMaxLength(500);
 
@@ -392,69 +397,6 @@ public class CleanSampleDbContext : DbContext
 
             // Add table name
             entity.ToTable("Designs");
-        });
-
-        // Configure ProductVariant entity
-        modelBuilder.Entity<ProductVariant>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-
-            entity.Property(e => e.Id)
-                .HasColumnName("ProductVariantId");
-
-            entity.Property(e => e.ProductId)
-                .IsRequired();
-
-            entity.HasOne(e => e.Product)
-                .WithMany()
-                .HasForeignKey(e => e.ProductId)
-                .HasConstraintName("FK_ProductVariants_Products")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(e => e.Color)
-                .WithMany()
-                .HasForeignKey(e => e.ColorId)
-                .HasConstraintName("FK_ProductVariants_Colors")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(e => e.Material)
-                .WithMany()
-                .HasForeignKey(e => e.MaterialId)
-                .HasConstraintName("FK_ProductVariants_Materials")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(e => e.Design)
-                .WithMany()
-                .HasForeignKey(e => e.DesignId)
-                .HasConstraintName("FK_ProductVariants_Designs")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.Property(e => e.Code)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            entity.HasIndex(e => e.Code)
-                .IsUnique()
-                .HasDatabaseName("UQ_ProductVariants_Code");
-
-            entity.Property(e => e.Barcode)
-                .HasMaxLength(100);
-
-            entity.HasIndex(e => e.Barcode)
-                .IsUnique()
-                .HasDatabaseName("UQ_ProductVariants_Barcode");
-
-            entity.Property(e => e.Description)
-                .HasMaxLength(1000);
-
-            entity.Property(e => e.IsActive)
-                .HasDefaultValue(true);
-
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("SYSUTCDATETIME()");
-
-            // Add table name
-            entity.ToTable("ProductVariants");
         });
 
         // Configure Part entity
@@ -505,16 +447,16 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("ProductBOMId");
 
-            entity.Property(e => e.ProductVariantId)
+            entity.Property(e => e.ProductId)
                 .IsRequired();
 
             entity.Property(e => e.PartId)
                 .IsRequired();
 
-            entity.HasOne(e => e.ProductVariant)
+            entity.HasOne(e => e.Product)
                 .WithMany()
-                .HasForeignKey(e => e.ProductVariantId)
-                .HasConstraintName("FK_ProductBOM_ProductVariants")
+                .HasForeignKey(e => e.ProductId)
+                .HasConstraintName("FK_ProductBOM_Products")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.Part)
@@ -523,12 +465,12 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_ProductBOM_Parts")
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasIndex(e => new { e.ProductVariantId, e.PartId })
+            entity.HasIndex(e => new { e.ProductId, e.PartId })
                 .IsUnique()
-                .HasDatabaseName("UQ_ProductBOM_Variant_Part");
+                .HasDatabaseName("UQ_ProductBOM_Product_Part");
 
-            entity.HasIndex(e => e.ProductVariantId)
-                .HasDatabaseName("IX_ProductBOM_ProductVariantId");
+            entity.HasIndex(e => e.ProductId)
+                .HasDatabaseName("IX_ProductBOM_ProductId");
 
             entity.HasIndex(e => e.PartId)
                 .HasDatabaseName("IX_ProductBOM_PartId");
@@ -550,9 +492,6 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Id)
                 .HasColumnName("ClientId");
-
-            entity.Property(e => e.Code)
-                .HasMaxLength(50);
 
             entity.Property(e => e.Name)
                 .IsRequired()
@@ -644,13 +583,6 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("OrderId");
 
-            entity.Property(e => e.OrderNumber)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.HasIndex(e => e.OrderNumber)
-                .IsUnique()
-                .HasDatabaseName("UQ_Orders_OrderNumber");
 
             entity.Property(e => e.ClientId)
                 .IsRequired();
@@ -702,20 +634,20 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_OrderLines_Orders")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.Property(e => e.ProductVariantId)
+            entity.Property(e => e.ProductId)
                 .IsRequired();
 
-            entity.HasOne(e => e.ProductVariant)
+            entity.HasOne(e => e.Product)
                 .WithMany()
-                .HasForeignKey(e => e.ProductVariantId)
-                .HasConstraintName("FK_OrderLines_ProductVariants")
+                .HasForeignKey(e => e.ProductId)
+                .HasConstraintName("FK_OrderLines_Products")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.OrderId)
                 .HasDatabaseName("IX_OrderLines_OrderId");
 
-            entity.HasIndex(e => e.ProductVariantId)
-                .HasDatabaseName("IX_OrderLines_ProductVariantId");
+            entity.HasIndex(e => e.ProductId)
+                .HasDatabaseName("IX_OrderLines_ProductId");
 
             entity.Property(e => e.Quantity)
                 .IsRequired();
@@ -737,13 +669,6 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("LoadRequestId");
 
-            entity.Property(e => e.RequestNumber)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.HasIndex(e => e.RequestNumber)
-                .IsUnique()
-                .HasDatabaseName("UQ_LoadRequests_RequestNumber");
 
             entity.Property(e => e.OrderId);
 
@@ -791,8 +716,7 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("Created");
+                .HasDefaultValue(LoadRequestStatus.New);
 
             entity.HasIndex(e => e.Status)
                 .HasDatabaseName("IX_LoadRequests_Status");
@@ -849,13 +773,13 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_LoadRequestLines_LoadRequests")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.Property(e => e.ProductVariantId)
+            entity.Property(e => e.ProductId)
                 .IsRequired();
 
-            entity.HasOne(e => e.ProductVariant)
+            entity.HasOne(e => e.Product)
                 .WithMany()
-                .HasForeignKey(e => e.ProductVariantId)
-                .HasConstraintName("FK_LoadRequestLines_ProductVariants")
+                .HasForeignKey(e => e.ProductId)
+                .HasConstraintName("FK_LoadRequestLines_Products")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.Quantity)
@@ -931,8 +855,8 @@ public class CleanSampleDbContext : DbContext
                 .HasDefaultValueSql("SYSUTCDATETIME()");
         });
 
-        // Configure Load entity
-        modelBuilder.Entity<Load>(entity =>
+        // Configure VehicleLoad entity
+        modelBuilder.Entity<VehicleLoad>(entity =>
         {
             entity.HasKey(e => e.Id);
 
@@ -943,21 +867,13 @@ public class CleanSampleDbContext : DbContext
                 .IsRequired();
 
             entity.HasOne(e => e.LoadRequest)
-                .WithMany(p => p.Loads)
+                .WithMany(p => p.VehicleLoads)
                 .HasForeignKey(e => e.LoadRequestId)
-                .HasConstraintName("FK_Loads_LoadRequests")
+                .HasConstraintName("FK_VehicleLoads_LoadRequests")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.LoadRequestId)
-                .HasDatabaseName("IX_Loads_LoadRequestId");
-
-            entity.Property(e => e.LoadRequestPartId);
-
-            entity.HasOne(e => e.LoadRequestPart)
-                .WithMany(prp => prp.Loads)
-                .HasForeignKey(e => e.LoadRequestPartId)
-                .HasConstraintName("FK_Loads_LoadRequestParts")
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasDatabaseName("IX_VehicleLoads_LoadRequestId");
 
             entity.Property(e => e.PartId)
                 .IsRequired();
@@ -965,14 +881,14 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Part)
                 .WithMany()
                 .HasForeignKey(e => e.PartId)
-                .HasConstraintName("FK_Loads_Parts")
+                .HasConstraintName("FK_VehicleLoads_Parts")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.Barcode)
                 .HasMaxLength(100);
 
             entity.HasIndex(e => e.Barcode)
-                .HasDatabaseName("IX_Loads_Barcode");
+                .HasDatabaseName("IX_VehicleLoads_Barcode");
 
             entity.Property(e => e.Quantity)
                 .HasPrecision(18, 4)
@@ -983,7 +899,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Loader)
                 .WithMany()
                 .HasForeignKey(e => e.LoadedBy)
-                .HasConstraintName("FK_Loads_LoadedBy")
+                .HasConstraintName("FK_VehicleLoads_LoadedBy")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.DriverId);
@@ -991,7 +907,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Driver)
                 .WithMany()
                 .HasForeignKey(e => e.DriverId)
-                .HasConstraintName("FK_Loads_Driver")
+                .HasConstraintName("FK_VehicleLoads_Driver")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.VehicleId);
@@ -999,7 +915,7 @@ public class CleanSampleDbContext : DbContext
             entity.HasOne(e => e.Vehicle)
                 .WithMany()
                 .HasForeignKey(e => e.VehicleId)
-                .HasConstraintName("FK_Loads_Vehicle")
+                .HasConstraintName("FK_VehicleLoads_Vehicle")
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.LoadDate)
@@ -1013,9 +929,9 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Notes)
                 .HasMaxLength(500);
 
-            entity.ToTable("Loads", t =>
+            entity.ToTable("VehicleLoads", t =>
             {
-                t.HasCheckConstraint("CK_Loads_Quantity", "[Quantity] > 0");
+                t.HasCheckConstraint("CK_VehicleLoads_Quantity", "[Quantity] > 0");
             });
 
             entity.Property(e => e.CreatedAt)
@@ -1042,6 +958,18 @@ public class CleanSampleDbContext : DbContext
             entity.HasIndex(e => e.LoadRequestId)
                 .HasDatabaseName("IX_VehicleOffloads_LoadRequestId");
 
+            entity.Property(e => e.PartId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Part)
+                .WithMany()
+                .HasForeignKey(e => e.PartId)
+                .HasConstraintName("FK_VehicleOffloads_Parts")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.PartId)
+                .HasDatabaseName("IX_VehicleOffloads_PartId");
+
             entity.Property(e => e.VehicleId)
                 .IsRequired();
 
@@ -1059,6 +987,12 @@ public class CleanSampleDbContext : DbContext
                 .HasForeignKey(e => e.DriverId)
                 .HasConstraintName("FK_VehicleOffloads_Drivers")
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.Barcode)
+                .HasMaxLength(100);
+
+            entity.HasIndex(e => e.Barcode)
+                .HasDatabaseName("IX_VehicleOffloads_Barcode");
 
             entity.Property(e => e.OffloadDate)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
@@ -1090,59 +1024,6 @@ public class CleanSampleDbContext : DbContext
             entity.ToTable("VehicleOffloads");
         });
 
-        // Configure VehicleOffloadItem entity
-        modelBuilder.Entity<VehicleOffloadItem>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-
-            entity.Property(e => e.Id)
-                .HasColumnName("VehicleOffloadItemId");
-
-            entity.Property(e => e.VehicleOffloadId)
-                .IsRequired();
-
-            entity.HasOne(e => e.VehicleOffload)
-                .WithMany(vl => vl.VehicleOffloadItems)
-                .HasForeignKey(e => e.VehicleOffloadId)
-                .HasConstraintName("FK_VehicleOffloadItems_VehicleOffloads")
-                .OnDelete(DeleteBehavior.Cascade);
-
-            entity.Property(e => e.LoadId);
-
-            entity.HasOne(e => e.Load)
-                .WithMany(p => p.VehicleOffloadItems)
-                .HasForeignKey(e => e.LoadId)
-                .HasConstraintName("FK_VehicleOffloadItems_Loads")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.Property(e => e.PartId)
-                .IsRequired();
-
-            entity.HasOne(e => e.Part)
-                .WithMany()
-                .HasForeignKey(e => e.PartId)
-                .HasConstraintName("FK_VehicleOffloadItems_Parts")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.Property(e => e.Barcode)
-                .HasMaxLength(100);
-
-            entity.Property(e => e.Quantity)
-                .HasPrecision(18, 4)
-                .IsRequired();
-
-            entity.Property(e => e.OffloadedAt)
-                .HasDefaultValueSql("SYSUTCDATETIME()");
-
-            entity.ToTable("VehicleOffloadItems", t =>
-            {
-                t.HasCheckConstraint("CK_VehicleOffloadItems_Quantity", "[Quantity] > 0");
-            });
-
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("SYSUTCDATETIME()");
-        });
-
         // Configure FieldJob entity
         modelBuilder.Entity<FieldJob>(entity =>
         {
@@ -1151,13 +1032,6 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("FieldJobId");
 
-            entity.Property(e => e.JobNumber)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.HasIndex(e => e.JobNumber)
-                .IsUnique()
-                .HasDatabaseName("UQ_FieldJobs_JobNumber");
 
             entity.Property(e => e.LoadRequestId)
                 .IsRequired();
@@ -1250,17 +1124,17 @@ public class CleanSampleDbContext : DbContext
             entity.HasIndex(e => e.FieldJobId)
                 .HasDatabaseName("IX_FieldAssemblies_FieldJobId");
 
-            entity.Property(e => e.ProductVariantId)
+            entity.Property(e => e.ProductId)
                 .IsRequired();
 
-            entity.HasOne(e => e.ProductVariant)
-                .WithMany(pv => pv.FieldAssemblies)
-                .HasForeignKey(e => e.ProductVariantId)
-                .HasConstraintName("FK_FieldAssemblies_ProductVariants")
+            entity.HasOne(e => e.Product)
+                .WithMany(p => p.FieldAssemblies)
+                .HasForeignKey(e => e.ProductId)
+                .HasConstraintName("FK_FieldAssemblies_Products")
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasIndex(e => e.ProductVariantId)
-                .HasDatabaseName("IX_FieldAssemblies_ProductVariantId");
+            entity.HasIndex(e => e.ProductId)
+                .HasDatabaseName("IX_FieldAssemblies_ProductId");
 
             entity.Property(e => e.ProductBarcode)
                 .HasMaxLength(100);

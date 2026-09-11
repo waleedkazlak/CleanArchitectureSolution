@@ -10,10 +10,6 @@ public class UpdateFieldJobCommandValidator : AbstractValidator<UpdateFieldJobCo
         RuleFor(x => x.Id)
             .GreaterThan(0).WithMessage("Field job ID must be greater than 0.");
 
-        RuleFor(x => x.JobNumber)
-            .NotEmpty().WithMessage("Job number is required.")
-            .MaximumLength(50).WithMessage("Job number cannot exceed 50 characters.");
-
         RuleFor(x => x.LoadRequestId)
             .GreaterThan(0).WithMessage("Load request ID must be greater than 0.");
 

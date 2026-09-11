@@ -20,7 +20,6 @@ public class GetOrdersByClientIdQueryHandler : IRequestHandler<GetOrdersByClient
         return orders.Select(o => new OrderDto
         {
             Id = o.Id,
-            OrderNumber = o.OrderNumber,
             ClientId = o.ClientId,
             ClientName = o.Client?.Name,
             OrderDate = o.OrderDate,
@@ -33,9 +32,8 @@ public class GetOrdersByClientIdQueryHandler : IRequestHandler<GetOrdersByClient
             {
                 Id = ol.Id,
                 OrderId = ol.OrderId,
-                OrderNumber = o.OrderNumber,
-                ProductVariantId = ol.ProductVariantId,
-                ProductVariantCode = ol.ProductVariant?.Code,
+                ProductId = ol.ProductId,
+                ProductName = ol.Product?.Name,
                 Quantity = ol.Quantity,
                 Notes = ol.Notes,
                 CreatedAt = ol.CreatedAt,

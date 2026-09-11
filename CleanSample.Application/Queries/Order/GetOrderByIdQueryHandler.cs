@@ -24,7 +24,6 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
         return new OrderDto
         {
             Id = o.Id,
-            OrderNumber = o.OrderNumber,
             ClientId = o.ClientId,
             ClientName = o.Client?.Name,
             OrderDate = o.OrderDate,
@@ -37,9 +36,8 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
             {
                 Id = ol.Id,
                 OrderId = ol.OrderId,
-                OrderNumber = o.OrderNumber,
-                ProductVariantId = ol.ProductVariantId,
-                ProductVariantCode = ol.ProductVariant?.Code,
+                ProductId = ol.ProductId,
+                ProductName = ol.Product?.Name,
                 Quantity = ol.Quantity,
                 Notes = ol.Notes,
                 CreatedAt = ol.CreatedAt,

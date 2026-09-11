@@ -2,7 +2,6 @@ namespace CleanSample.Domain.Entities;
 
 public class Client : BaseEntity
 {
-    public string? Code { get; set; }
     public string Name { get; set; } = null!;
     public string? Phone { get; set; }
     public string? Mobile { get; set; }

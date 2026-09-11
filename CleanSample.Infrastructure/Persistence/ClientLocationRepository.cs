@@ -35,6 +35,13 @@ public class ClientLocationRepository : IClientLocationRepository
             .ToListAsync();
     }
 
+    public async Task<ClientLocation?> GetByNameAndClientIdAsync(int clientId, string name)
+    {
+        return await _context.ClientLocations
+            .Include(cl => cl.Client)
+            .FirstOrDefaultAsync(cl => cl.ClientId == clientId && cl.Name == name);
+    }
+
     public async Task<int> AddAsync(ClientLocation clientLocation)
     {
         _context.ClientLocations.Add(clientLocation);
@@ -42,10 +49,29 @@ public class ClientLocationRepository : IClientLocationRepository
         return clientLocation.Id;
     }
 
+    public async Task<List<ClientLocation>> AddRangeAsync(IEnumerable<ClientLocation> clientLocations)
+    {
+        var locationList = clientLocations.ToList();
+        _context.ClientLocations.AddRange(locationList);
+        await _context.SaveChangesAsync();
+        return locationList;
+    }
+
     public async Task UpdateAsync(ClientLocation clientLocation)
     {
         _context.Entry(clientLocation).State = EntityState.Modified;
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<ClientLocation>> UpdateRangeAsync(IEnumerable<ClientLocation> clientLocations)
+    {
+        var locationList = clientLocations.ToList();
+        foreach (var location in locationList)
+        {
+            _context.Entry(location).State = EntityState.Modified;
+        }
+        await _context.SaveChangesAsync();
+        return locationList;
     }
 
     public async Task DeleteAsync(int id)
@@ -56,5 +82,18 @@ public class ClientLocationRepository : IClientLocationRepository
             _context.ClientLocations.Remove(clientLocation);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<bool> DeleteRangeAsync(IEnumerable<int> ids)
+    {
+        var idList = ids.ToList();
+        var locations = await _context.ClientLocations.Where(cl => idList.Contains(cl.Id)).ToListAsync();
+        if (locations.Any())
+        {
+            _context.ClientLocations.RemoveRange(locations);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        return false;
     }
 }

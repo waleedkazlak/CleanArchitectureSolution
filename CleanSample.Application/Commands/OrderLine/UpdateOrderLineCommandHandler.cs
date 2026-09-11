@@ -21,7 +21,7 @@ public class UpdateOrderLineCommandHandler : IRequestHandler<UpdateOrderLineComm
         }
 
         orderLine.OrderId = request.OrderId;
-        orderLine.ProductVariantId = request.ProductVariantId;
+        orderLine.ProductId = request.ProductId;
         orderLine.Quantity = request.Quantity;
         orderLine.Notes = request.Notes;
         orderLine.UpdatedAt = DateTime.UtcNow;

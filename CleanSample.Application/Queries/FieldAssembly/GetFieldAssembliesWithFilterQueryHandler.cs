@@ -33,8 +33,7 @@ public class GetFieldAssembliesWithFilterQueryHandler : IRequestHandler<GetField
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             assemblies = assemblies.Where(fa =>
-                (fa.FieldJob != null && fa.FieldJob.JobNumber.ToLower().Contains(searchTermLower)) ||
-                (fa.ProductVariant != null && (fa.ProductVariant.Code.ToLower().Contains(searchTermLower) || (fa.ProductVariant.Barcode != null && fa.ProductVariant.Barcode.ToLower().Contains(searchTermLower)))) ||
+                (fa.Product != null && (fa.Product.Name.ToLower().Contains(searchTermLower) || (fa.Product.Barcode != null && fa.Product.Barcode.ToLower().Contains(searchTermLower)))) ||
                 (fa.ProductBarcode != null && fa.ProductBarcode.ToLower().Contains(searchTermLower)) ||
                 (fa.Technician != null && fa.Technician.FullName.ToLower().Contains(searchTermLower)) ||
                 (fa.Supervisor != null && fa.Supervisor.FullName.ToLower().Contains(searchTermLower)) ||
@@ -48,9 +47,9 @@ public class GetFieldAssembliesWithFilterQueryHandler : IRequestHandler<GetField
             assemblies = assemblies.Where(fa => fa.FieldJobId == filter.FieldJobId.Value).ToList();
         }
 
-        if (filter.ProductVariantId.HasValue)
+        if (filter.ProductId.HasValue)
         {
-            assemblies = assemblies.Where(fa => fa.ProductVariantId == filter.ProductVariantId.Value).ToList();
+            assemblies = assemblies.Where(fa => fa.ProductId == filter.ProductId.Value).ToList();
         }
 
         if (!string.IsNullOrWhiteSpace(filter.ProductBarcode))
@@ -103,9 +102,8 @@ public class GetFieldAssembliesWithFilterQueryHandler : IRequestHandler<GetField
         {
             Id = fa.Id,
             FieldJobId = fa.FieldJobId,
-            JobNumber = fa.FieldJob?.JobNumber,
-            ProductVariantId = fa.ProductVariantId,
-            ProductVariantCode = fa.ProductVariant?.Code,
+            ProductId = fa.ProductId,
+            ProductName = fa.Product?.Name,
             ProductBarcode = fa.ProductBarcode,
             Quantity = fa.Quantity,
             AssemblyDate = fa.AssemblyDate,
@@ -140,9 +138,9 @@ public class GetFieldAssembliesWithFilterQueryHandler : IRequestHandler<GetField
                 ? items.OrderByDescending(x => x.FieldJobId).ToList()
                 : items.OrderBy(x => x.FieldJobId).ToList(),
 
-            "productvariantid" => isDescending
-                ? items.OrderByDescending(x => x.ProductVariantId).ToList()
-                : items.OrderBy(x => x.ProductVariantId).ToList(),
+            "productid" => isDescending
+                ? items.OrderByDescending(x => x.ProductId).ToList()
+                : items.OrderBy(x => x.ProductId).ToList(),
 
             "quantity" => isDescending
                 ? items.OrderByDescending(x => x.Quantity).ToList()

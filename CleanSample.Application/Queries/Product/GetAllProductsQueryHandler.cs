@@ -19,61 +19,53 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, P
     public async Task<PaginatedResultDto<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
     {
         _logger.LogInformation(
-            "Handling GetAllProductsQuery - Page: {PageNumber}, PageSize: {PageSize}, Search: {SearchTerm}, MinPrice: {MinPrice}, MaxPrice: {MaxPrice}",
-            request.PageNumber, request.PageSize, request.SearchTerm, request.MinPrice, request.MaxPrice);
+            "Handling GetAllProductsQuery - Page: {PageNumber}, PageSize: {PageSize}, Search: {SearchTerm}",
+            request.PageNumber, request.PageSize, request.SearchTerm);
 
-        // Validate pagination parameters
         var pageNumber = request.PageNumber > 0 ? request.PageNumber : 1;
         var pageSize = request.PageSize > 0 && request.PageSize <= 100 ? request.PageSize : 10;
 
-        // Get all products from repository
         var products = await _unitOfWork.Products.GetAllAsync();
 
-        // Apply search filter
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var searchTermLower = request.SearchTerm.ToLower();
             products = products.Where(p =>
                 p.Name.ToLower().Contains(searchTermLower) ||
-                p.Description.ToLower().Contains(searchTermLower)
+                (p.Barcode != null && p.Barcode.ToLower().Contains(searchTermLower)) ||
+                (p.Description != null && p.Description.ToLower().Contains(searchTermLower))
             ).ToList();
-
-            _logger.LogInformation("Applied search filter '{SearchTerm}', found {Count} products", request.SearchTerm, products.Count());
         }
 
-        // Apply price filter
-        if (request.MinPrice.HasValue)
+        if (request.CategoryId.HasValue)
         {
-            products = products.Where(p => p.Price >= request.MinPrice.Value).ToList();
-            _logger.LogInformation("Applied minimum price filter {MinPrice}", request.MinPrice);
+            products = products.Where(p => p.CategoryId == request.CategoryId.Value).ToList();
         }
 
-        if (request.MaxPrice.HasValue)
+        if (request.ColorId.HasValue)
         {
-            products = products.Where(p => p.Price <= request.MaxPrice.Value).ToList();
-            _logger.LogInformation("Applied maximum price filter {MaxPrice}", request.MaxPrice);
+            products = products.Where(p => p.ColorId == request.ColorId.Value).ToList();
         }
 
-        // Apply active status filter
+        if (request.MaterialId.HasValue)
+        {
+            products = products.Where(p => p.MaterialId == request.MaterialId.Value).ToList();
+        }
+
+        if (request.DesignId.HasValue)
+        {
+            products = products.Where(p => p.DesignId == request.DesignId.Value).ToList();
+        }
+
         if (request.IsActive.HasValue)
         {
             products = products.Where(p => p.IsActive == request.IsActive.Value).ToList();
-            _logger.LogInformation("Applied active status filter {IsActive}", request.IsActive);
         }
 
-        // Apply stock filter
-        if (request.MinStock.HasValue)
-        {
-            products = products.Where(p => p.Stock >= request.MinStock.Value).ToList();
-            _logger.LogInformation("Applied minimum stock filter {MinStock}", request.MinStock);
-        }
-
-        // Apply sorting
         products = ApplySort(products.ToList(), request.SortBy, request.SortDirection);
 
         var totalCount = products.Count();
 
-        // Apply pagination
         var paginatedProducts = products
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -82,18 +74,21 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, P
         var productDtos = paginatedProducts.Select(p => new ProductDto
         {
             Id = p.Id,
+            CategoryId = p.CategoryId,
+            CategoryName = p.Category?.Name,
+            ColorId = p.ColorId,
+            ColorName = p.Color?.Name,
+            MaterialId = p.MaterialId,
+            MaterialName = p.Material?.Name,
+            DesignId = p.DesignId,
+            DesignName = p.Design?.Name,
             Name = p.Name,
+            Barcode = p.Barcode,
             Description = p.Description,
-            Price = p.Price,
-            Stock = p.Stock,
             IsActive = p.IsActive,
             CreatedAt = p.CreatedAt,
             UpdatedAt = p.UpdatedAt
         }).ToList();
-
-        _logger.LogInformation(
-            "Query completed - Returned {Count} products from {TotalCount} total on page {PageNumber}",
-            paginatedProducts.Count, totalCount, pageNumber);
 
         return new PaginatedResultDto<ProductDto>
         {
@@ -114,13 +109,13 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, P
                 ? products.OrderByDescending(p => p.Name).ToList()
                 : products.OrderBy(p => p.Name).ToList(),
 
-            "price" => isDescending
-                ? products.OrderByDescending(p => p.Price).ToList()
-                : products.OrderBy(p => p.Price).ToList(),
+            "barcode" => isDescending
+                ? products.OrderByDescending(p => p.Barcode).ToList()
+                : products.OrderBy(p => p.Barcode).ToList(),
 
-            "stock" => isDescending
-                ? products.OrderByDescending(p => p.Stock).ToList()
-                : products.OrderBy(p => p.Stock).ToList(),
+            "categoryid" => isDescending
+                ? products.OrderByDescending(p => p.CategoryId).ToList()
+                : products.OrderBy(p => p.CategoryId).ToList(),
 
             "createdat" => isDescending
                 ? products.OrderByDescending(p => p.CreatedAt).ToList()

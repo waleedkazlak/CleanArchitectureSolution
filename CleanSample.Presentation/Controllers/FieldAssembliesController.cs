@@ -133,25 +133,25 @@ public class FieldAssembliesController : ControllerBase
     }
 
     /// <summary>
-    /// Get all field assemblies for a specific product variant
+    /// Get all field assemblies for a specific product
     /// </summary>
-    /// <param name="productVariantId">Product variant ID</param>
+    /// <param name="productId">Product ID</param>
     /// <returns>List of field assemblies</returns>
-    [HttpGet("by-product-variant/{productVariantId}")]
+    [HttpGet("by-product/{productId}")]
     [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldAssemblyDto>>>> GetByProductVariantId([FromRoute] int productVariantId)
+    public async Task<ActionResult<APIBaseResponse<IEnumerable<FieldAssemblyDto>>>> GetByProductId([FromRoute] int productId)
     {
-        _logger.LogInformation("User {User} fetching field assemblies for product variant: {ProductVariantId}", User.Identity?.Name, productVariantId);
+        _logger.LogInformation("User {User} fetching field assemblies for product: {ProductId}", User.Identity?.Name, productId);
 
-        var query = new GetFieldAssembliesByProductVariantIdQuery(productVariantId);
+        var query = new GetFieldAssembliesByProductIdQuery(productId);
         var result = await _mediator.Send(query);
 
         return Ok(new APIBaseResponse<IEnumerable<FieldAssemblyDto>>()
-            .SetSuccess(result, "Field assemblies for product variant retrieved successfully"));
+            .SetSuccess(result, "Field assemblies for product retrieved successfully"));
     }
 
     /// <summary>

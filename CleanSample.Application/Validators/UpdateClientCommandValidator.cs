@@ -10,9 +10,6 @@ public class UpdateClientCommandValidator : AbstractValidator<UpdateClientComman
         RuleFor(x => x.Id)
             .GreaterThan(0).WithMessage("Client ID must be greater than 0.");
 
-        RuleFor(x => x.Code)
-            .MaximumLength(50).WithMessage("Client code cannot exceed 50 characters.");
-
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Client name is required.")
             .MaximumLength(250).WithMessage("Client name cannot exceed 250 characters.");

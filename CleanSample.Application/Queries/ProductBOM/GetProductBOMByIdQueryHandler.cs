@@ -24,8 +24,8 @@ public class GetProductBOMByIdQueryHandler : IRequestHandler<GetProductBOMByIdQu
         return new ProductBOMDto
         {
             Id = pb.Id,
-            ProductVariantId = pb.ProductVariantId,
-            ProductVariantCode = pb.ProductVariant?.Code,
+            ProductId = pb.ProductId,
+            ProductName = pb.Product?.Name,
             PartId = pb.PartId,
             PartCode = pb.Part?.Code,
             PartName = pb.Part?.Name,

@@ -1,4 +1,5 @@
 using CleanSample.Application.Commands.LoadRequest;
+using CleanSample.Application.Commands.LoadRequestLine;
 using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.LoadRequest;
@@ -165,7 +166,7 @@ public class LoadRequestsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIBaseResponse<long>>> Create([FromBody] CreateLoadRequestCommand command)
     {
-        _logger.LogInformation("User {User} creating new load request: {RequestNumber}", User.Identity?.Name, command?.RequestNumber);
+        _logger.LogInformation("User {User} creating new load request", User.Identity?.Name);
 
         var result = await _mediator.Send(command);
 
@@ -238,5 +239,66 @@ public class LoadRequestsController : ControllerBase
 
         return Ok(new APIBaseResponse<bool>()
             .SetSuccess(true, "Load request deleted successfully"));
+    }
+
+    /// <summary>
+    /// Batch create or update load request lines for a specific load request
+    /// </summary>
+    /// <param name="id">Load request id (bigint)</param>
+    /// <param name="items">List of load request line items to create or update</param>
+    /// <returns>List of created/updated load request lines</returns>
+    [HttpPost("{id}/lines/batch")]
+    [RequirePermission("LOAD_REQUESTS", PermissionAction.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<APIBaseResponse<List<LoadRequestLineDto>>>> BatchLoadRequestLinesForLoadRequest(
+        [FromRoute] long id,
+        [FromBody] List<CreateLoadRequestLineItemDto> items)
+    {
+        _logger.LogInformation("User {User} batch creating/updating {Count} lines for load request {LoadRequestId}", User.Identity?.Name, items?.Count ?? 0, id);
+
+        if (items != null)
+        {
+            foreach (var item in items)
+            {
+                if (item.LoadRequestId <= 0)
+                {
+                    item.LoadRequestId = id;
+                }
+            }
+        }
+
+        var command = new CreateLoadRequestLineCommand(items ?? new List<CreateLoadRequestLineItemDto>());
+        var result = await _mediator.Send(command);
+
+        return Ok(new APIBaseResponse<List<LoadRequestLineDto>>()
+            .SetSuccess(result, result.Count, "Load request lines processed successfully"));
+    }
+
+    /// <summary>
+    /// Batch create or update load request lines from a list of items
+    /// </summary>
+    /// <param name="items">List of load request line items to create or update</param>
+    /// <returns>List of created/updated load request lines</returns>
+    [HttpPost("lines/batch")]
+    [RequirePermission("LOAD_REQUESTS", PermissionAction.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<APIBaseResponse<List<LoadRequestLineDto>>>> BatchLoadRequestLines(
+        [FromBody] List<CreateLoadRequestLineItemDto> items)
+    {
+        _logger.LogInformation("User {User} batch creating/updating {Count} load request lines", User.Identity?.Name, items?.Count ?? 0);
+
+        var command = new CreateLoadRequestLineCommand(items ?? new List<CreateLoadRequestLineItemDto>());
+        var result = await _mediator.Send(command);
+
+        return Ok(new APIBaseResponse<List<LoadRequestLineDto>>()
+            .SetSuccess(result, result.Count, "Load request lines processed successfully"));
     }
 }

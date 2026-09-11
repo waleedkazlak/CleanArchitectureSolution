@@ -213,8 +213,7 @@ public class FieldJobsController : ControllerBase
     public async Task<ActionResult<APIBaseResponse<long>>> Create(
         [FromBody] CreateFieldJobCommand command)
     {
-        _logger.LogInformation("User {User} creating field job with JobNumber: {JobNumber}",
-            User.Identity?.Name, command?.JobNumber);
+        _logger.LogInformation("User {User} creating field job", User.Identity?.Name);
 
         var result = await _mediator.Send(command);
 

@@ -5,7 +5,7 @@ namespace CleanSample.Application.Validators;
 
 public class DesignSearchFilterDtoValidator : AbstractValidator<DesignSearchFilterDto>
 {
-    private readonly string[] _validSortFields = { "Name", "Code", "Description", "CreatedAt" };
+    private readonly string[] _validSortFields = { "Name", "Description", "CreatedAt" };
     private readonly string[] _validSortDirections = { "asc", "desc" };
 
     public DesignSearchFilterDtoValidator()

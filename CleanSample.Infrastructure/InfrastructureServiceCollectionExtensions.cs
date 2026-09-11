@@ -29,7 +29,6 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IColorRepository, ColorRepository>();
         services.AddScoped<IMaterialRepository, MaterialRepository>();
         services.AddScoped<IDesignRepository, DesignRepository>();
-        services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
         services.AddScoped<IPartRepository, PartRepository>();
         services.AddScoped<IProductBOMRepository, ProductBOMRepository>();
         services.AddScoped<IClientRepository, ClientRepository>();
@@ -39,9 +38,8 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<ILoadRequestRepository, LoadRequestRepository>();
         services.AddScoped<ILoadRequestLineRepository, LoadRequestLineRepository>();
         services.AddScoped<ILoadRequestPartRepository, LoadRequestPartRepository>();
-        services.AddScoped<ILoadRepository, LoadRepository>();
+        services.AddScoped<IVehicleLoadRepository, VehicleLoadRepository>();
         services.AddScoped<IVehicleOffloadRepository, VehicleOffloadRepository>();
-        services.AddScoped<IVehicleOffloadItemRepository, VehicleOffloadItemRepository>();
         services.AddScoped<IFieldJobRepository, FieldJobRepository>();
         services.AddScoped<IFieldAssemblyRepository, FieldAssemblyRepository>();
         services.AddScoped<IIssueRepository, IssueRepository>();

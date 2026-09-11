@@ -27,7 +27,7 @@ public class UpdateFieldAssemblyCommandHandler : IRequestHandler<UpdateFieldAsse
         }
 
         existingAssembly.FieldJobId = request.FieldJobId;
-        existingAssembly.ProductVariantId = request.ProductVariantId;
+        existingAssembly.ProductId = request.ProductId;
         existingAssembly.ProductBarcode = request.ProductBarcode;
         existingAssembly.Quantity = request.Quantity;
         existingAssembly.AssemblyDate = request.AssemblyDate;

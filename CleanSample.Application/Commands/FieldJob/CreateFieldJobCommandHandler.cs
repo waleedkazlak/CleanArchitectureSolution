@@ -17,12 +17,11 @@ public class CreateFieldJobCommandHandler : IRequestHandler<CreateFieldJobComman
 
     public async Task<long> Handle(CreateFieldJobCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling CreateFieldJobCommand for JobNumber: {JobNumber}, LoadRequestId: {LoadRequestId}",
-            request.JobNumber, request.LoadRequestId);
+        _logger.LogInformation("Handling CreateFieldJobCommand for LoadRequestId: {LoadRequestId}",
+            request.LoadRequestId);
 
         var fieldJob = new Domain.Entities.FieldJob
         {
-            JobNumber = request.JobNumber,
             LoadRequestId = request.LoadRequestId,
             ClientId = request.ClientId,
             ClientLocationId = request.ClientLocationId,

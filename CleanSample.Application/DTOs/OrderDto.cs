@@ -3,7 +3,6 @@ namespace CleanSample.Application.DTOs;
 public class OrderDto
 {
     public long Id { get; set; }
-    public string OrderNumber { get; set; } = null!;
     public int ClientId { get; set; }
     public string? ClientName { get; set; }
     public DateTime OrderDate { get; set; }

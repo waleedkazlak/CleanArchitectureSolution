@@ -25,9 +25,8 @@ public class GetLoadRequestByIdQueryHandler : IRequestHandler<GetLoadRequestById
         {
             Id = l.Id,
             LoadRequestId = l.LoadRequestId,
-            RequestNumber = lr.RequestNumber,
-            ProductVariantId = l.ProductVariantId,
-            ProductVariantCode = l.ProductVariant?.Code,
+            ProductId = l.ProductId,
+            ProductName = l.Product?.Name,
             Quantity = l.Quantity,
             CreatedAt = l.CreatedAt,
             UpdatedAt = l.UpdatedAt,
@@ -65,9 +64,7 @@ public class GetLoadRequestByIdQueryHandler : IRequestHandler<GetLoadRequestById
         return new LoadRequestDto
         {
             Id = lr.Id,
-            RequestNumber = lr.RequestNumber,
             OrderId = lr.OrderId,
-            OrderNumber = lr.Order?.OrderNumber,
             ClientId = lr.ClientId,
             ClientName = lr.Client?.Name,
             ClientLocationId = lr.ClientLocationId,

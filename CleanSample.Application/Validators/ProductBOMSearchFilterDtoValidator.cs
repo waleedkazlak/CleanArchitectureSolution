@@ -5,7 +5,7 @@ namespace CleanSample.Application.Validators;
 
 public class ProductBOMSearchFilterDtoValidator : AbstractValidator<ProductBOMSearchFilterDto>
 {
-    private readonly string[] _validSortFields = { "ProductVariantId", "PartId", "Quantity", "CreatedAt" };
+    private readonly string[] _validSortFields = { "ProductId", "ProductName", "PartId", "PartCode", "PartName", "Quantity", "CreatedAt" };
     private readonly string[] _validSortDirections = { "asc", "desc" };
 
     public ProductBOMSearchFilterDtoValidator()
@@ -23,9 +23,9 @@ public class ProductBOMSearchFilterDtoValidator : AbstractValidator<ProductBOMSe
             .MaximumLength(255).WithMessage("Search term cannot exceed 255 characters")
             .When(x => !string.IsNullOrWhiteSpace(x.SearchTerm));
 
-        RuleFor(x => x.ProductVariantId)
-            .GreaterThan(0).WithMessage("Product Variant ID must be greater than 0")
-            .When(x => x.ProductVariantId.HasValue);
+        RuleFor(x => x.ProductId)
+            .GreaterThan(0).WithMessage("Product ID must be greater than 0")
+            .When(x => x.ProductId.HasValue);
 
         RuleFor(x => x.PartId)
             .GreaterThan(0).WithMessage("Part ID must be greater than 0")

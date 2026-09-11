@@ -6,7 +6,7 @@ public class FieldAssemblySearchFilterDto
     public int PageSize { get; set; } = 10;
     public string? SearchTerm { get; set; }
     public long? FieldJobId { get; set; }
-    public int? ProductVariantId { get; set; }
+    public int? ProductId { get; set; }
     public string? ProductBarcode { get; set; }
     public int? TechnicianId { get; set; }
     public int? SupervisorId { get; set; }

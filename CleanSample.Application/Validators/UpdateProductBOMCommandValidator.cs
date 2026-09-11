@@ -10,8 +10,8 @@ public class UpdateProductBOMCommandValidator : AbstractValidator<UpdateProductB
         RuleFor(x => x.Id)
             .GreaterThan(0).WithMessage("Product BOM ID must be greater than 0.");
 
-        RuleFor(x => x.ProductVariantId)
-            .GreaterThan(0).WithMessage("Product Variant ID must be greater than 0.");
+        RuleFor(x => x.ProductId)
+            .GreaterThan(0).WithMessage("Product ID must be greater than 0.");
 
         RuleFor(x => x.PartId)
             .GreaterThan(0).WithMessage("Part ID must be greater than 0.");

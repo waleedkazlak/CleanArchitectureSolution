@@ -1,9 +1,9 @@
+using CleanSample.Domain.Enums;
+
 namespace CleanSample.Domain.Entities;
 
 public class LoadRequest : BaseEntity<long>
 {
-    public string RequestNumber { get; set; } = null!;
-
     public long? OrderId { get; set; }
     public Order? Order { get; set; }
 
@@ -19,7 +19,7 @@ public class LoadRequest : BaseEntity<long>
     public DateTime RequestDate { get; set; } = DateTime.UtcNow;
     public DateTime? ExecutionDate { get; set; }
 
-    public string Status { get; set; } = "Created";
+    public LoadRequestStatus Status { get; set; } = LoadRequestStatus.New;
 
     public string? DestinationAddress { get; set; }
     public string? DestinationCity { get; set; }
@@ -36,7 +36,7 @@ public class LoadRequest : BaseEntity<long>
 
     public ICollection<LoadRequestLine> LoadRequestLines { get; set; } = new List<LoadRequestLine>();
     public ICollection<LoadRequestPart> LoadRequestParts { get; set; } = new List<LoadRequestPart>();
-    public ICollection<Load> Loads { get; set; } = new List<Load>();
+    public ICollection<VehicleLoad> VehicleLoads { get; set; } = new List<VehicleLoad>();
     public ICollection<VehicleOffload> VehicleOffloads { get; set; } = new List<VehicleOffload>();
     public ICollection<FieldJob> FieldJobs { get; set; } = new List<FieldJob>();
     public ICollection<Issue> Issues { get; set; } = new List<Issue>();

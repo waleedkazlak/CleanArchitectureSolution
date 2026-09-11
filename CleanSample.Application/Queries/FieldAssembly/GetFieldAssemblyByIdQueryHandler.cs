@@ -25,9 +25,8 @@ public class GetFieldAssemblyByIdQueryHandler : IRequestHandler<GetFieldAssembly
         {
             Id = fa.Id,
             FieldJobId = fa.FieldJobId,
-            JobNumber = fa.FieldJob?.JobNumber,
-            ProductVariantId = fa.ProductVariantId,
-            ProductVariantCode = fa.ProductVariant?.Code,
+            ProductId = fa.ProductId,
+            ProductName = fa.Product?.Name,
             ProductBarcode = fa.ProductBarcode,
             Quantity = fa.Quantity,
             AssemblyDate = fa.AssemblyDate,

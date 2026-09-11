@@ -110,6 +110,28 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
+    /// Get products by category id
+    /// </summary>
+    /// <param name="categoryId">Category id</param>
+    /// <returns>List of products</returns>
+    [HttpGet("by-category/{categoryId}")]
+    [RequirePermission("PRODUCTS", PermissionAction.View)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<APIBaseResponse<IEnumerable<ProductDto>>>> GetByCategoryId([FromRoute] int categoryId)
+    {
+        _logger.LogInformation("User {User} fetching products for category: {CategoryId}", User.Identity?.Name, categoryId);
+
+        var query = new GetProductsByCategoryIdQuery(categoryId);
+        var result = await _mediator.Send(query);
+
+        return Ok(new APIBaseResponse<IEnumerable<ProductDto>>()
+            .SetSuccess(result, "Products for category retrieved successfully"));
+    }
+
+    /// <summary>
     /// Create a new product
     /// </summary>
     /// <param name="command">Product creation command</param>

@@ -16,7 +16,7 @@ public class ProductBOMRepository : IProductBOMRepository
     public async Task<ProductBOM?> GetByIdAsync(int id)
     {
         return await _context.ProductBOMs
-            .Include(pb => pb.ProductVariant)
+            .Include(pb => pb.Product)
             .Include(pb => pb.Part)
             .FirstOrDefaultAsync(pb => pb.Id == id);
     }
@@ -24,26 +24,26 @@ public class ProductBOMRepository : IProductBOMRepository
     public async Task<IEnumerable<ProductBOM>> GetAllAsync()
     {
         return await _context.ProductBOMs
-            .Include(pb => pb.ProductVariant)
+            .Include(pb => pb.Product)
             .Include(pb => pb.Part)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<ProductBOM>> GetByProductVariantIdAsync(int productVariantId)
+    public async Task<IEnumerable<ProductBOM>> GetByProductIdAsync(int productId)
     {
         return await _context.ProductBOMs
-            .Include(pb => pb.ProductVariant)
+            .Include(pb => pb.Product)
             .Include(pb => pb.Part)
-            .Where(pb => pb.ProductVariantId == productVariantId)
+            .Where(pb => pb.ProductId == productId)
             .ToListAsync();
     }
 
-    public async Task<ProductBOM?> GetByVariantAndPartIdAsync(int productVariantId, int partId)
+    public async Task<ProductBOM?> GetByProductAndPartIdAsync(int productId, int partId)
     {
         return await _context.ProductBOMs
-            .Include(pb => pb.ProductVariant)
+            .Include(pb => pb.Product)
             .Include(pb => pb.Part)
-            .FirstOrDefaultAsync(pb => pb.ProductVariantId == productVariantId && pb.PartId == partId);
+            .FirstOrDefaultAsync(pb => pb.ProductId == productId && pb.PartId == partId);
     }
 
     public async Task<int> AddAsync(ProductBOM productBom)

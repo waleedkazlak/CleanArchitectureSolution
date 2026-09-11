@@ -5,7 +5,7 @@ namespace CleanSample.Application.Validators;
 
 public class OrderSearchFilterDtoValidator : AbstractValidator<OrderSearchFilterDto>
 {
-    private readonly string[] _validSortFields = { "OrderNumber", "ClientId", "OrderDate", "RequiredDate", "Status", "CreatedAt" };
+    private readonly string[] _validSortFields = { "ClientId", "OrderDate", "RequiredDate", "Status", "CreatedAt" };
     private readonly string[] _validSortDirections = { "asc", "desc" };
 
     public OrderSearchFilterDtoValidator()

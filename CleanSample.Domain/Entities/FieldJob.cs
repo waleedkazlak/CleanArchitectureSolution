@@ -2,8 +2,6 @@ namespace CleanSample.Domain.Entities;
 
 public class FieldJob : BaseEntity<long>
 {
-    public string JobNumber { get; set; } = null!;
-
     public long LoadRequestId { get; set; }
     public LoadRequest LoadRequest { get; set; } = null!;
 

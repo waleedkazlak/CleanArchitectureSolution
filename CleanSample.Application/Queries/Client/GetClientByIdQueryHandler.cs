@@ -24,7 +24,6 @@ public class GetClientByIdQueryHandler : IRequestHandler<GetClientByIdQuery, Cli
         return new ClientDto
         {
             Id = client.Id,
-            Code = client.Code,
             Name = client.Name,
             Phone = client.Phone,
             Mobile = client.Mobile,

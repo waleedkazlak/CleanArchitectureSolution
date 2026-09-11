@@ -20,7 +20,7 @@ public class UpdateProductBOMCommandHandler : IRequestHandler<UpdateProductBOMCo
             return false;
         }
 
-        productBom.ProductVariantId = request.ProductVariantId;
+        productBom.ProductId = request.ProductId;
         productBom.PartId = request.PartId;
         productBom.Quantity = request.Quantity;
         productBom.UpdatedAt = DateTime.UtcNow;

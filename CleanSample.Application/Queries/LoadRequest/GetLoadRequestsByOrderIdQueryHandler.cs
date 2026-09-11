@@ -20,9 +20,7 @@ public class GetLoadRequestsByOrderIdQueryHandler : IRequestHandler<GetLoadReque
         return requests.Select(lr => new LoadRequestDto
         {
             Id = lr.Id,
-            RequestNumber = lr.RequestNumber,
             OrderId = lr.OrderId,
-            OrderNumber = lr.Order?.OrderNumber,
             ClientId = lr.ClientId,
             ClientName = lr.Client?.Name,
             ClientLocationId = lr.ClientLocationId,
@@ -42,7 +40,45 @@ public class GetLoadRequestsByOrderIdQueryHandler : IRequestHandler<GetLoadReque
             PlateNumber = lr.Vehicle?.PlateNumber,
             Verified = lr.Verified,
             CreatedAt = lr.CreatedAt,
-            UpdatedAt = lr.UpdatedAt
-        });
+            UpdatedAt = lr.UpdatedAt,
+            LoadRequestLines = lr.LoadRequestLines?.Select(l => new LoadRequestLineDto
+            {
+                Id = l.Id,
+                LoadRequestId = l.LoadRequestId,
+                ProductId = l.ProductId,
+                ProductName = l.Product?.Name,
+                Quantity = l.Quantity,
+                CreatedAt = l.CreatedAt,
+                UpdatedAt = l.UpdatedAt,
+                LoadRequestParts = l.LoadRequestParts?.Select(lrp => new LoadRequestPartDto
+                {
+                    Id = lrp.Id,
+                    LoadRequestId = lrp.LoadRequestId,
+                    LoadRequestLineId = lrp.LoadRequestLineId,
+                    PartId = lrp.PartId,
+                    PartCode = lrp.Part?.Code,
+                    PartName = lrp.Part?.Name,
+                    RequiredQuantity = lrp.RequiredQuantity,
+                    LoadedQuantity = lrp.LoadedQuantity,
+                    Status = lrp.Status,
+                    CreatedAt = lrp.CreatedAt,
+                    UpdatedAt = lrp.UpdatedAt
+                }).ToList() ?? new List<LoadRequestPartDto>()
+            }).ToList() ?? new List<LoadRequestLineDto>(),
+            LoadRequestParts = lr.LoadRequestParts?.Select(lrp => new LoadRequestPartDto
+            {
+                Id = lrp.Id,
+                LoadRequestId = lrp.LoadRequestId,
+                LoadRequestLineId = lrp.LoadRequestLineId,
+                PartId = lrp.PartId,
+                PartCode = lrp.Part?.Code,
+                PartName = lrp.Part?.Name,
+                RequiredQuantity = lrp.RequiredQuantity,
+                LoadedQuantity = lrp.LoadedQuantity,
+                Status = lrp.Status,
+                CreatedAt = lrp.CreatedAt,
+                UpdatedAt = lrp.UpdatedAt
+            }).ToList() ?? new List<LoadRequestPartDto>()
+        }).ToList();
     }
 }

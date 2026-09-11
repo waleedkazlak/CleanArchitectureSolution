@@ -15,16 +15,18 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
     {
         var product = new CleanSample.Domain.Entities.Product
         {
-            Name = request.Name,
-            Description = request.Description,
-            Price = request.Price,
-            Stock = request.Stock,
             CategoryId = request.CategoryId,
-            IsActive = true
+            ColorId = request.ColorId,
+            MaterialId = request.MaterialId,
+            DesignId = request.DesignId,
+            Name = request.Name,
+            Barcode = request.Barcode,
+            Description = request.Description,
+            IsActive = request.IsActive
         };
 
         var productId = await _unitOfWork.Products.AddAsync(product);
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return productId;
     }

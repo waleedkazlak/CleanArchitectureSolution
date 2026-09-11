@@ -34,7 +34,6 @@ public class GetDesignsWithFilterQueryHandler : IRequestHandler<GetDesignsWithFi
             var searchTermLower = filter.SearchTerm.ToLower();
             designs = designs.Where(d =>
                 d.Name.ToLower().Contains(searchTermLower) ||
-                (d.Code != null && d.Code.ToLower().Contains(searchTermLower)) ||
                 (d.Description != null && d.Description.ToLower().Contains(searchTermLower))
             ).ToList();
         }
@@ -52,7 +51,6 @@ public class GetDesignsWithFilterQueryHandler : IRequestHandler<GetDesignsWithFi
         {
             Id = d.Id,
             Name = d.Name,
-            Code = d.Code,
             Description = d.Description,
             CreatedAt = d.CreatedAt,
             UpdatedAt = d.UpdatedAt
@@ -76,10 +74,6 @@ public class GetDesignsWithFilterQueryHandler : IRequestHandler<GetDesignsWithFi
             "name" => isDescending
                 ? designs.OrderByDescending(d => d.Name).ToList()
                 : designs.OrderBy(d => d.Name).ToList(),
-
-            "code" => isDescending
-                ? designs.OrderByDescending(d => d.Code).ToList()
-                : designs.OrderBy(d => d.Code).ToList(),
 
             "description" => isDescending
                 ? designs.OrderByDescending(d => d.Description).ToList()

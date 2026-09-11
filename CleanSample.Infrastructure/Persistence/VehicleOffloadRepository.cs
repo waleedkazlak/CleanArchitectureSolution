@@ -17,13 +17,10 @@ public class VehicleOffloadRepository : IVehicleOffloadRepository
     {
         return await _context.VehicleOffloads
             .Include(v => v.LoadRequest)
+            .Include(v => v.Part)
             .Include(v => v.Vehicle)
             .Include(v => v.Driver)
             .Include(v => v.Verifier)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Part)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Load)
             .FirstOrDefaultAsync(v => v.Id == id);
     }
 
@@ -31,13 +28,10 @@ public class VehicleOffloadRepository : IVehicleOffloadRepository
     {
         return await _context.VehicleOffloads
             .Include(v => v.LoadRequest)
+            .Include(v => v.Part)
             .Include(v => v.Vehicle)
             .Include(v => v.Driver)
             .Include(v => v.Verifier)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Part)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Load)
             .ToListAsync();
     }
 
@@ -45,13 +39,10 @@ public class VehicleOffloadRepository : IVehicleOffloadRepository
     {
         return await _context.VehicleOffloads
             .Include(v => v.LoadRequest)
+            .Include(v => v.Part)
             .Include(v => v.Vehicle)
             .Include(v => v.Driver)
             .Include(v => v.Verifier)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Part)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Load)
             .Where(v => v.LoadRequestId == loadRequestId)
             .ToListAsync();
     }
@@ -60,13 +51,10 @@ public class VehicleOffloadRepository : IVehicleOffloadRepository
     {
         return await _context.VehicleOffloads
             .Include(v => v.LoadRequest)
+            .Include(v => v.Part)
             .Include(v => v.Vehicle)
             .Include(v => v.Driver)
             .Include(v => v.Verifier)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Part)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Load)
             .Where(v => v.DriverId == driverId)
             .ToListAsync();
     }
@@ -75,13 +63,10 @@ public class VehicleOffloadRepository : IVehicleOffloadRepository
     {
         return await _context.VehicleOffloads
             .Include(v => v.LoadRequest)
+            .Include(v => v.Part)
             .Include(v => v.Vehicle)
             .Include(v => v.Driver)
             .Include(v => v.Verifier)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Part)
-            .Include(v => v.VehicleOffloadItems)
-                .ThenInclude(i => i.Load)
             .Where(v => v.VehicleId == vehicleId)
             .ToListAsync();
     }
@@ -93,6 +78,12 @@ public class VehicleOffloadRepository : IVehicleOffloadRepository
         return vehicleOffload.Id;
     }
 
+    public async Task AddRangeAsync(IEnumerable<VehicleOffload> vehicleOffloads)
+    {
+        await _context.VehicleOffloads.AddRangeAsync(vehicleOffloads);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task UpdateAsync(VehicleOffload vehicleOffload)
     {
         _context.Entry(vehicleOffload).State = EntityState.Modified;
@@ -102,7 +93,6 @@ public class VehicleOffloadRepository : IVehicleOffloadRepository
     public async Task DeleteAsync(long id)
     {
         var vehicleOffload = await _context.VehicleOffloads
-            .Include(v => v.VehicleOffloadItems)
             .FirstOrDefaultAsync(v => v.Id == id);
 
         if (vehicleOffload != null)

@@ -5,7 +5,7 @@ namespace CleanSample.Application.Validators;
 
 public class FieldAssemblySearchFilterDtoValidator : AbstractValidator<FieldAssemblySearchFilterDto>
 {
-    private readonly string[] _validSortFields = { "FieldJobId", "ProductVariantId", "Quantity", "AssemblyDate", "Status", "CreatedAt" };
+    private readonly string[] _validSortFields = { "FieldJobId", "ProductId", "Quantity", "AssemblyDate", "Status", "CreatedAt" };
     private readonly string[] _validSortDirections = { "asc", "desc" };
 
     public FieldAssemblySearchFilterDtoValidator()
@@ -27,9 +27,9 @@ public class FieldAssemblySearchFilterDtoValidator : AbstractValidator<FieldAsse
             .GreaterThan(0).WithMessage("Field job ID must be greater than 0")
             .When(x => x.FieldJobId.HasValue);
 
-        RuleFor(x => x.ProductVariantId)
-            .GreaterThan(0).WithMessage("Product variant ID must be greater than 0")
-            .When(x => x.ProductVariantId.HasValue);
+        RuleFor(x => x.ProductId)
+            .GreaterThan(0).WithMessage("Product ID must be greater than 0")
+            .When(x => x.ProductId.HasValue);
 
         RuleFor(x => x.ProductBarcode)
             .MaximumLength(100).WithMessage("Product barcode cannot exceed 100 characters")
