@@ -22,12 +22,12 @@ public class GetLoadRequestsDashboardSummaryQueryHandler : IRequestHandler<GetLo
     {
         _logger.LogInformation("Retrieving load requests dashboard summary");
 
-        var lrStatusCounts = await _unitOfWork.LoadRequests.GetQueryable(false)
+        var lrStatusCounts = await _unitOfWork.LoadRequests.GetQueryable()
             .GroupBy(lr => lr.Status)
             .Select(g => new { Status = g.Key, Count = g.Count() })
             .ToListAsync(cancellationToken);
 
-        var lrVerifiedCount = await _unitOfWork.LoadRequests.GetQueryable(false)
+        var lrVerifiedCount = await _unitOfWork.LoadRequests.GetQueryable()
             .CountAsync(lr => lr.Verified, cancellationToken);
 
         var totalLoadRequests = lrStatusCounts.Sum(x => x.Count);
@@ -36,9 +36,11 @@ public class GetLoadRequestsDashboardSummaryQueryHandler : IRequestHandler<GetLo
         {
             TotalLoadRequests = totalLoadRequests,
             NewLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.New)?.Count ?? 0,
-            LoadingLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Loading)?.Count ?? 0,
+            LoadedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Loaded)?.Count ?? 0,
+            LoadingLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Loaded)?.Count ?? 0,
             OffloadedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Offloaded)?.Count ?? 0,
             CompletedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Completed)?.Count ?? 0,
+            BlockedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Blocked)?.Count ?? 0,
             CancelledLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Cancelled)?.Count ?? 0,
             VerifiedLoadRequests = lrVerifiedCount,
             UnverifiedLoadRequests = totalLoadRequests - lrVerifiedCount,

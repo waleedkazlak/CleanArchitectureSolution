@@ -9,13 +9,16 @@ public class UpdateLoadRequestCommandHandler : IRequestHandler<UpdateLoadRequest
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILoadRequestBOMService _loadRequestBOMService;
+    private readonly IWorkflowOrchestratorService _workflowOrchestrator;
 
     public UpdateLoadRequestCommandHandler(
         IUnitOfWork unitOfWork,
-        ILoadRequestBOMService loadRequestBOMService)
+        ILoadRequestBOMService loadRequestBOMService,
+        IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _loadRequestBOMService = loadRequestBOMService;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<bool> Handle(UpdateLoadRequestCommand request, CancellationToken cancellationToken)
@@ -158,12 +161,14 @@ public class UpdateLoadRequestCommandHandler : IRequestHandler<UpdateLoadRequest
         if (loadRequest.OrderId.HasValue)
         {
             await _loadRequestBOMService.CheckAndGeneratePartsForOrderAsync(loadRequest.OrderId.Value, cancellationToken);
+            await _workflowOrchestrator.RecalculateOrderStatusAfterLoadRequestChangeAsync(loadRequest.OrderId.Value, cancellationToken);
         }
 
         // Also check previous Order if OrderId was changed
         if (previousOrderId.HasValue && previousOrderId != loadRequest.OrderId)
         {
             await _loadRequestBOMService.CheckAndGeneratePartsForOrderAsync(previousOrderId.Value, cancellationToken);
+            await _workflowOrchestrator.RecalculateOrderStatusAfterLoadRequestChangeAsync(previousOrderId.Value, cancellationToken);
         }
 
         return true;

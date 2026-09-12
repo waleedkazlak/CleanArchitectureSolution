@@ -4,6 +4,7 @@ using CleanSample.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanSample.Infrastructure.Migrations
 {
     [DbContext(typeof(CleanSampleDbContext))]
-    partial class CleanSampleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260912114051_UpdateWorkflowStatusSeeds")]
+    partial class UpdateWorkflowStatusSeeds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -969,8 +972,8 @@ namespace CleanSample.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
-                    b.Property<DateTime?>("RequiredDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("RequiredDate")
+                        .HasColumnType("date");
 
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()

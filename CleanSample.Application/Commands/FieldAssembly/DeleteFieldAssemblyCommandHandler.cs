@@ -8,11 +8,16 @@ public class DeleteFieldAssemblyCommandHandler : IRequestHandler<DeleteFieldAsse
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DeleteFieldAssemblyCommandHandler> _logger;
+    private readonly Services.IWorkflowOrchestratorService _workflowOrchestrator;
 
-    public DeleteFieldAssemblyCommandHandler(IUnitOfWork unitOfWork, ILogger<DeleteFieldAssemblyCommandHandler> logger)
+    public DeleteFieldAssemblyCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<DeleteFieldAssemblyCommandHandler> logger,
+        Services.IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<bool> Handle(DeleteFieldAssemblyCommand request, CancellationToken cancellationToken)
@@ -26,8 +31,16 @@ public class DeleteFieldAssemblyCommandHandler : IRequestHandler<DeleteFieldAsse
             return false;
         }
 
+        var fieldJobId = existingAssembly.FieldJobId;
         await _unitOfWork.FieldAssemblies.DeleteAsync(request.Id);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Check if all FieldAssemblies for the related LoadRequest are Completed (2)
+        var job = await _unitOfWork.FieldJobs.GetByIdAsync(fieldJobId);
+        if (job != null)
+        {
+            await _workflowOrchestrator.RecalculateLoadRequestStatusAfterFieldAssembliesChangeAsync(job.LoadRequestId, cancellationToken);
+        }
 
         _logger.LogInformation("Successfully deleted FieldAssembly with ID: {FieldAssemblyId}", request.Id);
         return true;

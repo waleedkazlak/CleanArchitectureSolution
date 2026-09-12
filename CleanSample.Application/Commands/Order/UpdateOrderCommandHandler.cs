@@ -24,7 +24,7 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, boo
         existingOrder.ClientId = request.ClientId;
         existingOrder.OrderDate = request.OrderDate;
         existingOrder.RequiredDate = request.RequiredDate;
-        existingOrder.Status = request.Status;
+        existingOrder.Status = request.Status > 0 ? request.Status : (int)CleanSample.Domain.Enums.OrderStatusEnum.Pending;
         existingOrder.Notes = request.Notes;
         existingOrder.UpdatedAt = DateTime.UtcNow;
 

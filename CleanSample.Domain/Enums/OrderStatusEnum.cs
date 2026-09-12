@@ -7,7 +7,8 @@ public enum OrderStatusEnum
 {
     Draft = 1,
     Pending = 2,
-    Processing = 3,
-    Completed = 4,
-    Cancelled = 5
+    Approved = 3,
+    Processing = 4,
+    Completed = 5,
+    Cancelled = 6
 }

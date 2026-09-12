@@ -222,6 +222,35 @@ public class OrdersController : ControllerBase
     }
 
     /// <summary>
+    /// Approve an order (Sales Manager action)
+    /// </summary>
+    /// <param name="id">Order id</param>
+    /// <returns>Success indicator</returns>
+    [HttpPost("{id}/approve")]
+    [RequirePermission("ORDERS", PermissionAction.Update)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<APIBaseResponse<bool>>> Approve([FromRoute] long id)
+    {
+        _logger.LogInformation("User {User} approving order with id: {OrderId}", User.Identity?.Name, id);
+
+        var command = new ApproveOrderCommand(id);
+        var result = await _mediator.Send(command);
+
+        if (!result)
+        {
+            return NotFound(new APIBaseResponse<bool>()
+                .SetError(404, $"Order with id {id} not found"));
+        }
+
+        return Ok(new APIBaseResponse<bool>()
+            .SetSuccess(true, "Order approved successfully"));
+    }
+
+    /// <summary>
     /// Get all lines for a specific order
     /// </summary>
     /// <param name="id">Order id</param>

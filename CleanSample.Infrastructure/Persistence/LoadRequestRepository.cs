@@ -13,9 +13,9 @@ public class LoadRequestRepository : ILoadRequestRepository
         _context = context;
     }
 
-    public IQueryable<LoadRequest> GetQueryable(bool includeFieldJobs = false)
+    public IQueryable<LoadRequest> GetQueryable()
     {
-        var query = _context.LoadRequests
+        return _context.LoadRequests
             .AsNoTracking()
             .Include(p => p.Order)
             .Include(p => p.Client)
@@ -32,13 +32,6 @@ public class LoadRequestRepository : ILoadRequestRepository
             .Include(p => p.LoadRequestParts)
                 .ThenInclude(prp => prp.Part)
             .AsQueryable();
-
-        if (includeFieldJobs)
-        {
-            query = query.Include(p => p.FieldJobs);
-        }
-
-        return query;
     }
 
     public async Task<LoadRequest?> GetByIdAsync(long id)

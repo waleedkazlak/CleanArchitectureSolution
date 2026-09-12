@@ -1,6 +1,8 @@
-using CleanSample.Application.DTOs;
+﻿using CleanSample.Application.DTOs;
+using CleanSample.Domain.Enums;
 using CleanSample.Domain.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CleanSample.Application.Queries.LoadRequestLine;
@@ -27,44 +29,72 @@ public class GetLoadRequestLinesWithFilterQueryHandler : IRequestHandler<GetLoad
         var pageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
         var pageSize = filter.PageSize > 0 && filter.PageSize <= 100 ? filter.PageSize : 10;
 
-        var lines = await _unitOfWork.LoadRequestLines.GetAllAsync();
+        var query = _unitOfWork.LoadRequestLines.GetQueryable();
 
         if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
         {
             var searchTermLower = filter.SearchTerm.ToLower();
-            lines = lines.Where(l =>
-                (l.Product != null && l.Product.Name.ToLower().Contains(searchTermLower))
-            ).ToList();
+            query = query.Where(l =>
+                (l.Product != null && l.Product.Name.ToLower().Contains(searchTermLower)) ||
+                (l.LoadRequest != null && l.LoadRequest.Description != null && l.LoadRequest.Description.ToLower().Contains(searchTermLower))
+            );
         }
 
         if (filter.LoadRequestId.HasValue)
         {
-            lines = lines.Where(l => l.LoadRequestId == filter.LoadRequestId.Value).ToList();
+            query = query.Where(l => l.LoadRequestId == filter.LoadRequestId.Value);
+        }
+
+        if (filter.DriverId.HasValue)
+        {
+            query = query.Where(l => l.LoadRequest != null && l.LoadRequest.DriverId == filter.DriverId.Value);
+        }
+
+        if (filter.ApprovedOnly == true)
+        {
+            query = query.Where(l => l.LoadRequest != null
+                && l.LoadRequest.Status != (int)LoadRequestStatusEnum.Cancelled
+                && (l.LoadRequest.OrderId == null || (
+                    l.LoadRequest.Order != null && (
+                        l.LoadRequest.Order.Status == (int)OrderStatusEnum.Approved ||
+                        l.LoadRequest.Order.Status == (int)OrderStatusEnum.Processing ||
+                        l.LoadRequest.Order.Status == (int)OrderStatusEnum.Completed
+                    )
+                )));
         }
 
         if (filter.ProductId.HasValue)
         {
-            lines = lines.Where(l => l.ProductId == filter.ProductId.Value).ToList();
+            query = query.Where(l => l.ProductId == filter.ProductId.Value);
         }
 
         if (filter.MinQuantity.HasValue)
         {
-            lines = lines.Where(l => l.Quantity >= filter.MinQuantity.Value).ToList();
+            query = query.Where(l => l.Quantity >= filter.MinQuantity.Value);
         }
 
         if (filter.MaxQuantity.HasValue)
         {
-            lines = lines.Where(l => l.Quantity <= filter.MaxQuantity.Value).ToList();
+            query = query.Where(l => l.Quantity <= filter.MaxQuantity.Value);
         }
 
-        lines = ApplySort(lines.ToList(), filter.SortBy, filter.SortDirection);
+        var isDescending = filter.SortDirection?.ToLower() == "desc";
+        query = (filter.SortBy?.ToLower()) switch
+        {
+            "loadrequestid" => isDescending ? query.OrderByDescending(x => x.LoadRequestId) : query.OrderBy(x => x.LoadRequestId),
+            "productid" => isDescending ? query.OrderByDescending(x => x.ProductId) : query.OrderBy(x => x.ProductId),
+            "productname" => isDescending ? query.OrderByDescending(x => x.Product != null ? x.Product.Name : string.Empty) : query.OrderBy(x => x.Product != null ? x.Product.Name : string.Empty),
+            "quantity" => isDescending ? query.OrderByDescending(x => x.Quantity) : query.OrderBy(x => x.Quantity),
+            "createdat" => isDescending ? query.OrderByDescending(x => x.CreatedAt) : query.OrderBy(x => x.CreatedAt),
+            _ => query.OrderByDescending(x => x.CreatedAt)
+        };
 
-        var totalCount = lines.Count();
+        var totalCount = await query.CountAsync(cancellationToken);
 
-        var paginatedItems = lines
+        var paginatedItems = await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .ToList();
+            .ToListAsync(cancellationToken);
 
         var dtos = paginatedItems.Select(line => new LoadRequestLineDto
         {
@@ -98,36 +128,6 @@ public class GetLoadRequestLinesWithFilterQueryHandler : IRequestHandler<GetLoad
             PageNumber = pageNumber,
             PageSize = pageSize,
             TotalCount = totalCount
-        };
-    }
-
-    private List<Domain.Entities.LoadRequestLine> ApplySort(List<Domain.Entities.LoadRequestLine> items, string? sortBy, string? sortDirection)
-    {
-        var isDescending = sortDirection?.ToLower() == "desc";
-
-        return (sortBy?.ToLower()) switch
-        {
-            "loadrequestid" => isDescending
-                ? items.OrderByDescending(x => x.LoadRequestId).ToList()
-                : items.OrderBy(x => x.LoadRequestId).ToList(),
-
-            "productid" => isDescending
-                ? items.OrderByDescending(x => x.ProductId).ToList()
-                : items.OrderBy(x => x.ProductId).ToList(),
-
-            "productname" => isDescending
-                ? items.OrderByDescending(x => x.Product?.Name).ToList()
-                : items.OrderBy(x => x.Product?.Name).ToList(),
-
-            "quantity" => isDescending
-                ? items.OrderByDescending(x => x.Quantity).ToList()
-                : items.OrderBy(x => x.Quantity).ToList(),
-
-            "createdat" => isDescending
-                ? items.OrderByDescending(x => x.CreatedAt).ToList()
-                : items.OrderBy(x => x.CreatedAt).ToList(),
-
-            _ => items.OrderByDescending(x => x.CreatedAt).ToList()
         };
     }
 }

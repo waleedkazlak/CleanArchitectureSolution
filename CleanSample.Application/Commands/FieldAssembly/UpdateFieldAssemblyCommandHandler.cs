@@ -8,11 +8,16 @@ public class UpdateFieldAssemblyCommandHandler : IRequestHandler<UpdateFieldAsse
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateFieldAssemblyCommandHandler> _logger;
+    private readonly Services.IWorkflowOrchestratorService _workflowOrchestrator;
 
-    public UpdateFieldAssemblyCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateFieldAssemblyCommandHandler> logger)
+    public UpdateFieldAssemblyCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<UpdateFieldAssemblyCommandHandler> logger,
+        Services.IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<bool> Handle(UpdateFieldAssemblyCommand request, CancellationToken cancellationToken)
@@ -41,6 +46,13 @@ public class UpdateFieldAssemblyCommandHandler : IRequestHandler<UpdateFieldAsse
 
         await _unitOfWork.FieldAssemblies.UpdateAsync(existingAssembly);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Check if all FieldAssemblies for the related LoadRequest are Completed (2)
+        var job = await _unitOfWork.FieldJobs.GetByIdAsync(existingAssembly.FieldJobId);
+        if (job != null)
+        {
+            await _workflowOrchestrator.RecalculateLoadRequestStatusAfterFieldAssembliesChangeAsync(job.LoadRequestId, cancellationToken);
+        }
 
         _logger.LogInformation("Successfully updated FieldAssembly with ID: {FieldAssemblyId}", existingAssembly.Id);
         return true;

@@ -27,18 +27,20 @@ public class StatusLookupQueryHandlers :
     private static readonly Dictionary<OrderStatusEnum, string> OrderStatusDescriptions = new()
     {
         { OrderStatusEnum.Draft, "Order created in draft status" },
-        { OrderStatusEnum.Pending, "Order pending approval or processing" },
-        { OrderStatusEnum.Processing, "Order is actively being processed" },
-        { OrderStatusEnum.Completed, "Order fulfilled and completed" },
+        { OrderStatusEnum.Pending, "Order pending approval" },
+        { OrderStatusEnum.Approved, "Order approved by sales manager" },
+        { OrderStatusEnum.Processing, "Load requests placed for order" },
+        { OrderStatusEnum.Completed, "All load requests fulfilled and order completed" },
         { OrderStatusEnum.Cancelled, "Order has been cancelled" }
     };
 
     private static readonly Dictionary<LoadRequestStatusEnum, string> LoadRequestStatusDescriptions = new()
     {
         { LoadRequestStatusEnum.New, "Load request newly created" },
-        { LoadRequestStatusEnum.Loading, "Items are being loaded onto vehicle" },
-        { LoadRequestStatusEnum.Offloaded, "Items have been offloaded at destination" },
-        { LoadRequestStatusEnum.Completed, "Load request workflow completed" },
+        { LoadRequestStatusEnum.Loaded, "Loading completed in good condition" },
+        { LoadRequestStatusEnum.Offloaded, "Offloaded in good condition at destination" },
+        { LoadRequestStatusEnum.Completed, "All field assemblies completed" },
+        { LoadRequestStatusEnum.Blocked, "Blocked due to damaged or missing parts during loading/offloading" },
         { LoadRequestStatusEnum.Cancelled, "Load request has been cancelled" }
     };
 

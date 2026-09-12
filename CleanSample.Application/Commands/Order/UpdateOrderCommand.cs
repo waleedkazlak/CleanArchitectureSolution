@@ -8,7 +8,7 @@ public class UpdateOrderCommand : IRequest<bool>
     public long Id { get; set; }
     public int ClientId { get; set; }
     public DateTime OrderDate { get; set; }
-    public DateOnly? RequiredDate { get; set; }
+    public DateTime? RequiredDate { get; set; }
     public int Status { get; set; }
     public string? Notes { get; set; }
 

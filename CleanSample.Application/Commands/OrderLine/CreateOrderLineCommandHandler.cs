@@ -95,6 +95,19 @@ public class CreateOrderLineCommandHandler : IRequestHandler<CreateOrderLineComm
             }
         }
 
+        // Update parent order(s) status to Pending (2)
+        var affectedOrderIds = itemsToProcess.Select(i => i.OrderId).Distinct().Where(id => id > 0);
+        foreach (var orderId in affectedOrderIds)
+        {
+            var parentOrder = await _unitOfWork.Orders.GetByIdAsync(orderId);
+            if (parentOrder != null && parentOrder.Status != (int)Domain.Enums.OrderStatusEnum.Completed)
+            {
+                parentOrder.Status = (int)Domain.Enums.OrderStatusEnum.Pending;
+                parentOrder.UpdatedAt = DateTime.UtcNow;
+                await _unitOfWork.Orders.UpdateAsync(parentOrder);
+            }
+        }
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // Fetch full entity details with relations to map to DTOs

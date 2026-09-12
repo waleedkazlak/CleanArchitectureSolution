@@ -13,6 +13,20 @@ public class LoadRequestLineRepository : ILoadRequestLineRepository
         _context = context;
     }
 
+    public IQueryable<LoadRequestLine> GetQueryable()
+    {
+        return _context.LoadRequestLines
+            .AsNoTracking()
+            .Include(l => l.LoadRequest)
+                .ThenInclude(lr => lr.Order)
+            .Include(l => l.LoadRequest)
+                .ThenInclude(lr => lr.Driver)
+            .Include(l => l.Product)
+            .Include(l => l.LoadRequestParts)
+                .ThenInclude(lrp => lrp.Part)
+            .AsQueryable();
+    }
+
     public async Task<LoadRequestLine?> GetByIdAsync(long id)
     {
         return await _context.LoadRequestLines

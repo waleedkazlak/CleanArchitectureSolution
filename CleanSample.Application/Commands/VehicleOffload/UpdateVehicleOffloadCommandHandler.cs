@@ -9,11 +9,16 @@ public class UpdateVehicleOffloadCommandHandler : IRequestHandler<UpdateVehicleO
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateVehicleOffloadCommandHandler> _logger;
+    private readonly Services.IWorkflowOrchestratorService _workflowOrchestrator;
 
-    public UpdateVehicleOffloadCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateVehicleOffloadCommandHandler> logger)
+    public UpdateVehicleOffloadCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<UpdateVehicleOffloadCommandHandler> logger,
+        Services.IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<bool> Handle(UpdateVehicleOffloadCommand request, CancellationToken cancellationToken)
@@ -48,6 +53,9 @@ public class UpdateVehicleOffloadCommandHandler : IRequestHandler<UpdateVehicleO
 
         await _unitOfWork.VehicleOffloads.UpdateAsync(existingOffload);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Trigger workflow recalculation for LoadRequest
+        await _workflowOrchestrator.RecalculateLoadRequestStatusAfterVehicleOffloadsChangeAsync(existingOffload.LoadRequestId, cancellationToken);
 
         _logger.LogInformation("Successfully updated VehicleOffload with ID: {VehicleOffloadId}", existingOffload.Id);
         return true;

@@ -598,9 +598,10 @@ public class CleanSampleDbContext : DbContext
 
             entity.HasData(
                 new OrderStatus { Id = (int)OrderStatusEnum.Draft, Name = "Draft", Description = "Draft order created", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new OrderStatus { Id = (int)OrderStatusEnum.Pending, Name = "Pending", Description = "Order pending approval/processing", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new OrderStatus { Id = (int)OrderStatusEnum.Processing, Name = "Processing", Description = "Order in processing", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new OrderStatus { Id = (int)OrderStatusEnum.Completed, Name = "Completed", Description = "Order fulfilled and completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Pending, Name = "Pending", Description = "Order pending approval", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Approved, Name = "Approved", Description = "Order approved by sales manager", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Processing, Name = "Processing", Description = "Load requests placed for order", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Completed, Name = "Completed", Description = "All load requests fulfilled and order completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
                 new OrderStatus { Id = (int)OrderStatusEnum.Cancelled, Name = "Cancelled", Description = "Order cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
             );
         });
@@ -628,9 +629,6 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.OrderDate)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
-
-            entity.Property(e => e.RequiredDate)
-                .HasColumnType("date");
 
             entity.Property(e => e.Status)
                 .IsRequired()
@@ -711,9 +709,10 @@ public class CleanSampleDbContext : DbContext
 
             entity.HasData(
                 new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.New, Name = "New", Description = "New load request created", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Loading, Name = "Loading", Description = "Loading in progress", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Offloaded, Name = "Offloaded", Description = "Offloaded at destination", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Completed, Name = "Completed", Description = "Load request completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Loaded, Name = "Loaded", Description = "Loading completed in good condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Offloaded, Name = "Offloaded", Description = "Offloaded in good condition at destination", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Completed, Name = "Completed", Description = "All field assemblies completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Blocked, Name = "Blocked", Description = "Blocked due to damaged or missing parts during loading/offloading", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
                 new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Cancelled, Name = "Cancelled", Description = "Load request cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
             );
         });

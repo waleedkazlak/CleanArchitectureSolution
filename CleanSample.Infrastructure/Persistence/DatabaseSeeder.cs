@@ -613,7 +613,7 @@ public static class DatabaseSeeder
             {
                 ClientId = client1.Id,
                 OrderDate = DateTime.UtcNow.AddDays(-5),
-                RequiredDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10)),
+                RequiredDate = DateTime.UtcNow.AddDays(10),
                 Status = (int)OrderStatusEnum.Processing,
                 Notes = "Priority delivery for Q3 office expansion"
             },
@@ -621,7 +621,7 @@ public static class DatabaseSeeder
             {
                 ClientId = client1.Id,
                 OrderDate = DateTime.UtcNow.AddDays(-2),
-                RequiredDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(15)),
+                RequiredDate = DateTime.UtcNow.AddDays(15),
                 Status = (int)OrderStatusEnum.Processing,
                 Notes = "Standard equipment deployment"
             },
@@ -629,7 +629,7 @@ public static class DatabaseSeeder
             {
                 ClientId = client1.Id,
                 OrderDate = DateTime.UtcNow.AddDays(-1),
-                RequiredDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)),
+                RequiredDate = DateTime.UtcNow.AddDays(7),
                 Status = (int)OrderStatusEnum.Pending,
                 Notes = "Urgent spare units order"
             }
@@ -707,7 +707,7 @@ public static class DatabaseSeeder
                 RequestedBy = requester?.Id,
                 RequestDate = DateTime.UtcNow.AddDays(-2),
                 ExecutionDate = DateTime.UtcNow.AddDays(2),
-                Status = (int)LoadRequestStatusEnum.Loading,
+                Status = (int)LoadRequestStatusEnum.Loaded,
                 DestinationAddress = "250 Freight Terminal Blvd",
                 DestinationCity = "Chicago",
                 Description = "Load request for field assembly equipment",

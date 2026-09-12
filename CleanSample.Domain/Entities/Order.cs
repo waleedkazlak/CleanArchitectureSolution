@@ -8,7 +8,7 @@ public class Order : BaseEntity<long>
     public Client Client { get; set; } = null!;
 
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
-    public DateOnly? RequiredDate { get; set; }
+    public DateTime? RequiredDate { get; set; }
     public int Status { get; set; } = (int)OrderStatusEnum.Draft;
     public OrderStatus? OrderStatus { get; set; }
     public string? Notes { get; set; }

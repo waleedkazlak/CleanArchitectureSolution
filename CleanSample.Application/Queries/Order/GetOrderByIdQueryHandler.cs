@@ -29,6 +29,7 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
             OrderDate = o.OrderDate,
             RequiredDate = o.RequiredDate,
             Status = o.Status,
+            StatusName = o.OrderStatus?.Name,
             Notes = o.Notes,
             CreatedAt = o.CreatedAt,
             UpdatedAt = o.UpdatedAt,

@@ -33,6 +33,7 @@ public class GetDashboardMetricsQueryHandler : IRequestHandler<GetDashboardMetri
             TotalOrders = orderCountsByStatus.Sum(x => x.Count),
             DraftOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Draft)?.Count ?? 0,
             PendingOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Pending)?.Count ?? 0,
+            ApprovedOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Approved)?.Count ?? 0,
             ProcessingOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Processing)?.Count ?? 0,
             CompletedOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Completed)?.Count ?? 0,
             CancelledOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Cancelled)?.Count ?? 0,
@@ -42,12 +43,12 @@ public class GetDashboardMetricsQueryHandler : IRequestHandler<GetDashboardMetri
         };
 
         // 2. Load Requests Summary
-        var lrStatusCounts = await _unitOfWork.LoadRequests.GetQueryable(false)
+        var lrStatusCounts = await _unitOfWork.LoadRequests.GetQueryable()
             .GroupBy(lr => lr.Status)
             .Select(g => new { Status = g.Key, Count = g.Count() })
             .ToListAsync(cancellationToken);
 
-        var lrVerifiedCount = await _unitOfWork.LoadRequests.GetQueryable(false)
+        var lrVerifiedCount = await _unitOfWork.LoadRequests.GetQueryable()
             .CountAsync(lr => lr.Verified, cancellationToken);
 
         var totalLoadRequests = lrStatusCounts.Sum(x => x.Count);
@@ -56,9 +57,11 @@ public class GetDashboardMetricsQueryHandler : IRequestHandler<GetDashboardMetri
         {
             TotalLoadRequests = totalLoadRequests,
             NewLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.New)?.Count ?? 0,
-            LoadingLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Loading)?.Count ?? 0,
+            LoadedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Loaded)?.Count ?? 0,
+            LoadingLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Loaded)?.Count ?? 0,
             OffloadedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Offloaded)?.Count ?? 0,
             CompletedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Completed)?.Count ?? 0,
+            BlockedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Blocked)?.Count ?? 0,
             CancelledLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Cancelled)?.Count ?? 0,
             VerifiedLoadRequests = lrVerifiedCount,
             UnverifiedLoadRequests = totalLoadRequests - lrVerifiedCount,

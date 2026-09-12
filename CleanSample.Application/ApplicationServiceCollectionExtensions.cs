@@ -29,6 +29,7 @@ public static class ApplicationServiceCollectionExtensions
         services.AddMemoryCache();
         services.AddScoped<Services.IPermissionCheckerService, Services.PermissionCheckerService>();
         services.AddScoped<Services.ILoadRequestBOMService, Services.LoadRequestBOMService>();
+        services.AddScoped<Services.IWorkflowOrchestratorService, Services.WorkflowOrchestratorService>();
 
         return services;
     }

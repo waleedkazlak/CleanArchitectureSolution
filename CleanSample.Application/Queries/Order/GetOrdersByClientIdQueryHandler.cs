@@ -25,6 +25,7 @@ public class GetOrdersByClientIdQueryHandler : IRequestHandler<GetOrdersByClient
             OrderDate = o.OrderDate,
             RequiredDate = o.RequiredDate,
             Status = o.Status,
+            StatusName = o.OrderStatus?.Name,
             Notes = o.Notes,
             CreatedAt = o.CreatedAt,
             UpdatedAt = o.UpdatedAt,

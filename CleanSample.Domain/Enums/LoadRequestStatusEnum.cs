@@ -6,8 +6,9 @@ namespace CleanSample.Domain.Enums;
 public enum LoadRequestStatusEnum
 {
     New = 1,
-    Loading = 2,
+    Loaded = 2,
     Offloaded = 3,
     Completed = 4,
-    Cancelled = 5
+    Blocked = 5,
+    Cancelled = 6
 }

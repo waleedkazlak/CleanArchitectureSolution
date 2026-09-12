@@ -8,11 +8,16 @@ public class DeleteVehicleOffloadCommandHandler : IRequestHandler<DeleteVehicleO
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DeleteVehicleOffloadCommandHandler> _logger;
+    private readonly Services.IWorkflowOrchestratorService _workflowOrchestrator;
 
-    public DeleteVehicleOffloadCommandHandler(IUnitOfWork unitOfWork, ILogger<DeleteVehicleOffloadCommandHandler> logger)
+    public DeleteVehicleOffloadCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<DeleteVehicleOffloadCommandHandler> logger,
+        Services.IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<bool> Handle(DeleteVehicleOffloadCommand request, CancellationToken cancellationToken)
@@ -26,8 +31,12 @@ public class DeleteVehicleOffloadCommandHandler : IRequestHandler<DeleteVehicleO
             return false;
         }
 
+        var loadRequestId = existingOffload.LoadRequestId;
         await _unitOfWork.VehicleOffloads.DeleteAsync(request.Id);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Trigger workflow recalculation for LoadRequest
+        await _workflowOrchestrator.RecalculateLoadRequestStatusAfterVehicleOffloadsChangeAsync(loadRequestId, cancellationToken);
 
         _logger.LogInformation("Successfully deleted VehicleOffload with ID: {VehicleOffloadId}", request.Id);
         return true;

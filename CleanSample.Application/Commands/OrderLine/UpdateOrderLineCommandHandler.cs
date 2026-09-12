@@ -27,6 +27,16 @@ public class UpdateOrderLineCommandHandler : IRequestHandler<UpdateOrderLineComm
         orderLine.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.OrderLines.UpdateAsync(orderLine);
+
+        // Update parent order status to Pending (2)
+        var parentOrder = await _unitOfWork.Orders.GetByIdAsync(orderLine.OrderId);
+        if (parentOrder != null && parentOrder.Status != (int)Domain.Enums.OrderStatusEnum.Completed)
+        {
+            parentOrder.Status = (int)Domain.Enums.OrderStatusEnum.Pending;
+            parentOrder.UpdatedAt = DateTime.UtcNow;
+            await _unitOfWork.Orders.UpdateAsync(parentOrder);
+        }
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return true;

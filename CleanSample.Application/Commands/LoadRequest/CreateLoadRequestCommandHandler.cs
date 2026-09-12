@@ -9,13 +9,16 @@ public class CreateLoadRequestCommandHandler : IRequestHandler<CreateLoadRequest
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILoadRequestBOMService _loadRequestBOMService;
+    private readonly IWorkflowOrchestratorService _workflowOrchestrator;
 
     public CreateLoadRequestCommandHandler(
         IUnitOfWork unitOfWork,
-        ILoadRequestBOMService loadRequestBOMService)
+        ILoadRequestBOMService loadRequestBOMService,
+        IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _loadRequestBOMService = loadRequestBOMService;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<long> Handle(CreateLoadRequestCommand request, CancellationToken cancellationToken)
@@ -73,10 +76,11 @@ public class CreateLoadRequestCommandHandler : IRequestHandler<CreateLoadRequest
 
         var loadRequestId = await _unitOfWork.LoadRequests.AddAsync(loadRequest);
 
-        // If associated with an Order, check verification and quantities across all load requests for this order
+        // If associated with an Order, check verification and quantities, and update Order.Status to Processing (4)
         if (loadRequest.OrderId.HasValue)
         {
             await _loadRequestBOMService.CheckAndGeneratePartsForOrderAsync(loadRequest.OrderId.Value, cancellationToken);
+            await _workflowOrchestrator.RecalculateOrderStatusAfterLoadRequestChangeAsync(loadRequest.OrderId.Value, cancellationToken);
         }
 
         return loadRequestId;

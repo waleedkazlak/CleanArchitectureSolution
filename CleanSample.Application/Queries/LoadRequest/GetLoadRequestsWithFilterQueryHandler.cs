@@ -28,8 +28,7 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
         var pageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
         var pageSize = filter.PageSize > 0 && filter.PageSize <= 100 ? filter.PageSize : 10;
 
-        var includeFieldJobs = filter.WithoutFieldJobs == true;
-        var query = _unitOfWork.LoadRequests.GetQueryable(includeFieldJobs);
+        var query = _unitOfWork.LoadRequests.GetQueryable();
 
         if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
         {
@@ -84,18 +83,6 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
         if (filter.Verified.HasValue)
         {
             query = query.Where(p => p.Verified == filter.Verified.Value);
-        }
-
-        if (filter.WithoutFieldJobs.HasValue)
-        {
-            if (filter.WithoutFieldJobs.Value)
-            {
-                query = query.Where(p => !p.FieldJobs.Any());
-            }
-            else
-            {
-                query = query.Where(p => p.FieldJobs.Any());
-            }
         }
 
         if (filter.FromDate.HasValue)

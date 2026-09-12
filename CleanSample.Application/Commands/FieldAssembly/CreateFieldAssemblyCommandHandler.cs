@@ -10,11 +10,16 @@ public class CreateFieldAssemblyCommandHandler : IRequestHandler<CreateFieldAsse
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateFieldAssemblyCommandHandler> _logger;
+    private readonly Services.IWorkflowOrchestratorService _workflowOrchestrator;
 
-    public CreateFieldAssemblyCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateFieldAssemblyCommandHandler> logger)
+    public CreateFieldAssemblyCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<CreateFieldAssemblyCommandHandler> logger,
+        Services.IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<bool> Handle(CreateFieldAssemblyCommand request, CancellationToken cancellationToken)
@@ -52,9 +57,12 @@ public class CreateFieldAssemblyCommandHandler : IRequestHandler<CreateFieldAsse
 
         _logger.LogInformation("Processing {Count} FieldAssembly items (create/update)", itemsToProcess.Count);
 
+        var affectedFieldJobIds = new HashSet<long>();
+
         foreach (var item in itemsToProcess)
         {
             Domain.Entities.FieldAssembly? existing = null;
+            affectedFieldJobIds.Add(item.FieldJobId);
 
             if (item.Id.HasValue && item.Id.Value > 0)
             {
@@ -106,6 +114,16 @@ public class CreateFieldAssemblyCommandHandler : IRequestHandler<CreateFieldAsse
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Check if all FieldAssemblies for the related LoadRequest are Completed (2)
+        foreach (var jobId in affectedFieldJobIds)
+        {
+            var job = await _unitOfWork.FieldJobs.GetByIdAsync(jobId);
+            if (job != null)
+            {
+                await _workflowOrchestrator.RecalculateLoadRequestStatusAfterFieldAssembliesChangeAsync(job.LoadRequestId, cancellationToken);
+            }
+        }
 
         _logger.LogInformation("Successfully processed {Count} FieldAssembly items", itemsToProcess.Count);
         return true;

@@ -10,11 +10,16 @@ public class CreateVehicleLoadsCommandHandler : IRequestHandler<CreateVehicleLoa
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateVehicleLoadsCommandHandler> _logger;
+    private readonly Services.IWorkflowOrchestratorService _workflowOrchestrator;
 
-    public CreateVehicleLoadsCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateVehicleLoadsCommandHandler> logger)
+    public CreateVehicleLoadsCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<CreateVehicleLoadsCommandHandler> logger,
+        Services.IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<List<VehicleLoadDto>> Handle(CreateVehicleLoadsCommand request, CancellationToken cancellationToken)
@@ -59,6 +64,13 @@ public class CreateVehicleLoadsCommandHandler : IRequestHandler<CreateVehicleLoa
 
         await _unitOfWork.VehicleLoads.AddRangeAsync(newLoads);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Trigger workflow recalculation for each affected LoadRequest
+        var affectedLoadRequestIds = newLoads.Select(l => l.LoadRequestId).Distinct();
+        foreach (var loadRequestId in affectedLoadRequestIds)
+        {
+            await _workflowOrchestrator.RecalculateLoadRequestStatusAfterVehicleLoadsChangeAsync(loadRequestId, cancellationToken);
+        }
 
         _logger.LogInformation("Successfully created {Count} vehicle load records", newLoads.Count);
 

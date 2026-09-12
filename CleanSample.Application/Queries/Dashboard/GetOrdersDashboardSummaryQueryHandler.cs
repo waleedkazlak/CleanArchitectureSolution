@@ -32,6 +32,7 @@ public class GetOrdersDashboardSummaryQueryHandler : IRequestHandler<GetOrdersDa
             TotalOrders = orderCountsByStatus.Sum(x => x.Count),
             DraftOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Draft)?.Count ?? 0,
             PendingOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Pending)?.Count ?? 0,
+            ApprovedOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Approved)?.Count ?? 0,
             ProcessingOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Processing)?.Count ?? 0,
             CompletedOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Completed)?.Count ?? 0,
             CancelledOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Cancelled)?.Count ?? 0,

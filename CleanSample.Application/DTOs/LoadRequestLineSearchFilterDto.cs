@@ -1,4 +1,4 @@
-﻿namespace CleanSample.Application.DTOs;
+namespace CleanSample.Application.DTOs;
 
 public class LoadRequestLineSearchFilterDto
 {
@@ -6,6 +6,8 @@ public class LoadRequestLineSearchFilterDto
     public int PageSize { get; set; } = 10;
     public string? SearchTerm { get; set; }
     public long? LoadRequestId { get; set; }
+    public int? DriverId { get; set; }
+    public bool? ApprovedOnly { get; set; }
     public int? ProductId { get; set; }
     public int? MinQuantity { get; set; }
     public int? MaxQuantity { get; set; }

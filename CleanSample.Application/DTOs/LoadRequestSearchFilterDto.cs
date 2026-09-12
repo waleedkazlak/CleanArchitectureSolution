@@ -1,4 +1,4 @@
-﻿namespace CleanSample.Application.DTOs;
+namespace CleanSample.Application.DTOs;
 public class LoadRequestSearchFilterDto
 {
     public int PageNumber { get; set; } = 1;
@@ -12,7 +12,6 @@ public class LoadRequestSearchFilterDto
     public int? VehicleId { get; set; }
     public int? Status { get; set; }
     public bool? Verified { get; set; }
-    public bool? WithoutFieldJobs { get; set; }
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
     public string? SortBy { get; set; } = "CreatedAt";

@@ -4,6 +4,7 @@ namespace CleanSample.Domain.Interfaces;
 
 public interface ILoadRequestLineRepository
 {
+    IQueryable<LoadRequestLine> GetQueryable();
     Task<LoadRequestLine?> GetByIdAsync(long id);
     Task<IEnumerable<LoadRequestLine>> GetAllAsync();
     Task<IEnumerable<LoadRequestLine>> GetByLoadRequestIdAsync(long loadRequestId);

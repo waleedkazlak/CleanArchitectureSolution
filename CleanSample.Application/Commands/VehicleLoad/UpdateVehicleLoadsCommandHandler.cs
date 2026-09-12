@@ -9,11 +9,16 @@ public class UpdateVehicleLoadsCommandHandler : IRequestHandler<UpdateVehicleLoa
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateVehicleLoadsCommandHandler> _logger;
+    private readonly Services.IWorkflowOrchestratorService _workflowOrchestrator;
 
-    public UpdateVehicleLoadsCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateVehicleLoadsCommandHandler> logger)
+    public UpdateVehicleLoadsCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<UpdateVehicleLoadsCommandHandler> logger,
+        Services.IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<List<VehicleLoadDto>> Handle(UpdateVehicleLoadsCommand request, CancellationToken cancellationToken)
@@ -95,6 +100,13 @@ public class UpdateVehicleLoadsCommandHandler : IRequestHandler<UpdateVehicleLoa
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Trigger workflow recalculation for each affected LoadRequest
+        var affectedLoadRequestIds = updatedLoads.Select(l => l.LoadRequestId).Distinct();
+        foreach (var loadRequestId in affectedLoadRequestIds)
+        {
+            await _workflowOrchestrator.RecalculateLoadRequestStatusAfterVehicleLoadsChangeAsync(loadRequestId, cancellationToken);
+        }
 
         _logger.LogInformation("Successfully updated {Count} vehicle load records", updatedLoads.Count);
 

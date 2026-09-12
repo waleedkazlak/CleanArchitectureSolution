@@ -1,4 +1,4 @@
-﻿using CleanSample.Application.Commands.LoadRequestLine;
+using CleanSample.Application.Commands.LoadRequestLine;
 using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
 using CleanSample.Application.Queries.LoadRequestLine;
@@ -129,6 +129,41 @@ public class LoadRequestLinesController : ControllerBase
 
         return Ok(new APIBaseResponse<IEnumerable<LoadRequestLineDto>>()
             .SetSuccess(result, "Load request lines retrieved successfully"));
+    }
+
+    /// <summary>
+    /// Get approved load request lines for a specific driver with pagination
+    /// </summary>
+    /// <param name="driverId">Driver id (int)</param>
+    /// <param name="pageNumber">Page number (1-based), defaults to 1</param>
+    /// <param name="pageSize">Number of items per page, defaults to 10</param>
+    /// <param name="searchTerm">Optional search term</param>
+    /// <param name="sortBy">Sort field name</param>
+    /// <param name="sortDirection">Sort direction (asc/desc)</param>
+    /// <returns>Paginated list of approved load request lines for the driver</returns>
+    [HttpGet("by-driver/{driverId}")]
+    [HttpGet("driver/{driverId}")]
+    [RequirePermission("LOAD_REQUESTS", PermissionAction.View)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<APIBaseResponse<PaginatedResultDto<LoadRequestLineDto>>>> GetApprovedByDriverId(
+        [FromRoute] int driverId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] string? sortBy = "CreatedAt",
+        [FromQuery] string? sortDirection = "desc")
+    {
+        _logger.LogInformation("User {User} fetching approved load request lines for driver: {DriverId} - Page: {PageNumber}",
+            User.Identity?.Name, driverId, pageNumber);
+
+        var query = new GetApprovedLoadRequestLinesByDriverIdQuery(driverId, pageNumber, pageSize, searchTerm, sortBy, sortDirection);
+        var result = await _mediator.Send(query);
+
+        return Ok(new APIBaseResponse<PaginatedResultDto<LoadRequestLineDto>>()
+            .SetSuccess(result, result.TotalCount, "Approved load request lines for driver retrieved successfully"));
     }
 
     /// <summary>

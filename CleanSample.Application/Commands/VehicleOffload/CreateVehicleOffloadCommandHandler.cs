@@ -9,11 +9,16 @@ public class CreateVehicleOffloadCommandHandler : IRequestHandler<CreateVehicleO
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateVehicleOffloadCommandHandler> _logger;
+    private readonly Services.IWorkflowOrchestratorService _workflowOrchestrator;
 
-    public CreateVehicleOffloadCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateVehicleOffloadCommandHandler> logger)
+    public CreateVehicleOffloadCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<CreateVehicleOffloadCommandHandler> logger,
+        Services.IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<long> Handle(CreateVehicleOffloadCommand request, CancellationToken cancellationToken)
@@ -39,6 +44,9 @@ public class CreateVehicleOffloadCommandHandler : IRequestHandler<CreateVehicleO
 
         await _unitOfWork.VehicleOffloads.AddAsync(vehicleOffload);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Trigger workflow recalculation for LoadRequest
+        await _workflowOrchestrator.RecalculateLoadRequestStatusAfterVehicleOffloadsChangeAsync(request.LoadRequestId, cancellationToken);
 
         _logger.LogInformation("Successfully created VehicleOffload with ID: {VehicleOffloadId}", vehicleOffload.Id);
 

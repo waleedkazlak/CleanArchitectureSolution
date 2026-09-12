@@ -8,11 +8,16 @@ public class DeleteVehicleLoadsCommandHandler : IRequestHandler<DeleteVehicleLoa
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DeleteVehicleLoadsCommandHandler> _logger;
+    private readonly Services.IWorkflowOrchestratorService _workflowOrchestrator;
 
-    public DeleteVehicleLoadsCommandHandler(IUnitOfWork unitOfWork, ILogger<DeleteVehicleLoadsCommandHandler> logger)
+    public DeleteVehicleLoadsCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<DeleteVehicleLoadsCommandHandler> logger,
+        Services.IWorkflowOrchestratorService workflowOrchestrator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _workflowOrchestrator = workflowOrchestrator;
     }
 
     public async Task<bool> Handle(DeleteVehicleLoadsCommand request, CancellationToken cancellationToken)
@@ -24,11 +29,14 @@ public class DeleteVehicleLoadsCommandHandler : IRequestHandler<DeleteVehicleLoa
             return false;
         }
 
+        var affectedLoadRequestIds = new HashSet<long>();
+
         foreach (var id in request.LoadIds)
         {
             var load = await _unitOfWork.VehicleLoads.GetByIdAsync(id);
             if (load != null)
             {
+                affectedLoadRequestIds.Add(load.LoadRequestId);
                 var relatedParts = await _unitOfWork.LoadRequestParts.GetByLoadRequestIdAsync(load.LoadRequestId);
                 var lrp = relatedParts.FirstOrDefault(p => p.PartId == load.PartId);
                 if (lrp != null)
@@ -41,6 +49,12 @@ public class DeleteVehicleLoadsCommandHandler : IRequestHandler<DeleteVehicleLoa
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        foreach (var loadRequestId in affectedLoadRequestIds)
+        {
+            await _workflowOrchestrator.RecalculateLoadRequestStatusAfterVehicleLoadsChangeAsync(loadRequestId, cancellationToken);
+        }
+
         _logger.LogInformation("Successfully deleted vehicle loads: {Ids}", string.Join(",", request.LoadIds));
 
         return true;
