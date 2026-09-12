@@ -199,28 +199,51 @@ public class FieldAssembliesController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new field assembly
+    /// Create or update field assembly records (supports single item, batch list, or command object)
     /// </summary>
     /// <param name="command">Field assembly creation command</param>
-    /// <returns>Created field assembly ID</returns>
+    /// <returns>Success status</returns>
     [HttpPost]
     [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.Create)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<APIBaseResponse<long>>> Create(
+    public async Task<ActionResult<APIBaseResponse<bool>>> Create(
         [FromBody] CreateFieldAssemblyCommand command)
     {
-        _logger.LogInformation("User {User} creating field assembly for FieldJobId: {FieldJobId}",
-            User.Identity?.Name, command?.FieldJobId);
+        _logger.LogInformation("User {User} creating/updating field assemblies", User.Identity?.Name);
 
         var result = await _mediator.Send(command);
 
-        return CreatedAtAction(nameof(GetById), new { id = result },
-            new APIBaseResponse<long>()
-                .SetSuccess(result, "Field assembly created successfully"));
+        return Ok(new APIBaseResponse<bool>()
+            .SetSuccess(result, "Field assemblies processed successfully"));
+    }
+
+    /// <summary>
+    /// Batch create or update field assemblies from a list of items
+    /// </summary>
+    /// <param name="items">List of field assembly items to create or update</param>
+    /// <returns>Success status</returns>
+    [HttpPost("batch")]
+    [RequirePermission("FIELD_ASSEMBLIES", PermissionAction.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<APIBaseResponse<bool>>> Batch(
+        [FromBody] List<CreateFieldAssemblyItemDto> items)
+    {
+        _logger.LogInformation("User {User} batch creating/updating {Count} field assemblies", User.Identity?.Name, items?.Count ?? 0);
+
+        var command = new CreateFieldAssemblyCommand(items ?? new List<CreateFieldAssemblyItemDto>());
+        var result = await _mediator.Send(command);
+
+        return Ok(new APIBaseResponse<bool>()
+            .SetSuccess(result, "Field assemblies processed successfully"));
     }
 
     /// <summary>

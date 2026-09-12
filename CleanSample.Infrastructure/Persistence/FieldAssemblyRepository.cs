@@ -13,6 +13,11 @@ public class FieldAssemblyRepository : IFieldAssemblyRepository
         _context = context;
     }
 
+    public IQueryable<FieldAssembly> GetQueryable()
+    {
+        return _context.FieldAssemblies.AsNoTracking();
+    }
+
     public async Task<FieldAssembly?> GetByIdAsync(long id)
     {
         return await _context.FieldAssemblies

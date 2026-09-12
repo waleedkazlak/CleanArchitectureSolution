@@ -15,6 +15,7 @@ public class LoadRequestSearchFilterDto
     public int? VehicleId { get; set; }
     public LoadRequestStatus? Status { get; set; }
     public bool? Verified { get; set; }
+    public bool? WithoutFieldJobs { get; set; }
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
     public string? SortBy { get; set; } = "CreatedAt";

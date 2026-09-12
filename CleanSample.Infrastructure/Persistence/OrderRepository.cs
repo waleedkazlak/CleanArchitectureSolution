@@ -13,6 +13,11 @@ public class OrderRepository : IOrderRepository
         _context = context;
     }
 
+    public IQueryable<Order> GetQueryable()
+    {
+        return _context.Orders.AsNoTracking();
+    }
+
     public async Task<Order?> GetByIdAsync(long id)
     {
         return await _context.Orders

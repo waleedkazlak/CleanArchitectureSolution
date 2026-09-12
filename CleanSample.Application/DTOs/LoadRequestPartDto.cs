@@ -5,6 +5,8 @@ public class LoadRequestPartDto
     public long Id { get; set; }
     public long LoadRequestId { get; set; }
     public long LoadRequestLineId { get; set; }
+    public int ProductId { get; set; }
+    public string? ProductName { get; set; }
     public int PartId { get; set; }
     public string? PartCode { get; set; }
     public string? PartName { get; set; }

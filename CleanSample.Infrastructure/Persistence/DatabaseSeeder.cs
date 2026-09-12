@@ -784,6 +784,7 @@ public static class DatabaseSeeder
                 {
                     LoadRequestId = line.LoadRequestId,
                     LoadRequestLineId = line.Id,
+                    ProductId = line.ProductId,
                     PartId = part.Id,
                     RequiredQuantity = line.Quantity * 2.0m,
                     LoadedQuantity = line.Quantity * 2.0m,

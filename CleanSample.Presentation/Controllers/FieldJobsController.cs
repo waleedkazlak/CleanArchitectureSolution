@@ -1,3 +1,4 @@
+using CleanSample.Application.Commands.FieldAssembly;
 using CleanSample.Application.Commands.FieldJob;
 using CleanSample.Application.Common;
 using CleanSample.Application.DTOs;
@@ -285,5 +286,42 @@ public class FieldJobsController : ControllerBase
 
         return Ok(new APIBaseResponse<bool>()
             .SetSuccess(true, "Field job deleted successfully"));
+    }
+
+    /// <summary>
+    /// Batch create or update field assemblies for a specific field job
+    /// </summary>
+    /// <param name="id">Field job ID (bigint)</param>
+    /// <param name="items">List of field assembly items to create or update</param>
+    /// <returns>Success status</returns>
+    [HttpPost("{id}/assemblies/batch")]
+    [RequirePermission("FIELD_JOBS", PermissionAction.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<APIBaseResponse<bool>>> BatchAssembliesForFieldJob(
+        [FromRoute] long id,
+        [FromBody] List<CreateFieldAssemblyItemDto> items)
+    {
+        _logger.LogInformation("User {User} batch creating/updating {Count} assemblies for field job {FieldJobId}", User.Identity?.Name, items?.Count ?? 0, id);
+
+        if (items != null)
+        {
+            foreach (var item in items)
+            {
+                if (item.FieldJobId <= 0)
+                {
+                    item.FieldJobId = id;
+                }
+            }
+        }
+
+        var command = new CreateFieldAssemblyCommand(items ?? new List<CreateFieldAssemblyItemDto>());
+        var result = await _mediator.Send(command);
+
+        return Ok(new APIBaseResponse<bool>()
+            .SetSuccess(result, "Field assemblies processed successfully"));
     }
 }

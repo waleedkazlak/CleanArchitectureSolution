@@ -1,4 +1,4 @@
-﻿using CleanSample.Application.DTOs;
+using CleanSample.Application.DTOs;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -80,6 +80,8 @@ public class GetLoadRequestLinesWithFilterQueryHandler : IRequestHandler<GetLoad
                 Id = lrp.Id,
                 LoadRequestId = lrp.LoadRequestId,
                 LoadRequestLineId = lrp.LoadRequestLineId,
+                ProductId = lrp.ProductId,
+                ProductName = lrp.Product?.Name ?? line.Product?.Name,
                 PartId = lrp.PartId,
                 PartCode = lrp.Part?.Code,
                 PartName = lrp.Part?.Name,

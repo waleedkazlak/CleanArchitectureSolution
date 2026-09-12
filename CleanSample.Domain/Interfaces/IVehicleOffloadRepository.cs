@@ -4,6 +4,7 @@ namespace CleanSample.Domain.Interfaces;
 
 public interface IVehicleOffloadRepository
 {
+    IQueryable<VehicleOffload> GetQueryable();
     Task<VehicleOffload?> GetByIdAsync(long id);
     Task<IEnumerable<VehicleOffload>> GetAllAsync();
     Task<IEnumerable<VehicleOffload>> GetByLoadRequestIdAsync(long loadRequestId);

@@ -4,6 +4,7 @@ using CleanSample.Domain.Entities;
 
 public interface IOrderRepository
 {
+    IQueryable<Order> GetQueryable();
     Task<Order?> GetByIdAsync(long id);
     Task<IEnumerable<Order>> GetAllAsync();
     Task<IEnumerable<Order>> GetByClientIdAsync(int clientId);

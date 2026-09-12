@@ -1,3 +1,4 @@
+using CleanSample.Application.Services;
 using CleanSample.Domain.Entities;
 using CleanSample.Domain.Interfaces;
 using MediatR;
@@ -7,10 +8,14 @@ namespace CleanSample.Application.Commands.LoadRequest;
 public class UpdateLoadRequestCommandHandler : IRequestHandler<UpdateLoadRequestCommand, bool>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILoadRequestBOMService _loadRequestBOMService;
 
-    public UpdateLoadRequestCommandHandler(IUnitOfWork unitOfWork)
+    public UpdateLoadRequestCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILoadRequestBOMService loadRequestBOMService)
     {
         _unitOfWork = unitOfWork;
+        _loadRequestBOMService = loadRequestBOMService;
     }
 
     public async Task<bool> Handle(UpdateLoadRequestCommand request, CancellationToken cancellationToken)
@@ -20,6 +25,8 @@ public class UpdateLoadRequestCommandHandler : IRequestHandler<UpdateLoadRequest
         {
             return false;
         }
+
+        var previousOrderId = loadRequest.OrderId;
 
         loadRequest.OrderId = request.OrderId;
         loadRequest.ClientId = request.ClientId;
@@ -85,6 +92,7 @@ public class UpdateLoadRequestCommandHandler : IRequestHandler<UpdateLoadRequest
                                 LoadRequest = loadRequest,
                                 LoadRequestLineId = existingLine.Id,
                                 LoadRequestLine = existingLine,
+                                ProductId = incomingLine.ProductId,
                                 PartId = bom.PartId,
                                 RequiredQuantity = incomingLine.Quantity * bom.Quantity,
                                 LoadedQuantity = 0,
@@ -130,6 +138,7 @@ public class UpdateLoadRequestCommandHandler : IRequestHandler<UpdateLoadRequest
                         LoadRequestId = loadRequest.Id,
                         LoadRequest = loadRequest,
                         LoadRequestLine = newLine,
+                        ProductId = incomingLine.ProductId,
                         PartId = bom.PartId,
                         RequiredQuantity = incomingLine.Quantity * bom.Quantity,
                         LoadedQuantity = 0,
@@ -146,6 +155,18 @@ public class UpdateLoadRequestCommandHandler : IRequestHandler<UpdateLoadRequest
 
         await _unitOfWork.LoadRequests.UpdateAsync(loadRequest);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Check verification and quantities for current Order
+        if (loadRequest.OrderId.HasValue)
+        {
+            await _loadRequestBOMService.CheckAndGeneratePartsForOrderAsync(loadRequest.OrderId.Value, cancellationToken);
+        }
+
+        // Also check previous Order if OrderId was changed
+        if (previousOrderId.HasValue && previousOrderId != loadRequest.OrderId)
+        {
+            await _loadRequestBOMService.CheckAndGeneratePartsForOrderAsync(previousOrderId.Value, cancellationToken);
+        }
 
         return true;
     }

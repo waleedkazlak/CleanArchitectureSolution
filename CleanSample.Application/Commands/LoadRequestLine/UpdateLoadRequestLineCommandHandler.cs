@@ -1,4 +1,5 @@
-﻿using CleanSample.Domain.Entities;
+using CleanSample.Application.Services;
+using CleanSample.Domain.Entities;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -8,11 +9,16 @@ namespace CleanSample.Application.Commands.LoadRequestLine;
 public class UpdateLoadRequestLineCommandHandler : IRequestHandler<UpdateLoadRequestLineCommand, bool>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILoadRequestBOMService _loadRequestBOMService;
     private readonly ILogger<UpdateLoadRequestLineCommandHandler> _logger;
 
-    public UpdateLoadRequestLineCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateLoadRequestLineCommandHandler> logger)
+    public UpdateLoadRequestLineCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILoadRequestBOMService loadRequestBOMService,
+        ILogger<UpdateLoadRequestLineCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _loadRequestBOMService = loadRequestBOMService;
         _logger = logger;
     }
 
@@ -51,6 +57,8 @@ public class UpdateLoadRequestLineCommandHandler : IRequestHandler<UpdateLoadReq
                 {
                     LoadRequestId = existing.LoadRequestId,
                     LoadRequestLineId = existing.Id,
+                    LoadRequestLine = existing,
+                    ProductId = existing.ProductId,
                     PartId = bom.PartId,
                     RequiredQuantity = request.Quantity * bom.Quantity,
                     LoadedQuantity = 0,
@@ -76,6 +84,13 @@ public class UpdateLoadRequestLineCommandHandler : IRequestHandler<UpdateLoadReq
 
         await _unitOfWork.LoadRequestLines.UpdateAsync(existing);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Check verification and quantities for associated Order
+        var loadRequest = await _unitOfWork.LoadRequests.GetByIdAsync(existing.LoadRequestId);
+        if (loadRequest != null && loadRequest.OrderId.HasValue)
+        {
+            await _loadRequestBOMService.CheckAndGeneratePartsForOrderAsync(loadRequest.OrderId.Value, cancellationToken);
+        }
 
         _logger.LogInformation("LoadRequestLine with Id: {Id} updated successfully", request.Id);
         return true;

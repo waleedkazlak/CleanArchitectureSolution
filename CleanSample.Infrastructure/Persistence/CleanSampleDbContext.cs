@@ -820,6 +820,18 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_LoadRequestParts_LoadRequestLines")
                 .OnDelete(DeleteBehavior.Cascade);
 
+            entity.Property(e => e.ProductId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Product)
+                .WithMany()
+                .HasForeignKey(e => e.ProductId)
+                .HasConstraintName("FK_LoadRequestParts_Products")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.ProductId)
+                .HasDatabaseName("IX_LoadRequestParts_ProductId");
+
             entity.Property(e => e.PartId)
                 .IsRequired();
 

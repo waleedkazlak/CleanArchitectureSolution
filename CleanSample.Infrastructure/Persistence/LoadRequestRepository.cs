@@ -13,6 +13,34 @@ public class LoadRequestRepository : ILoadRequestRepository
         _context = context;
     }
 
+    public IQueryable<LoadRequest> GetQueryable(bool includeFieldJobs = false)
+    {
+        var query = _context.LoadRequests
+            .AsNoTracking()
+            .Include(p => p.Order)
+            .Include(p => p.Client)
+            .Include(p => p.ClientLocation)
+            .Include(p => p.Requester)
+            .Include(p => p.Driver)
+            .Include(p => p.Vehicle)
+            .Include(p => p.FieldJobs)
+            .Include(p => p.LoadRequestLines)
+                .ThenInclude(l => l.Product)
+            .Include(p => p.LoadRequestLines)
+                .ThenInclude(l => l.LoadRequestParts)
+                    .ThenInclude(prp => prp.Part)
+            .Include(p => p.LoadRequestParts)
+                .ThenInclude(prp => prp.Part)
+            .AsQueryable();
+
+        if (includeFieldJobs)
+        {
+            query = query.Include(p => p.FieldJobs);
+        }
+
+        return query;
+    }
+
     public async Task<LoadRequest?> GetByIdAsync(long id)
     {
         return await _context.LoadRequests
@@ -29,6 +57,7 @@ public class LoadRequestRepository : ILoadRequestRepository
                     .ThenInclude(prp => prp.Part)
             .Include(p => p.LoadRequestParts)
                 .ThenInclude(prp => prp.Part)
+            .Include(p => p.FieldJobs)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -48,6 +77,7 @@ public class LoadRequestRepository : ILoadRequestRepository
                     .ThenInclude(prp => prp.Part)
             .Include(p => p.LoadRequestParts)
                 .ThenInclude(prp => prp.Part)
+            .Include(p => p.FieldJobs)
             .ToListAsync();
     }
 
@@ -67,6 +97,7 @@ public class LoadRequestRepository : ILoadRequestRepository
                     .ThenInclude(prp => prp.Part)
             .Include(p => p.LoadRequestParts)
                 .ThenInclude(prp => prp.Part)
+            .Include(p => p.FieldJobs)
             .Where(p => p.OrderId == orderId)
             .ToListAsync();
     }
@@ -87,6 +118,7 @@ public class LoadRequestRepository : ILoadRequestRepository
                     .ThenInclude(prp => prp.Part)
             .Include(p => p.LoadRequestParts)
                 .ThenInclude(prp => prp.Part)
+            .Include(p => p.FieldJobs)
             .Where(p => p.ClientId == clientId)
             .ToListAsync();
     }
@@ -179,6 +211,7 @@ public class LoadRequestRepository : ILoadRequestRepository
                                         LoadRequest = existingLoadRequest,
                                         LoadRequestLineId = existingLine.Id,
                                         LoadRequestLine = existingLine,
+                                        ProductId = existingLine.ProductId,
                                         PartId = bom.PartId,
                                         RequiredQuantity = incomingLine.Quantity * bom.Quantity,
                                         LoadedQuantity = 0,
@@ -231,6 +264,7 @@ public class LoadRequestRepository : ILoadRequestRepository
                                 LoadRequestId = existingLoadRequest.Id,
                                 LoadRequest = existingLoadRequest,
                                 LoadRequestLine = newLine,
+                                ProductId = incomingLine.ProductId,
                                 PartId = bom.PartId,
                                 RequiredQuantity = incomingLine.Quantity * bom.Quantity,
                                 LoadedQuantity = 0,

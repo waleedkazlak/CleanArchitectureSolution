@@ -1,6 +1,7 @@
 using CleanSample.Application.DTOs;
 using CleanSample.Domain.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CleanSample.Application.Queries.LoadRequest;
@@ -27,82 +28,94 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
         var pageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
         var pageSize = filter.PageSize > 0 && filter.PageSize <= 100 ? filter.PageSize : 10;
 
-        var loadRequests = await _unitOfWork.LoadRequests.GetAllAsync();
+        var includeFieldJobs = filter.WithoutFieldJobs == true;
+        var query = _unitOfWork.LoadRequests.GetQueryable(includeFieldJobs);
 
         if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
         {
-            var searchTermLower = filter.SearchTerm.ToLower();
-            loadRequests = loadRequests.Where(p =>
-                (p.Client != null && p.Client.Name.ToLower().Contains(searchTermLower)) ||
-                (p.ClientLocation != null && p.ClientLocation.Name.ToLower().Contains(searchTermLower)) ||
-                (p.Requester != null && p.Requester.FullName.ToLower().Contains(searchTermLower)) ||
-                (p.Driver != null && p.Driver.FullName.ToLower().Contains(searchTermLower)) ||
-                (p.Vehicle != null && (p.Vehicle.VehicleNumber.ToLower().Contains(searchTermLower) || p.Vehicle.PlateNumber.ToLower().Contains(searchTermLower))) ||
-                (p.DestinationAddress != null && p.DestinationAddress.ToLower().Contains(searchTermLower)) ||
-                (p.DestinationCity != null && p.DestinationCity.ToLower().Contains(searchTermLower)) ||
-                (p.Description != null && p.Description.ToLower().Contains(searchTermLower)) ||
-                p.Status.ToString().ToLower().Contains(searchTermLower)
-            ).ToList();
+            var searchTerm = filter.SearchTerm.Trim();
+            query = query.Where(p =>
+                (p.Client != null && p.Client.Name.Contains(searchTerm)) ||
+                (p.ClientLocation != null && p.ClientLocation.Name.Contains(searchTerm)) ||
+                (p.Requester != null && p.Requester.FullName.Contains(searchTerm)) ||
+                (p.Driver != null && p.Driver.FullName.Contains(searchTerm)) ||
+                (p.Vehicle != null && (p.Vehicle.VehicleNumber.Contains(searchTerm) || p.Vehicle.PlateNumber.Contains(searchTerm))) ||
+                (p.DestinationAddress != null && p.DestinationAddress.Contains(searchTerm)) ||
+                (p.DestinationCity != null && p.DestinationCity.Contains(searchTerm)) ||
+                (p.Description != null && p.Description.Contains(searchTerm))
+            );
         }
 
         if (filter.OrderId.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.OrderId == filter.OrderId.Value).ToList();
+            query = query.Where(p => p.OrderId == filter.OrderId.Value);
         }
 
         if (filter.ClientId.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.ClientId == filter.ClientId.Value).ToList();
+            query = query.Where(p => p.ClientId == filter.ClientId.Value);
         }
 
         if (filter.ClientLocationId.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.ClientLocationId == filter.ClientLocationId.Value).ToList();
+            query = query.Where(p => p.ClientLocationId == filter.ClientLocationId.Value);
         }
 
         if (filter.RequestedBy.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.RequestedBy == filter.RequestedBy.Value).ToList();
+            query = query.Where(p => p.RequestedBy == filter.RequestedBy.Value);
         }
 
         if (filter.DriverId.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.DriverId == filter.DriverId.Value).ToList();
+            query = query.Where(p => p.DriverId == filter.DriverId.Value);
         }
 
         if (filter.VehicleId.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.VehicleId == filter.VehicleId.Value).ToList();
+            query = query.Where(p => p.VehicleId == filter.VehicleId.Value);
         }
 
         if (filter.Status.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.Status == filter.Status.Value).ToList();
+            query = query.Where(p => p.Status == filter.Status.Value);
         }
 
         if (filter.Verified.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.Verified == filter.Verified.Value).ToList();
+            query = query.Where(p => p.Verified == filter.Verified.Value);
+        }
+
+        if (filter.WithoutFieldJobs.HasValue)
+        {
+            if (filter.WithoutFieldJobs.Value)
+            {
+                query = query.Where(p => !p.FieldJobs.Any());
+            }
+            else
+            {
+                query = query.Where(p => p.FieldJobs.Any());
+            }
         }
 
         if (filter.FromDate.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.RequestDate >= filter.FromDate.Value).ToList();
+            query = query.Where(p => p.RequestDate >= filter.FromDate.Value);
         }
 
         if (filter.ToDate.HasValue)
         {
-            loadRequests = loadRequests.Where(p => p.RequestDate <= filter.ToDate.Value).ToList();
+            query = query.Where(p => p.RequestDate <= filter.ToDate.Value);
         }
 
-        loadRequests = ApplySort(loadRequests.ToList(), filter.SortBy, filter.SortDirection);
+        query = ApplySort(query, filter.SortBy, filter.SortDirection);
 
-        var totalCount = loadRequests.Count();
+        var totalCount = await query.CountAsync(cancellationToken);
 
-        var paginatedItems = loadRequests
+        var paginatedItems = await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .ToList();
+            .ToListAsync(cancellationToken);
 
         var dtos = paginatedItems.Select(p => new LoadRequestDto
         {
@@ -142,6 +155,8 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
                     Id = lrp.Id,
                     LoadRequestId = lrp.LoadRequestId,
                     LoadRequestLineId = lrp.LoadRequestLineId,
+                    ProductId = lrp.ProductId,
+                    ProductName = lrp.Product?.Name ?? l.Product?.Name,
                     PartId = lrp.PartId,
                     PartCode = lrp.Part?.Code,
                     PartName = lrp.Part?.Name,
@@ -157,6 +172,8 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
                 Id = lrp.Id,
                 LoadRequestId = lrp.LoadRequestId,
                 LoadRequestLineId = lrp.LoadRequestLineId,
+                ProductId = lrp.ProductId,
+                ProductName = lrp.Product?.Name,
                 PartId = lrp.PartId,
                 PartCode = lrp.Part?.Code,
                 PartName = lrp.Part?.Name,
@@ -177,38 +194,22 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
         };
     }
 
-    private List<Domain.Entities.LoadRequest> ApplySort(List<Domain.Entities.LoadRequest> items, string? sortBy, string? sortDirection)
+    private static IQueryable<Domain.Entities.LoadRequest> ApplySort(
+        IQueryable<Domain.Entities.LoadRequest> query,
+        string? sortBy,
+        string? sortDirection)
     {
-        var isDescending = sortDirection?.ToLower() == "desc";
+        var isDescending = string.Equals(sortDirection, "desc", StringComparison.OrdinalIgnoreCase);
 
         return (sortBy?.ToLower()) switch
         {
-
-            "clientid" => isDescending
-                ? items.OrderByDescending(x => x.ClientId).ToList()
-                : items.OrderBy(x => x.ClientId).ToList(),
-
-            "orderid" => isDescending
-                ? items.OrderByDescending(x => x.OrderId).ToList()
-                : items.OrderBy(x => x.OrderId).ToList(),
-
-            "requestdate" => isDescending
-                ? items.OrderByDescending(x => x.RequestDate).ToList()
-                : items.OrderBy(x => x.RequestDate).ToList(),
-
-            "executiondate" => isDescending
-                ? items.OrderByDescending(x => x.ExecutionDate).ToList()
-                : items.OrderBy(x => x.ExecutionDate).ToList(),
-
-            "status" => isDescending
-                ? items.OrderByDescending(x => x.Status).ToList()
-                : items.OrderBy(x => x.Status).ToList(),
-
-            "createdat" => isDescending
-                ? items.OrderByDescending(x => x.CreatedAt).ToList()
-                : items.OrderBy(x => x.CreatedAt).ToList(),
-
-            _ => items.OrderByDescending(x => x.CreatedAt).ToList()
+            "clientid" => isDescending ? query.OrderByDescending(x => x.ClientId) : query.OrderBy(x => x.ClientId),
+            "orderid" => isDescending ? query.OrderByDescending(x => x.OrderId) : query.OrderBy(x => x.OrderId),
+            "requestdate" => isDescending ? query.OrderByDescending(x => x.RequestDate) : query.OrderBy(x => x.RequestDate),
+            "executiondate" => isDescending ? query.OrderByDescending(x => x.ExecutionDate) : query.OrderBy(x => x.ExecutionDate),
+            "status" => isDescending ? query.OrderByDescending(x => x.Status) : query.OrderBy(x => x.Status),
+            "createdat" => isDescending ? query.OrderByDescending(x => x.CreatedAt) : query.OrderBy(x => x.CreatedAt),
+            _ => query.OrderByDescending(x => x.CreatedAt)
         };
     }
 }

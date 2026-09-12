@@ -13,6 +13,11 @@ public class FieldJobRepository : IFieldJobRepository
         _context = context;
     }
 
+    public IQueryable<FieldJob> GetQueryable()
+    {
+        return _context.FieldJobs.AsNoTracking();
+    }
+
     public async Task<FieldJob?> GetByIdAsync(long id)
     {
         return await _context.FieldJobs

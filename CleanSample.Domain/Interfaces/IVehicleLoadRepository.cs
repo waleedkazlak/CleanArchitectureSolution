@@ -1,9 +1,10 @@
-﻿using CleanSample.Domain.Entities;
+using CleanSample.Domain.Entities;
 
 namespace CleanSample.Domain.Interfaces;
 
 public interface IVehicleLoadRepository
 {
+    IQueryable<VehicleLoad> GetQueryable();
     Task<VehicleLoad?> GetByIdAsync(long id);
     Task<IEnumerable<VehicleLoad>> GetAllAsync();
     Task<IEnumerable<VehicleLoad>> GetByLoadRequestIdAsync(long loadRequestId);

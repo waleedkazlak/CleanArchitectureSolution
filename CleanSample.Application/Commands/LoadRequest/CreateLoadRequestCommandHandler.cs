@@ -1,3 +1,4 @@
+using CleanSample.Application.Services;
 using CleanSample.Domain.Entities;
 using CleanSample.Domain.Interfaces;
 using MediatR;
@@ -7,10 +8,14 @@ namespace CleanSample.Application.Commands.LoadRequest;
 public class CreateLoadRequestCommandHandler : IRequestHandler<CreateLoadRequestCommand, long>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILoadRequestBOMService _loadRequestBOMService;
 
-    public CreateLoadRequestCommandHandler(IUnitOfWork unitOfWork)
+    public CreateLoadRequestCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILoadRequestBOMService loadRequestBOMService)
     {
         _unitOfWork = unitOfWork;
+        _loadRequestBOMService = loadRequestBOMService;
     }
 
     public async Task<long> Handle(CreateLoadRequestCommand request, CancellationToken cancellationToken)
@@ -42,28 +47,38 @@ public class CreateLoadRequestCommandHandler : IRequestHandler<CreateLoadRequest
                 CreatedAt = DateTime.UtcNow
             };
 
-            // Fetch ProductBOM for this Product to automatically generate LoadRequestParts
-            var boms = await _unitOfWork.ProductBOMs.GetByProductIdAsync(line.ProductId);
-            foreach (var bom in boms)
+            // If standalone (no OrderId), generate parts from BOM directly
+            if (!request.OrderId.HasValue)
             {
-                var partEntity = new LoadRequestPart
+                var boms = await _unitOfWork.ProductBOMs.GetByProductIdAsync(line.ProductId);
+                foreach (var bom in boms)
                 {
-                    LoadRequest = loadRequest,
-                    LoadRequestLine = lineEntity,
-                    PartId = bom.PartId,
-                    RequiredQuantity = line.Quantity * bom.Quantity,
-                    LoadedQuantity = 0,
-                    Status = "Pending",
-                    CreatedAt = DateTime.UtcNow
-                };
-                lineEntity.LoadRequestParts.Add(partEntity);
-                loadRequest.LoadRequestParts.Add(partEntity);
+                    var partEntity = new LoadRequestPart
+                    {
+                        LoadRequest = loadRequest,
+                        LoadRequestLine = lineEntity,
+                        ProductId = line.ProductId,
+                        PartId = bom.PartId,
+                        RequiredQuantity = line.Quantity * bom.Quantity,
+                        LoadedQuantity = 0,
+                        Status = "Pending",
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    lineEntity.LoadRequestParts.Add(partEntity);
+                    loadRequest.LoadRequestParts.Add(partEntity);
+                }
             }
 
             loadRequest.LoadRequestLines.Add(lineEntity);
         }
 
         var loadRequestId = await _unitOfWork.LoadRequests.AddAsync(loadRequest);
+
+        // If associated with an Order, check verification and quantities across all load requests for this order
+        if (loadRequest.OrderId.HasValue)
+        {
+            await _loadRequestBOMService.CheckAndGeneratePartsForOrderAsync(loadRequest.OrderId.Value, cancellationToken);
+        }
 
         return loadRequestId;
     }

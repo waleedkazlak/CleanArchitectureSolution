@@ -8,6 +8,9 @@ public class LoadRequestPart : BaseEntity<long>
     public long LoadRequestLineId { get; set; }
     public LoadRequestLine LoadRequestLine { get; set; } = null!;
 
+    public int ProductId { get; set; }
+    public Product Product { get; set; } = null!;
+
     public int PartId { get; set; }
     public Part Part { get; set; } = null!;
 

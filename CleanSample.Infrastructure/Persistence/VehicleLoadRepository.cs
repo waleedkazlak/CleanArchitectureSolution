@@ -1,4 +1,4 @@
-﻿using CleanSample.Domain.Entities;
+using CleanSample.Domain.Entities;
 using CleanSample.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +11,11 @@ public class VehicleLoadRepository : IVehicleLoadRepository
     public VehicleLoadRepository(CleanSampleDbContext context)
     {
         _context = context;
+    }
+
+    public IQueryable<VehicleLoad> GetQueryable()
+    {
+        return _context.VehicleLoads.AsNoTracking();
     }
 
     public async Task<VehicleLoad?> GetByIdAsync(long id)

@@ -13,6 +13,11 @@ public class IssueRepository : IIssueRepository
         _context = context;
     }
 
+    public IQueryable<Issue> GetQueryable()
+    {
+        return _context.Issues.AsNoTracking();
+    }
+
     public async Task<Issue?> GetByIdAsync(long id)
     {
         return await _context.Issues

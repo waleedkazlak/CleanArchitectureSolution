@@ -13,6 +13,11 @@ public class VehicleOffloadRepository : IVehicleOffloadRepository
         _context = context;
     }
 
+    public IQueryable<VehicleOffload> GetQueryable()
+    {
+        return _context.VehicleOffloads.AsNoTracking();
+    }
+
     public async Task<VehicleOffload?> GetByIdAsync(long id)
     {
         return await _context.VehicleOffloads

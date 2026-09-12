@@ -4,6 +4,7 @@ namespace CleanSample.Domain.Interfaces;
 
 public interface IIssueRepository
 {
+    IQueryable<Issue> GetQueryable();
     Task<Issue?> GetByIdAsync(long id);
     Task<IEnumerable<Issue>> GetAllAsync();
     Task<IEnumerable<Issue>> GetByLoadRequestIdAsync(long loadRequestId);

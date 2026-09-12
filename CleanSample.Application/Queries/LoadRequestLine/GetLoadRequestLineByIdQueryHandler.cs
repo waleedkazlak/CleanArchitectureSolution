@@ -1,4 +1,4 @@
-﻿using CleanSample.Application.DTOs;
+using CleanSample.Application.DTOs;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 
@@ -35,6 +35,8 @@ public class GetLoadRequestLineByIdQueryHandler : IRequestHandler<GetLoadRequest
                 Id = lrp.Id,
                 LoadRequestId = lrp.LoadRequestId,
                 LoadRequestLineId = lrp.LoadRequestLineId,
+                ProductId = lrp.ProductId,
+                ProductName = lrp.Product?.Name ?? line.Product?.Name,
                 PartId = lrp.PartId,
                 PartCode = lrp.Part?.Code,
                 PartName = lrp.Part?.Name,

@@ -1,4 +1,5 @@
 using CleanSample.Application.DTOs;
+using CleanSample.Application.Services;
 using CleanSample.Domain.Entities;
 using CleanSample.Domain.Interfaces;
 using MediatR;
@@ -9,13 +10,16 @@ namespace CleanSample.Application.Commands.LoadRequestLine;
 public class CreateLoadRequestLineCommandHandler : IRequestHandler<CreateLoadRequestLineCommand, List<LoadRequestLineDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILoadRequestBOMService _loadRequestBOMService;
     private readonly ILogger<CreateLoadRequestLineCommandHandler> _logger;
 
     public CreateLoadRequestLineCommandHandler(
         IUnitOfWork unitOfWork,
+        ILoadRequestBOMService loadRequestBOMService,
         ILogger<CreateLoadRequestLineCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _loadRequestBOMService = loadRequestBOMService;
         _logger = logger;
     }
 
@@ -93,6 +97,7 @@ public class CreateLoadRequestLineCommandHandler : IRequestHandler<CreateLoadReq
                             LoadRequestId = existing.LoadRequestId,
                             LoadRequestLineId = existing.Id,
                             LoadRequestLine = existing,
+                            ProductId = existing.ProductId,
                             PartId = bom.PartId,
                             RequiredQuantity = item.Quantity * bom.Quantity,
                             LoadedQuantity = 0,
@@ -140,6 +145,7 @@ public class CreateLoadRequestLineCommandHandler : IRequestHandler<CreateLoadReq
                     {
                         LoadRequestId = item.LoadRequestId,
                         LoadRequestLine = newLine,
+                        ProductId = item.ProductId,
                         PartId = bom.PartId,
                         RequiredQuantity = item.Quantity * bom.Quantity,
                         LoadedQuantity = 0,
@@ -155,6 +161,22 @@ public class CreateLoadRequestLineCommandHandler : IRequestHandler<CreateLoadReq
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // For all affected LoadRequests, check if their OrderId satisfies verification and quantity rules
+        var affectedLoadRequestIds = itemsToProcess
+            .Select(i => i.LoadRequestId)
+            .Where(id => id > 0)
+            .Distinct()
+            .ToList();
+
+        foreach (var loadRequestId in affectedLoadRequestIds)
+        {
+            var loadReq = await _unitOfWork.LoadRequests.GetByIdAsync(loadRequestId);
+            if (loadReq != null && loadReq.OrderId.HasValue)
+            {
+                await _loadRequestBOMService.CheckAndGeneratePartsForOrderAsync(loadReq.OrderId.Value, cancellationToken);
+            }
+        }
 
         // Fetch full entity details with relations to map to DTOs
         var resultDtos = new List<LoadRequestLineDto>();
@@ -177,6 +199,8 @@ public class CreateLoadRequestLineCommandHandler : IRequestHandler<CreateLoadReq
                         Id = lrp.Id,
                         LoadRequestId = lrp.LoadRequestId,
                         LoadRequestLineId = lrp.LoadRequestLineId,
+                        ProductId = lrp.ProductId,
+                        ProductName = lrp.Product?.Name ?? fullLine.Product?.Name,
                         PartId = lrp.PartId,
                         PartCode = lrp.Part?.Code,
                         PartName = lrp.Part?.Name,
