@@ -174,6 +174,7 @@ public class ProductsController : ControllerBase
     {
         _logger.LogInformation("User {User} updating product with id: {ProductId}", User.Identity?.Name, id);
 
+        command.Id = id;
         var result = await _mediator.Send(command);
         if (!result)
         {
@@ -213,5 +214,61 @@ public class ProductsController : ControllerBase
 
         return Ok(new APIBaseResponse<bool>()
             .SetSuccess(true, "Product deleted successfully"));
+    }
+
+    /// <summary>
+    /// Upload product picture
+    /// </summary>
+    /// <param name="file">Product picture image file (.jpg, .jpeg, .png, .webp, .gif - max 5MB)</param>
+    /// <param name="productId">Optional product id to associate and update directly</param>
+    /// <returns>Uploaded picture URL and details</returns>
+    [HttpPost("upload-picture")]
+    [RequirePermission("PRODUCTS", PermissionAction.Update)]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<APIBaseResponse<UploadProductPictureResultDto>>> UploadPicture(
+        IFormFile file,
+        [FromForm] int? productId = null)
+    {
+        _logger.LogInformation("User {User} uploading product picture. ProductId: {ProductId}", User.Identity?.Name, productId);
+
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new APIBaseResponse<UploadProductPictureResultDto>()
+                .SetError(400, "Please provide a valid image file."));
+        }
+
+        try
+        {
+            using var stream = file.OpenReadStream();
+            var command = new UploadProductPictureCommand
+            {
+                ProductId = productId,
+                FileStream = stream,
+                FileName = file.FileName,
+                ContentType = file.ContentType,
+                Length = file.Length
+            };
+
+            var result = await _mediator.Send(command);
+            if (result == null && productId.HasValue)
+            {
+                return NotFound(new APIBaseResponse<UploadProductPictureResultDto>()
+                    .SetError(404, $"Product with id {productId} not found"));
+            }
+
+            return Ok(new APIBaseResponse<UploadProductPictureResultDto>()
+                .SetSuccess(result!, "Product picture uploaded successfully"));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new APIBaseResponse<UploadProductPictureResultDto>()
+                .SetError(400, ex.Message));
+        }
     }
 }

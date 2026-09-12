@@ -199,6 +199,9 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Description)
                 .HasMaxLength(1000);
 
+            entity.Property(e => e.PictureUrl)
+                .HasMaxLength(500);
+
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
 

@@ -218,6 +218,7 @@ catch (Exception ex)
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 // Authentication and Authorization middleware
 app.UseAuthentication();

@@ -24,6 +24,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
         product.Name = request.Name;
         product.Barcode = request.Barcode;
         product.Description = request.Description;
+        product.PictureUrl = request.PictureUrl;
         product.IsActive = request.IsActive;
         product.UpdatedAt = DateTime.UtcNow;
 

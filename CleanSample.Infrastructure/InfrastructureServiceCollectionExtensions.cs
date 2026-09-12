@@ -51,6 +51,9 @@ public static class InfrastructureServiceCollectionExtensions
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+        // Register File Storage Service
+        services.AddScoped<CleanSample.Application.Services.IFileStorageService, CleanSample.Infrastructure.Services.LocalFileStorageService>();
+
         return services;
     }
 }

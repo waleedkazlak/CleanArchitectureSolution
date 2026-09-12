@@ -36,6 +36,7 @@ public class GetProductsByCategoryIdQueryHandler : IRequestHandler<GetProductsBy
             Name = p.Name,
             Barcode = p.Barcode,
             Description = p.Description,
+            PictureUrl = p.PictureUrl,
             IsActive = p.IsActive,
             CreatedAt = p.CreatedAt,
             UpdatedAt = p.UpdatedAt

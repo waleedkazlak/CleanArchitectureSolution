@@ -22,6 +22,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             Name = request.Name,
             Barcode = request.Barcode,
             Description = request.Description,
+            PictureUrl = request.PictureUrl,
             IsActive = request.IsActive
         };
 

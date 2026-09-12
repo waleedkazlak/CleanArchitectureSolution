@@ -10,5 +10,6 @@ public class CreateProductCommand : IRequest<int>
     public string Name { get; set; } = null!;
     public string? Barcode { get; set; }
     public string? Description { get; set; }
+    public string? PictureUrl { get; set; }
     public bool IsActive { get; set; } = true;
 }
