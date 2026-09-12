@@ -1,3 +1,5 @@
+using CleanSample.Domain.Enums;
+
 namespace CleanSample.Domain.Entities;
 
 public class Order : BaseEntity<long>
@@ -7,7 +9,8 @@ public class Order : BaseEntity<long>
 
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
     public DateOnly? RequiredDate { get; set; }
-    public string Status { get; set; } = "Draft";
+    public int Status { get; set; } = (int)OrderStatusEnum.Draft;
+    public OrderStatus? OrderStatus { get; set; }
     public string? Notes { get; set; }
 
     public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();

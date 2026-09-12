@@ -1,4 +1,5 @@
 using CleanSample.Application.DTOs.Dashboard;
+using CleanSample.Domain.Enums;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -43,19 +44,24 @@ public class GetFieldOperationsDashboardSummaryQueryHandler : IRequestHandler<Ge
         return new FieldOperationsDashboardSummaryDto
         {
             TotalJobs = totalJobs,
-            ScheduledJobs = jobStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Scheduled", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            InProgressJobs = jobStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "InProgress", StringComparison.OrdinalIgnoreCase) || string.Equals(x.Status, "In Progress", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            CompletedJobs = jobStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
+            ScheduledJobs = jobStatusCounts.FirstOrDefault(x => x.Status == (int)FieldJobStatusEnum.Scheduled)?.Count ?? 0,
+            InProgressJobs = jobStatusCounts.FirstOrDefault(x => x.Status == (int)FieldJobStatusEnum.InProgress)?.Count ?? 0,
+            CompletedJobs = jobStatusCounts.FirstOrDefault(x => x.Status == (int)FieldJobStatusEnum.Completed)?.Count ?? 0,
             VerifiedJobs = verifiedJobs,
             UnverifiedJobs = totalJobs - verifiedJobs,
             TotalAssemblies = totalAssemblies,
             TotalAssembledQuantity = totalAssembledQty,
-            PendingAssemblies = assemblyStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Pending", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            CompletedAssemblies = assemblyStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
+            InProgressAssemblies = assemblyStatusCounts.FirstOrDefault(x => x.Status == (int)FieldAssemblyStatusEnum.InProgress)?.Count ?? 0,
+            CompletedAssemblies = assemblyStatusCounts.FirstOrDefault(x => x.Status == (int)FieldAssemblyStatusEnum.Completed)?.Count ?? 0,
+            CancelledAssemblies = assemblyStatusCounts.FirstOrDefault(x => x.Status == (int)FieldAssemblyStatusEnum.Cancelled)?.Count ?? 0,
             VerifiedAssemblies = verifiedAssemblies,
             UnverifiedAssemblies = totalAssemblies - verifiedAssemblies,
-            JobsByStatus = jobStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count),
-            AssembliesByStatus = assemblyStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count)
+            JobsByStatus = jobStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(FieldJobStatusEnum), x.Status) ? ((FieldJobStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count),
+            AssembliesByStatus = assemblyStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(FieldAssemblyStatusEnum), x.Status) ? ((FieldAssemblyStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count)
         };
     }
 }

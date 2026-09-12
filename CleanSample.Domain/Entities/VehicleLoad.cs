@@ -1,4 +1,6 @@
-﻿namespace CleanSample.Domain.Entities;
+using CleanSample.Domain.Enums;
+
+namespace CleanSample.Domain.Entities;
 
 public class VehicleLoad : BaseEntity<long>
 {
@@ -23,7 +25,8 @@ public class VehicleLoad : BaseEntity<long>
 
     public DateTime LoadDate { get; set; } = DateTime.UtcNow;
 
-    public string Status { get; set; } = "Loaded";
+    public int Status { get; set; } = (int)VehicleLoadStatusEnum.Good;
+    public VehicleLoadStatus? VehicleLoadStatus { get; set; }
 
     public string? Notes { get; set; }
 }

@@ -39,7 +39,7 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
                 (v.Verifier != null && v.Verifier.FullName.ToLower().Contains(searchTermLower)) ||
                 (v.Barcode != null && v.Barcode.ToLower().Contains(searchTermLower)) ||
                 (v.Notes != null && v.Notes.ToLower().Contains(searchTermLower)) ||
-                v.Status.ToLower().Contains(searchTermLower)
+                (v.VehicleOffloadStatus != null && v.VehicleOffloadStatus.Name.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
@@ -69,10 +69,9 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
             offloads = offloads.Where(v => v.Barcode != null && v.Barcode.ToLower().Contains(barcodeLower)).ToList();
         }
 
-        if (!string.IsNullOrWhiteSpace(filter.Status))
+        if (filter.Status.HasValue)
         {
-            var statusLower = filter.Status.ToLower();
-            offloads = offloads.Where(v => v.Status.ToLower().Contains(statusLower)).ToList();
+            offloads = offloads.Where(v => v.Status == filter.Status.Value).ToList();
         }
 
         if (filter.Verified.HasValue)
@@ -119,6 +118,7 @@ public class GetVehicleOffloadsWithFilterQueryHandler : IRequestHandler<GetVehic
             Barcode = vo.Barcode,
             OffloadDate = vo.OffloadDate,
             Status = vo.Status,
+            StatusName = vo.VehicleOffloadStatus?.Name,
             Verified = vo.Verified,
             VerifiedBy = vo.VerifiedBy,
             VerifierName = vo.Verifier?.FullName,

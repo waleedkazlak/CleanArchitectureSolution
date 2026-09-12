@@ -215,7 +215,6 @@ public class LoadRequestRepository : ILoadRequestRepository
                                         PartId = bom.PartId,
                                         RequiredQuantity = incomingLine.Quantity * bom.Quantity,
                                         LoadedQuantity = 0,
-                                        Status = "Pending",
                                         CreatedAt = DateTime.UtcNow
                                     };
                                     existingLine.LoadRequestParts.Add(partEntity);
@@ -268,7 +267,6 @@ public class LoadRequestRepository : ILoadRequestRepository
                                 PartId = bom.PartId,
                                 RequiredQuantity = incomingLine.Quantity * bom.Quantity,
                                 LoadedQuantity = 0,
-                                Status = "Pending",
                                 CreatedAt = DateTime.UtcNow
                             };
                             newLine.LoadRequestParts.Add(partEntity);

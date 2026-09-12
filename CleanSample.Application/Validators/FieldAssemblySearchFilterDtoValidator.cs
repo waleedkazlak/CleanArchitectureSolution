@@ -44,8 +44,8 @@ public class FieldAssemblySearchFilterDtoValidator : AbstractValidator<FieldAsse
             .When(x => x.SupervisorId.HasValue);
 
         RuleFor(x => x.Status)
-            .MaximumLength(50).WithMessage("Status cannot exceed 50 characters")
-            .When(x => !string.IsNullOrWhiteSpace(x.Status));
+            .Must(s => !s.HasValue || Enum.IsDefined(typeof(CleanSample.Domain.Enums.FieldAssemblyStatusEnum), s.Value))
+            .WithMessage("Status must be a valid value (1 = InProgress, 2 = Completed, 3 = Cancelled).");
 
         RuleFor(x => x.SortBy)
             .Must(sortBy => _validSortFields.Contains(sortBy, StringComparer.OrdinalIgnoreCase))

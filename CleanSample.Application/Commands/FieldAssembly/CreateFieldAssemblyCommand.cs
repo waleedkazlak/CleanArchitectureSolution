@@ -14,7 +14,7 @@ public class CreateFieldAssemblyCommand : IRequest<bool>
     public string? ProductBarcode { get; set; }
     public int Quantity { get; set; }
     public DateTime? AssemblyDate { get; set; }
-    public string Status { get; set; } = "Pending";
+    public int Status { get; set; } = (int)Domain.Enums.FieldAssemblyStatusEnum.InProgress;
     public int? TechnicianId { get; set; }
     public int? SupervisorId { get; set; }
     public bool Verified { get; set; } = false;
@@ -39,7 +39,7 @@ public class CreateFieldAssemblyCommand : IRequest<bool>
         long? id = null,
         string? productBarcode = null,
         DateTime? assemblyDate = null,
-        string status = "Pending",
+        int status = (int)Domain.Enums.FieldAssemblyStatusEnum.InProgress,
         int? technicianId = null,
         int? supervisorId = null,
         bool verified = false,
@@ -108,7 +108,7 @@ public class CreateFieldAssemblyCommandJsonConverter : JsonConverter<CreateField
             if (value.ProductBarcode != null) writer.WriteString("productBarcode", value.ProductBarcode);
             writer.WriteNumber("quantity", value.Quantity);
             if (value.AssemblyDate.HasValue) writer.WriteString("assemblyDate", value.AssemblyDate.Value.ToString("o"));
-            writer.WriteString("status", value.Status);
+            writer.WriteNumber("status", value.Status);
             if (value.TechnicianId.HasValue) writer.WriteNumber("technicianId", value.TechnicianId.Value);
             if (value.SupervisorId.HasValue) writer.WriteNumber("supervisorId", value.SupervisorId.Value);
             writer.WriteBoolean("verified", value.Verified);

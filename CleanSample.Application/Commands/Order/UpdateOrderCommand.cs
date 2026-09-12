@@ -9,7 +9,7 @@ public class UpdateOrderCommand : IRequest<bool>
     public int ClientId { get; set; }
     public DateTime OrderDate { get; set; }
     public DateOnly? RequiredDate { get; set; }
-    public string Status { get; set; } = null!;
+    public int Status { get; set; }
     public string? Notes { get; set; }
 
     public List<OrderLineItemDto> OrderLines { get; set; } = new();

@@ -1,3 +1,5 @@
+using CleanSample.Domain.Enums;
+
 namespace CleanSample.Domain.Entities;
 
 public class VehicleOffload : BaseEntity<long>
@@ -18,7 +20,8 @@ public class VehicleOffload : BaseEntity<long>
 
     public DateTime OffloadDate { get; set; } = DateTime.UtcNow;
 
-    public string Status { get; set; } = "Offloading";
+    public int Status { get; set; } = (int)VehicleOffloadStatusEnum.Good;
+    public VehicleOffloadStatus? VehicleOffloadStatus { get; set; }
 
     public bool Verified { get; set; } = false;
 

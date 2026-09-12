@@ -62,7 +62,6 @@ public class UpdateLoadRequestLineCommandHandler : IRequestHandler<UpdateLoadReq
                     PartId = bom.PartId,
                     RequiredQuantity = request.Quantity * bom.Quantity,
                     LoadedQuantity = 0,
-                    Status = "Pending",
                     CreatedAt = DateTime.UtcNow
                 });
             }

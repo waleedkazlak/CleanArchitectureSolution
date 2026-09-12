@@ -19,7 +19,8 @@ public class LoadRequest : BaseEntity<long>
     public DateTime RequestDate { get; set; } = DateTime.UtcNow;
     public DateTime? ExecutionDate { get; set; }
 
-    public LoadRequestStatus Status { get; set; } = LoadRequestStatus.New;
+    public int Status { get; set; } = (int)LoadRequestStatusEnum.New;
+    public LoadRequestStatus? LoadRequestStatus { get; set; }
 
     public string? DestinationAddress { get; set; }
     public string? DestinationCity { get; set; }

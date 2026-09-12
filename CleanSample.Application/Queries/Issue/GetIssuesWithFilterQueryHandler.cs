@@ -36,7 +36,7 @@ public class GetIssuesWithFilterQueryHandler : IRequestHandler<GetIssuesWithFilt
                 i.IssueType.ToLower().Contains(searchTermLower) ||
                 i.Description.ToLower().Contains(searchTermLower) ||
                 i.Severity.ToLower().Contains(searchTermLower) ||
-                i.Status.ToLower().Contains(searchTermLower) ||
+                (i.IssueStatus != null && i.IssueStatus.Name.ToLower().Contains(searchTermLower)) ||
                 (i.ResolutionNotes != null && i.ResolutionNotes.ToLower().Contains(searchTermLower)) ||
                 (i.ReportedByUser != null && i.ReportedByUser.FullName.ToLower().Contains(searchTermLower)) ||
                 (i.ResolvedByUser != null && i.ResolvedByUser.FullName.ToLower().Contains(searchTermLower))
@@ -70,10 +70,9 @@ public class GetIssuesWithFilterQueryHandler : IRequestHandler<GetIssuesWithFilt
             issues = issues.Where(i => i.Severity.ToLower().Contains(severityLower)).ToList();
         }
 
-        if (!string.IsNullOrWhiteSpace(filter.Status))
+        if (filter.Status.HasValue)
         {
-            var statusLower = filter.Status.ToLower();
-            issues = issues.Where(i => i.Status.ToLower().Contains(statusLower)).ToList();
+            issues = issues.Where(i => i.Status == filter.Status.Value).ToList();
         }
 
         if (filter.ReportedBy.HasValue)
@@ -115,6 +114,7 @@ public class GetIssuesWithFilterQueryHandler : IRequestHandler<GetIssuesWithFilt
             Description = i.Description,
             Severity = i.Severity,
             Status = i.Status,
+            StatusName = i.IssueStatus?.Name,
             ReportedBy = i.ReportedBy,
             ReportedByName = i.ReportedByUser?.FullName,
             ReportedAt = i.ReportedAt,

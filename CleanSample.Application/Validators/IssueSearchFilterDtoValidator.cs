@@ -44,8 +44,8 @@ public class IssueSearchFilterDtoValidator : AbstractValidator<IssueSearchFilter
             .When(x => !string.IsNullOrWhiteSpace(x.Severity));
 
         RuleFor(x => x.Status)
-            .MaximumLength(50).WithMessage("Status cannot exceed 50 characters")
-            .When(x => !string.IsNullOrWhiteSpace(x.Status));
+            .Must(s => !s.HasValue || Enum.IsDefined(typeof(CleanSample.Domain.Enums.IssueStatusEnum), s.Value))
+            .WithMessage("Status must be a valid value (1 = Open, 2 = InProgress, 3 = Resolved, 4 = Closed).");
 
         RuleFor(x => x.ReportedBy)
             .GreaterThan(0).WithMessage("ReportedBy user ID must be greater than 0")

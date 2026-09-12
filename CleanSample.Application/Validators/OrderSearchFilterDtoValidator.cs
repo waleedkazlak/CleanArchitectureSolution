@@ -27,6 +27,10 @@ public class OrderSearchFilterDtoValidator : AbstractValidator<OrderSearchFilter
             .GreaterThan(0).WithMessage("Client ID must be greater than 0")
             .When(x => x.ClientId.HasValue);
 
+        RuleFor(x => x.Status)
+            .Must(s => !s.HasValue || Enum.IsDefined(typeof(Domain.Enums.OrderStatusEnum), s.Value))
+            .WithMessage("Status must be a valid OrderStatus value.");
+
         RuleFor(x => x.SortBy)
             .Must(sortBy => _validSortFields.Contains(sortBy, StringComparer.OrdinalIgnoreCase))
             .WithMessage($"Sort field must be one of: {string.Join(", ", _validSortFields)}")

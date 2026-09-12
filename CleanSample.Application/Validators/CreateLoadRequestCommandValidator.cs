@@ -31,7 +31,8 @@ public class CreateLoadRequestCommandValidator : AbstractValidator<CreateLoadReq
             .When(x => x.VehicleId.HasValue);
 
         RuleFor(x => x.Status)
-            .IsInEnum().WithMessage("Status must be a valid LoadRequestStatus value.");
+            .Must(s => Enum.IsDefined(typeof(Domain.Enums.LoadRequestStatusEnum), s))
+            .WithMessage("Status must be a valid LoadRequestStatus value.");
 
         RuleFor(x => x.DestinationAddress)
             .MaximumLength(500).WithMessage("Destination address cannot exceed 500 characters.");

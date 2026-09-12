@@ -31,10 +31,7 @@ public class UpdateFieldAssemblyCommandHandler : IRequestHandler<UpdateFieldAsse
         existingAssembly.ProductBarcode = request.ProductBarcode;
         existingAssembly.Quantity = request.Quantity;
         existingAssembly.AssemblyDate = request.AssemblyDate;
-        if (!string.IsNullOrWhiteSpace(request.Status))
-        {
-            existingAssembly.Status = request.Status;
-        }
+        existingAssembly.Status = request.Status;
         existingAssembly.TechnicianId = request.TechnicianId;
         existingAssembly.SupervisorId = request.SupervisorId;
         existingAssembly.Verified = request.Verified;

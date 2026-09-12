@@ -1,3 +1,5 @@
+using CleanSample.Domain.Enums;
+
 namespace CleanSample.Domain.Entities;
 
 public class Issue : BaseEntity<long>
@@ -17,7 +19,8 @@ public class Issue : BaseEntity<long>
 
     public string Severity { get; set; } = "Medium";
 
-    public string Status { get; set; } = "Open";
+    public int Status { get; set; } = (int)IssueStatusEnum.Open;
+    public IssueStatus? IssueStatus { get; set; }
 
     public int? ReportedBy { get; set; }
     public User? ReportedByUser { get; set; }

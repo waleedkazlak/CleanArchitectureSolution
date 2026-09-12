@@ -23,7 +23,8 @@ public class UpdateFieldAssemblyCommandValidator : AbstractValidator<UpdateField
             .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
 
         RuleFor(x => x.Status)
-            .MaximumLength(50).WithMessage("Status cannot exceed 50 characters.");
+            .Must(s => Enum.IsDefined(typeof(CleanSample.Domain.Enums.FieldAssemblyStatusEnum), s))
+            .WithMessage("Valid Status is required (1 = InProgress, 2 = Completed, 3 = Cancelled).");
 
         RuleFor(x => x.TechnicianId)
             .GreaterThan(0).WithMessage("Technician user ID must be greater than 0.")

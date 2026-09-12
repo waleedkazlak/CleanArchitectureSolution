@@ -20,7 +20,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, lon
             ClientId = request.ClientId,
             OrderDate = request.OrderDate ?? DateTime.UtcNow,
             RequiredDate = request.RequiredDate,
-            Status = string.IsNullOrWhiteSpace(request.Status) ? "Draft" : request.Status,
+            Status = request.Status == 0 ? (int)CleanSample.Domain.Enums.OrderStatusEnum.Draft : request.Status,
             Notes = request.Notes,
             OrderLines = request.OrderLines.Select(l => new CleanSample.Domain.Entities.OrderLine
             {

@@ -1,4 +1,5 @@
 using CleanSample.Application.DTOs.Dashboard;
+using CleanSample.Domain.Enums;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -46,8 +47,12 @@ public class GetVehicleOperationsDashboardSummaryQueryHandler : IRequestHandler<
             TotalOffloadedPartsCount = totalOffloads,
             VerifiedOffloads = verifiedOffloads,
             UnverifiedOffloads = totalOffloads - verifiedOffloads,
-            LoadsByStatus = loadStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count),
-            OffloadsByStatus = offloadStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count)
+            LoadsByStatus = loadStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(VehicleLoadStatusEnum), x.Status) ? ((VehicleLoadStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count),
+            OffloadsByStatus = offloadStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(VehicleOffloadStatusEnum), x.Status) ? ((VehicleOffloadStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count)
         };
     }
 }

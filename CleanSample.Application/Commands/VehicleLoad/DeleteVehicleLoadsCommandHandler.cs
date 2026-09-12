@@ -34,8 +34,6 @@ public class DeleteVehicleLoadsCommandHandler : IRequestHandler<DeleteVehicleLoa
                 if (lrp != null)
                 {
                     lrp.LoadedQuantity = Math.Max(0, lrp.LoadedQuantity - load.Quantity);
-                    lrp.Status = lrp.LoadedQuantity >= lrp.RequiredQuantity ? "Completed" :
-                                 lrp.LoadedQuantity > 0 ? "PartiallyLoaded" : "Pending";
                     await _unitOfWork.LoadRequestParts.UpdateAsync(lrp);
                 }
                 await _unitOfWork.VehicleLoads.DeleteAsync(id);

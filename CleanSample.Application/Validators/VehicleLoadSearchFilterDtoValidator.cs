@@ -48,8 +48,8 @@ public class VehicleLoadSearchFilterDtoValidator : AbstractValidator<VehicleLoad
             .When(x => x.VehicleId.HasValue);
 
         RuleFor(x => x.Status)
-            .MaximumLength(50).WithMessage("Status cannot exceed 50 characters")
-            .When(x => !string.IsNullOrWhiteSpace(x.Status));
+            .Must(s => !s.HasValue || Enum.IsDefined(typeof(Domain.Enums.VehicleLoadStatusEnum), s.Value))
+            .WithMessage("Status must be a valid VehicleLoadStatus value.");
 
         RuleFor(x => x.SortBy)
             .Must(sortBy => _validSortFields.Contains(sortBy, StringComparer.OrdinalIgnoreCase))

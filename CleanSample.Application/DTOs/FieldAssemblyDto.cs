@@ -1,5 +1,4 @@
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class FieldAssemblyDto
 {
     public long Id { get; set; }
@@ -9,7 +8,8 @@ public class FieldAssemblyDto
     public string? ProductBarcode { get; set; }
     public int Quantity { get; set; }
     public DateTime? AssemblyDate { get; set; }
-    public string Status { get; set; } = "Pending";
+    public int Status { get; set; }
+    public string? StatusName { get; set; }
     public int? TechnicianId { get; set; }
     public string? TechnicianName { get; set; }
     public int? SupervisorId { get; set; }

@@ -1,5 +1,4 @@
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class FieldJobSearchFilterDto
 {
     public int PageNumber { get; set; } = 1;
@@ -10,7 +9,7 @@ public class FieldJobSearchFilterDto
     public int? ClientLocationId { get; set; }
     public int? TechnicianId { get; set; }
     public int? SupervisorId { get; set; }
-    public string? Status { get; set; }
+    public int? Status { get; set; }
     public bool? Verified { get; set; }
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }

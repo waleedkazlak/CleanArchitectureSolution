@@ -30,6 +30,7 @@ public class GetLoadRequestsByClientIdQueryHandler : IRequestHandler<GetLoadRequ
             RequestDate = lr.RequestDate,
             ExecutionDate = lr.ExecutionDate,
             Status = lr.Status,
+            StatusName = lr.LoadRequestStatus?.Name,
             DestinationAddress = lr.DestinationAddress,
             DestinationCity = lr.DestinationCity,
             Description = lr.Description,
@@ -62,7 +63,6 @@ public class GetLoadRequestsByClientIdQueryHandler : IRequestHandler<GetLoadRequ
                     PartName = lrp.Part?.Name,
                     RequiredQuantity = lrp.RequiredQuantity,
                     LoadedQuantity = lrp.LoadedQuantity,
-                    Status = lrp.Status,
                     CreatedAt = lrp.CreatedAt,
                     UpdatedAt = lrp.UpdatedAt
                 }).ToList() ?? new List<LoadRequestPartDto>()
@@ -79,7 +79,6 @@ public class GetLoadRequestsByClientIdQueryHandler : IRequestHandler<GetLoadRequ
                 PartName = lrp.Part?.Name,
                 RequiredQuantity = lrp.RequiredQuantity,
                 LoadedQuantity = lrp.LoadedQuantity,
-                Status = lrp.Status,
                 CreatedAt = lrp.CreatedAt,
                 UpdatedAt = lrp.UpdatedAt
             }).ToList() ?? new List<LoadRequestPartDto>()

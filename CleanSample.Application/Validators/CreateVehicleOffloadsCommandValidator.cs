@@ -33,7 +33,8 @@ public class CreateVehicleOffloadsCommandValidator : AbstractValidator<CreateVeh
                 .When(p => p.VerifiedBy.HasValue);
 
             offload.RuleFor(p => p.Status)
-                .MaximumLength(50).WithMessage("Status cannot exceed 50 characters.");
+                .Must(s => !s.HasValue || Enum.IsDefined(typeof(Domain.Enums.VehicleOffloadStatusEnum), s.Value))
+                .WithMessage("Status must be a valid VehicleOffloadStatus value.");
 
             offload.RuleFor(p => p.Notes)
                 .MaximumLength(500).WithMessage("Notes cannot exceed 500 characters.");

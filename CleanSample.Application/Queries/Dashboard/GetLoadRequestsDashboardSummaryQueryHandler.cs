@@ -35,14 +35,16 @@ public class GetLoadRequestsDashboardSummaryQueryHandler : IRequestHandler<GetLo
         return new LoadRequestsDashboardSummaryDto
         {
             TotalLoadRequests = totalLoadRequests,
-            NewLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.New)?.Count ?? 0,
-            LoadingLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.Loading)?.Count ?? 0,
-            OffloadedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.Offloaded)?.Count ?? 0,
-            CompletedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.Completed)?.Count ?? 0,
-            CancelledLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.Cancelled)?.Count ?? 0,
+            NewLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.New)?.Count ?? 0,
+            LoadingLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Loading)?.Count ?? 0,
+            OffloadedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Offloaded)?.Count ?? 0,
+            CompletedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Completed)?.Count ?? 0,
+            CancelledLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Cancelled)?.Count ?? 0,
             VerifiedLoadRequests = lrVerifiedCount,
             UnverifiedLoadRequests = totalLoadRequests - lrVerifiedCount,
-            StatusCounts = lrStatusCounts.ToDictionary(x => x.Status.ToString(), x => x.Count)
+            StatusCounts = lrStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(LoadRequestStatusEnum), x.Status) ? ((LoadRequestStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count)
         };
     }
 }

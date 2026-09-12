@@ -10,7 +10,7 @@ public class CreateIssueCommand : IRequest<long>
     public string IssueType { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Severity { get; set; } = "Medium";
-    public string Status { get; set; } = "Open";
+    public int Status { get; set; } = (int)CleanSample.Domain.Enums.IssueStatusEnum.Open;
     public int? ReportedBy { get; set; }
     public DateTime? ReportedAt { get; set; }
     public int? ResolvedBy { get; set; }

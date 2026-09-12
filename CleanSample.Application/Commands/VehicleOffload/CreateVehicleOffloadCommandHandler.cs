@@ -29,7 +29,7 @@ public class CreateVehicleOffloadCommandHandler : IRequestHandler<CreateVehicleO
             DriverId = request.DriverId,
             Barcode = request.Barcode,
             OffloadDate = request.OffloadDate ?? DateTime.UtcNow,
-            Status = string.IsNullOrWhiteSpace(request.Status) ? "Offloading" : request.Status,
+            Status = request.Status == 0 ? (int)Domain.Enums.VehicleOffloadStatusEnum.Good : request.Status,
             Verified = request.Verified,
             VerifiedBy = request.VerifiedBy,
             VerifiedAt = request.Verified ? (request.VerifiedAt ?? DateTime.UtcNow) : null,

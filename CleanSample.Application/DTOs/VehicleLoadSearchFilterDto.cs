@@ -1,5 +1,4 @@
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class VehicleLoadSearchFilterDto
 {
     public int PageNumber { get; set; } = 1;
@@ -11,7 +10,7 @@ public class VehicleLoadSearchFilterDto
     public int? LoadedBy { get; set; }
     public int? DriverId { get; set; }
     public int? VehicleId { get; set; }
-    public string? Status { get; set; }
+    public int? Status { get; set; }
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
     public string? SortBy { get; set; } = "LoadDate";

@@ -13,7 +13,7 @@ public class UpdateFieldJobCommand : IRequest<bool>
     public DateTime? ScheduledDate { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? CompletionDate { get; set; }
-    public string Status { get; set; } = "Scheduled";
+    public int Status { get; set; }
     public bool Verified { get; set; } = false;
     public DateTime? VerifiedAt { get; set; }
     public string? Notes { get; set; }

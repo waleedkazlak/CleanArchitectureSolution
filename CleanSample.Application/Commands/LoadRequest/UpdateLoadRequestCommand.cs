@@ -13,7 +13,7 @@ public class UpdateLoadRequestCommand : IRequest<bool>
     public int? RequestedBy { get; set; }
     public DateTime RequestDate { get; set; }
     public DateTime? ExecutionDate { get; set; }
-    public LoadRequestStatus Status { get; set; } = LoadRequestStatus.New;
+    public int Status { get; set; } = (int)LoadRequestStatusEnum.New;
     public string? DestinationAddress { get; set; }
     public string? DestinationCity { get; set; }
     public string? Description { get; set; }

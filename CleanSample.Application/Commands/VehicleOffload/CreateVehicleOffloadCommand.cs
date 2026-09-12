@@ -11,7 +11,7 @@ public class CreateVehicleOffloadCommand : IRequest<long>
     public int DriverId { get; set; }
     public string? Barcode { get; set; }
     public DateTime? OffloadDate { get; set; }
-    public string Status { get; set; } = "Offloading";
+    public int Status { get; set; } = (int)Domain.Enums.VehicleOffloadStatusEnum.Good;
     public bool Verified { get; set; } = false;
     public int? VerifiedBy { get; set; }
     public DateTime? VerifiedAt { get; set; }

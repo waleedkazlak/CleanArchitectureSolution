@@ -39,7 +39,7 @@ public class GetVehicleLoadsWithFilterQueryHandler : IRequestHandler<GetVehicleL
                 (l.Driver != null && l.Driver.FullName.ToLower().Contains(searchTermLower)) ||
                 (l.Vehicle != null && (l.Vehicle.VehicleNumber.ToLower().Contains(searchTermLower) || l.Vehicle.PlateNumber.ToLower().Contains(searchTermLower))) ||
                 (l.Notes != null && l.Notes.ToLower().Contains(searchTermLower)) ||
-                l.Status.ToLower().Contains(searchTermLower)
+                (l.VehicleLoadStatus != null && l.VehicleLoadStatus.Name.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
@@ -74,10 +74,9 @@ public class GetVehicleLoadsWithFilterQueryHandler : IRequestHandler<GetVehicleL
             loads = loads.Where(l => l.VehicleId == filter.VehicleId.Value).ToList();
         }
 
-        if (!string.IsNullOrWhiteSpace(filter.Status))
+        if (filter.Status.HasValue)
         {
-            var statusLower = filter.Status.ToLower();
-            loads = loads.Where(l => l.Status.ToLower().Contains(statusLower)).ToList();
+            loads = loads.Where(l => l.Status == filter.Status.Value).ToList();
         }
 
         if (filter.FromDate.HasValue)
@@ -117,6 +116,7 @@ public class GetVehicleLoadsWithFilterQueryHandler : IRequestHandler<GetVehicleL
             PlateNumber = l.Vehicle?.PlateNumber,
             LoadDate = l.LoadDate,
             Status = l.Status,
+            StatusName = l.VehicleLoadStatus?.Name,
             Notes = l.Notes,
             CreatedAt = l.CreatedAt,
             UpdatedAt = l.UpdatedAt

@@ -38,7 +38,8 @@ public class CreateVehicleLoadsCommandValidator : AbstractValidator<CreateVehicl
                 .When(p => p.VehicleId.HasValue);
 
             load.RuleFor(p => p.Status)
-                .MaximumLength(50).WithMessage("Status cannot exceed 50 characters.");
+                .Must(s => !s.HasValue || Enum.IsDefined(typeof(Domain.Enums.VehicleLoadStatusEnum), s.Value))
+                .WithMessage("Status must be a valid VehicleLoadStatus value.");
 
             load.RuleFor(p => p.Notes)
                 .MaximumLength(500).WithMessage("Notes cannot exceed 500 characters.");

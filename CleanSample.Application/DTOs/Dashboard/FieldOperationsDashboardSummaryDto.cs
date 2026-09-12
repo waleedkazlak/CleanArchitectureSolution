@@ -10,8 +10,9 @@ public class FieldOperationsDashboardSummaryDto
     public int UnverifiedJobs { get; set; }
     public int TotalAssemblies { get; set; }
     public int TotalAssembledQuantity { get; set; }
-    public int PendingAssemblies { get; set; }
+    public int InProgressAssemblies { get; set; }
     public int CompletedAssemblies { get; set; }
+    public int CancelledAssemblies { get; set; }
     public int VerifiedAssemblies { get; set; }
     public int UnverifiedAssemblies { get; set; }
     public Dictionary<string, int> JobsByStatus { get; set; } = new();

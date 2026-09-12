@@ -36,9 +36,9 @@ public class UpdateVehicleOffloadCommandHandler : IRequestHandler<UpdateVehicleO
         {
             existingOffload.OffloadDate = request.OffloadDate.Value;
         }
-        if (!string.IsNullOrWhiteSpace(request.Status))
+        if (request.Status.HasValue)
         {
-            existingOffload.Status = request.Status;
+            existingOffload.Status = request.Status.Value;
         }
         existingOffload.Verified = request.Verified;
         existingOffload.VerifiedBy = request.VerifiedBy;

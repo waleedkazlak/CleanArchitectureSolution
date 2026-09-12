@@ -1,5 +1,4 @@
 namespace CleanSample.Application.DTOs;
-
 public class LoadRequestPartDto
 {
     public long Id { get; set; }
@@ -12,7 +11,6 @@ public class LoadRequestPartDto
     public string? PartName { get; set; }
     public decimal RequiredQuantity { get; set; }
     public decimal LoadedQuantity { get; set; }
-    public string Status { get; set; } = "Pending";
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

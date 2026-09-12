@@ -134,6 +134,17 @@ public class CleanSampleDbContext : DbContext
     /// </summary>
     public DbSet<RolePermission> RolePermissions { get; set; }
 
+    /// <summary>
+    /// Status lookup DbSets
+    /// </summary>
+    public DbSet<OrderStatus> OrderStatuses { get; set; }
+    public DbSet<LoadRequestStatus> LoadRequestStatuses { get; set; }
+    public DbSet<VehicleLoadStatus> VehicleLoadStatuses { get; set; }
+    public DbSet<VehicleOffloadStatus> VehicleOffloadStatuses { get; set; }
+    public DbSet<FieldJobStatus> FieldJobStatuses { get; set; }
+    public DbSet<FieldAssemblyStatus> FieldAssemblyStatuses { get; set; }
+    public DbSet<IssueStatus> IssueStatuses { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -575,6 +586,25 @@ public class CleanSampleDbContext : DbContext
             entity.ToTable("ClientLocations");
         });
 
+        // Configure OrderStatus lookup entity
+        modelBuilder.Entity<OrderStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("OrderStatusId").ValueGeneratedNever();
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.ToTable("OrderStatuses");
+
+            entity.HasData(
+                new OrderStatus { Id = (int)OrderStatusEnum.Draft, Name = "Draft", Description = "Draft order created", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Pending, Name = "Pending", Description = "Order pending approval/processing", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Processing, Name = "Processing", Description = "Order in processing", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Completed, Name = "Completed", Description = "Order fulfilled and completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Cancelled, Name = "Cancelled", Description = "Order cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+            );
+        });
+
         // Configure Order entity
         modelBuilder.Entity<Order>(entity =>
         {
@@ -604,8 +634,16 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("Draft");
+                .HasDefaultValue((int)OrderStatusEnum.Draft);
+
+            entity.HasOne(e => e.OrderStatus)
+                .WithMany()
+                .HasForeignKey(e => e.Status)
+                .HasConstraintName("FK_Orders_OrderStatuses")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("IX_Orders_Status");
 
             entity.Property(e => e.Notes)
                 .HasMaxLength(1000);
@@ -659,6 +697,25 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure LoadRequestStatus lookup entity
+        modelBuilder.Entity<LoadRequestStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("LoadRequestStatusId").ValueGeneratedNever();
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.ToTable("LoadRequestStatuses");
+
+            entity.HasData(
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.New, Name = "New", Description = "New load request created", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Loading, Name = "Loading", Description = "Loading in progress", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Offloaded, Name = "Offloaded", Description = "Offloaded at destination", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Completed, Name = "Completed", Description = "Load request completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Cancelled, Name = "Cancelled", Description = "Load request cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+            );
         });
 
         // Configure LoadRequest entity
@@ -716,7 +773,13 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasDefaultValue(LoadRequestStatus.New);
+                .HasDefaultValue((int)LoadRequestStatusEnum.New);
+
+            entity.HasOne(e => e.LoadRequestStatus)
+                .WithMany()
+                .HasForeignKey(e => e.Status)
+                .HasConstraintName("FK_LoadRequests_LoadRequestStatuses")
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.Status)
                 .HasDatabaseName("IX_LoadRequests_Status");
@@ -852,11 +915,6 @@ public class CleanSampleDbContext : DbContext
                 .HasPrecision(18, 4)
                 .HasDefaultValue(0m);
 
-            entity.Property(e => e.Status)
-                .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("Pending");
-
             entity.ToTable("LoadRequestParts", t =>
             {
                 t.HasCheckConstraint("CK_LoadRequestParts_RequiredQuantity", "[RequiredQuantity] > 0");
@@ -865,6 +923,23 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure VehicleLoadStatus lookup entity
+        modelBuilder.Entity<VehicleLoadStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("VehicleLoadStatusId").ValueGeneratedNever();
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.ToTable("VehicleLoadStatuses");
+
+            entity.HasData(
+                new VehicleLoadStatus { Id = (int)VehicleLoadStatusEnum.Good, Name = "Good", Description = "Loaded in good condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new VehicleLoadStatus { Id = (int)VehicleLoadStatusEnum.Damaged, Name = "Damaged", Description = "Loaded in damaged condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new VehicleLoadStatus { Id = (int)VehicleLoadStatusEnum.Missing, Name = "Missing", Description = "Missing items during load", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+            );
         });
 
         // Configure VehicleLoad entity
@@ -935,8 +1010,16 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("Loaded");
+                .HasDefaultValue((int)VehicleLoadStatusEnum.Good);
+
+            entity.HasOne(e => e.VehicleLoadStatus)
+                .WithMany()
+                .HasForeignKey(e => e.Status)
+                .HasConstraintName("FK_VehicleLoads_VehicleLoadStatuses")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("IX_VehicleLoads_Status");
 
             entity.Property(e => e.Notes)
                 .HasMaxLength(500);
@@ -948,6 +1031,23 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
+        });
+
+        // Configure VehicleOffloadStatus lookup entity
+        modelBuilder.Entity<VehicleOffloadStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("VehicleOffloadStatusId").ValueGeneratedNever();
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.ToTable("VehicleOffloadStatuses");
+
+            entity.HasData(
+                new VehicleOffloadStatus { Id = (int)VehicleOffloadStatusEnum.Good, Name = "Good", Description = "Offloaded in good condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new VehicleOffloadStatus { Id = (int)VehicleOffloadStatusEnum.Damaged, Name = "Damaged", Description = "Offloaded in damaged condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new VehicleOffloadStatus { Id = (int)VehicleOffloadStatusEnum.Missing, Name = "Missing", Description = "Missing items during offload", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+            );
         });
 
         // Configure VehicleOffload entity
@@ -1011,8 +1111,16 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("Offloading");
+                .HasDefaultValue((int)VehicleOffloadStatusEnum.Good);
+
+            entity.HasOne(e => e.VehicleOffloadStatus)
+                .WithMany()
+                .HasForeignKey(e => e.Status)
+                .HasConstraintName("FK_VehicleOffloads_VehicleOffloadStatuses")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("IX_VehicleOffloads_Status");
 
             entity.Property(e => e.Verified)
                 .HasDefaultValue(false);
@@ -1034,6 +1142,24 @@ public class CleanSampleDbContext : DbContext
                 .HasDefaultValueSql("SYSUTCDATETIME()");
 
             entity.ToTable("VehicleOffloads");
+        });
+
+        // Configure FieldJobStatus lookup entity
+        modelBuilder.Entity<FieldJobStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("FieldJobStatusId").ValueGeneratedNever();
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.ToTable("FieldJobStatuses");
+
+            entity.HasData(
+                new FieldJobStatus { Id = (int)FieldJobStatusEnum.Scheduled, Name = "Scheduled", Description = "Field job scheduled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldJobStatus { Id = (int)FieldJobStatusEnum.InProgress, Name = "InProgress", Description = "Field job in progress", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldJobStatus { Id = (int)FieldJobStatusEnum.Completed, Name = "Completed", Description = "Field job completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldJobStatus { Id = (int)FieldJobStatusEnum.Cancelled, Name = "Cancelled", Description = "Field job cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+            );
         });
 
         // Configure FieldJob entity
@@ -1096,8 +1222,13 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("Scheduled");
+                .HasDefaultValue((int)FieldJobStatusEnum.Scheduled);
+
+            entity.HasOne(e => e.FieldJobStatus)
+                .WithMany()
+                .HasForeignKey(e => e.Status)
+                .HasConstraintName("FK_FieldJobs_FieldJobStatuses")
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.Status)
                 .HasDatabaseName("IX_FieldJobs_Status");
@@ -1114,6 +1245,23 @@ public class CleanSampleDbContext : DbContext
                 .HasDefaultValueSql("SYSUTCDATETIME()");
 
             entity.ToTable("FieldJobs");
+        });
+
+        // Configure FieldAssemblyStatus lookup entity
+        modelBuilder.Entity<FieldAssemblyStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("FieldAssemblyStatusId").ValueGeneratedNever();
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.ToTable("FieldAssemblyStatuses");
+
+            entity.HasData(
+                new FieldAssemblyStatus { Id = (int)FieldAssemblyStatusEnum.InProgress, Name = "InProgress", Description = "Assembly in progress", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldAssemblyStatus { Id = (int)FieldAssemblyStatusEnum.Completed, Name = "Completed", Description = "Assembly completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldAssemblyStatus { Id = (int)FieldAssemblyStatusEnum.Cancelled, Name = "Cancelled", Description = "Assembly cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+            );
         });
 
         // Configure FieldAssembly entity
@@ -1158,8 +1306,16 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("Pending");
+                .HasDefaultValue((int)FieldAssemblyStatusEnum.InProgress);
+
+            entity.HasOne(e => e.FieldAssemblyStatus)
+                .WithMany()
+                .HasForeignKey(e => e.Status)
+                .HasConstraintName("FK_FieldAssemblies_FieldAssemblyStatuses")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("IX_FieldAssemblies_Status");
 
             entity.Property(e => e.TechnicianId);
 
@@ -1192,6 +1348,24 @@ public class CleanSampleDbContext : DbContext
             {
                 t.HasCheckConstraint("CK_FieldAssemblies_Quantity", "[Quantity] > 0");
             });
+        });
+
+        // Configure IssueStatus lookup entity
+        modelBuilder.Entity<IssueStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("IssueStatusId").ValueGeneratedNever();
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.ToTable("IssueStatuses");
+
+            entity.HasData(
+                new IssueStatus { Id = (int)IssueStatusEnum.Open, Name = "Open", Description = "Issue open and unresolved", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new IssueStatus { Id = (int)IssueStatusEnum.InProgress, Name = "InProgress", Description = "Issue in progress of investigation/fixing", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new IssueStatus { Id = (int)IssueStatusEnum.Resolved, Name = "Resolved", Description = "Issue resolved", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new IssueStatus { Id = (int)IssueStatusEnum.Closed, Name = "Closed", Description = "Issue closed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+            );
         });
 
         // Configure Issue entity
@@ -1241,8 +1415,13 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Status)
                 .IsRequired()
-                .HasMaxLength(50)
-                .HasDefaultValue("Open");
+                .HasDefaultValue((int)IssueStatusEnum.Open);
+
+            entity.HasOne(e => e.IssueStatus)
+                .WithMany()
+                .HasForeignKey(e => e.Status)
+                .HasConstraintName("FK_Issues_IssueStatuses")
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.Status)
                 .HasDatabaseName("IX_Issues_Status");

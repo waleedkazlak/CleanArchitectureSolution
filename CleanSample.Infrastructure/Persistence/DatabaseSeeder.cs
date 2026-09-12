@@ -614,7 +614,7 @@ public static class DatabaseSeeder
                 ClientId = client1.Id,
                 OrderDate = DateTime.UtcNow.AddDays(-5),
                 RequiredDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10)),
-                Status = "Confirmed",
+                Status = (int)OrderStatusEnum.Processing,
                 Notes = "Priority delivery for Q3 office expansion"
             },
             new Order
@@ -622,7 +622,7 @@ public static class DatabaseSeeder
                 ClientId = client1.Id,
                 OrderDate = DateTime.UtcNow.AddDays(-2),
                 RequiredDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(15)),
-                Status = "Processing",
+                Status = (int)OrderStatusEnum.Processing,
                 Notes = "Standard equipment deployment"
             },
             new Order
@@ -630,7 +630,7 @@ public static class DatabaseSeeder
                 ClientId = client1.Id,
                 OrderDate = DateTime.UtcNow.AddDays(-1),
                 RequiredDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)),
-                Status = "Pending",
+                Status = (int)OrderStatusEnum.Pending,
                 Notes = "Urgent spare units order"
             }
         };
@@ -691,7 +691,7 @@ public static class DatabaseSeeder
                 RequestedBy = requester?.Id,
                 RequestDate = DateTime.UtcNow.AddDays(-3),
                 ExecutionDate = DateTime.UtcNow.AddDays(1),
-                Status = LoadRequestStatus.New,
+                Status = (int)LoadRequestStatusEnum.New,
                 DestinationAddress = "100 Innovation Way, Suite 400",
                 DestinationCity = "New York",
                 Description = "Load request for Order workstation batch",
@@ -707,7 +707,7 @@ public static class DatabaseSeeder
                 RequestedBy = requester?.Id,
                 RequestDate = DateTime.UtcNow.AddDays(-2),
                 ExecutionDate = DateTime.UtcNow.AddDays(2),
-                Status = LoadRequestStatus.Loading,
+                Status = (int)LoadRequestStatusEnum.Loading,
                 DestinationAddress = "250 Freight Terminal Blvd",
                 DestinationCity = "Chicago",
                 Description = "Load request for field assembly equipment",
@@ -723,7 +723,7 @@ public static class DatabaseSeeder
                 RequestedBy = requester?.Id,
                 RequestDate = DateTime.UtcNow.AddDays(-1),
                 ExecutionDate = DateTime.UtcNow.AddDays(3),
-                Status = LoadRequestStatus.Completed,
+                Status = (int)LoadRequestStatusEnum.Completed,
                 DestinationAddress = "88 Industrial Parkway",
                 DestinationCity = "Houston",
                 Description = "Load request for emergency maintenance replenishment",
@@ -756,7 +756,8 @@ public static class DatabaseSeeder
                 {
                     LoadRequestId = lr.Id,
                     ProductId = product.Id,
-                    Quantity = 4
+                    Quantity = 5,
+                    CreatedAt = DateTime.UtcNow
                 });
             }
         }
@@ -769,14 +770,14 @@ public static class DatabaseSeeder
     {
         if (await context.LoadRequestParts.AnyAsync()) return;
 
-        var lrLines = await context.LoadRequestLines.Include(l => l.LoadRequest).ToListAsync();
-        var parts = await context.Parts.Take(3).ToListAsync();
+        var lines = await context.LoadRequestLines.ToListAsync();
+        var parts = await context.Parts.Take(2).ToListAsync();
 
-        if (!lrLines.Any() || !parts.Any()) return;
+        if (!lines.Any() || !parts.Any()) return;
 
         var lrParts = new List<LoadRequestPart>();
 
-        foreach (var line in lrLines)
+        foreach (var line in lines)
         {
             foreach (var part in parts)
             {
@@ -788,7 +789,6 @@ public static class DatabaseSeeder
                     PartId = part.Id,
                     RequiredQuantity = line.Quantity * 2.0m,
                     LoadedQuantity = line.Quantity * 2.0m,
-                    Status = "Loaded",
                     CreatedAt = DateTime.UtcNow
                 });
             }
@@ -824,7 +824,7 @@ public static class DatabaseSeeder
                 DriverId = driver?.Id,
                 VehicleId = vehicle?.Id,
                 LoadDate = DateTime.UtcNow,
-                Status = "Loaded",
+                Status = (int)VehicleLoadStatusEnum.Good,
                 Notes = $"Completed bin load #{index}"
             });
             index++;
@@ -856,7 +856,7 @@ public static class DatabaseSeeder
                 DriverId = driver.Id,
                 Barcode = "VO-BC-0001",
                 OffloadDate = DateTime.UtcNow,
-                Status = "Offloaded",
+                Status = (int)VehicleOffloadStatusEnum.Good,
                 Verified = true,
                 VerifiedBy = supervisor?.Id,
                 VerifiedAt = DateTime.UtcNow,
@@ -892,7 +892,7 @@ public static class DatabaseSeeder
                 ScheduledDate = DateTime.UtcNow.AddDays(1),
                 StartDate = DateTime.UtcNow.AddDays(1).AddHours(2),
                 CompletionDate = null,
-                Status = "InProgress",
+                Status = (int)FieldJobStatusEnum.InProgress,
                 Verified = false,
                 Notes = "On-site assembly and calibration for client main floor"
             },
@@ -906,7 +906,7 @@ public static class DatabaseSeeder
                 ScheduledDate = DateTime.UtcNow.AddDays(3),
                 StartDate = null,
                 CompletionDate = null,
-                Status = "Scheduled",
+                Status = (int)FieldJobStatusEnum.Scheduled,
                 Verified = false,
                 Notes = "Scheduled setup for auxiliary warehouse units"
             }
@@ -936,7 +936,7 @@ public static class DatabaseSeeder
                 ProductBarcode = "SN-ASM-2026-001",
                 Quantity = 1,
                 AssemblyDate = DateTime.UtcNow,
-                Status = "Completed",
+                Status = (int)FieldAssemblyStatusEnum.Completed,
                 TechnicianId = technician?.Id,
                 SupervisorId = supervisor?.Id,
                 Verified = true,
@@ -950,7 +950,7 @@ public static class DatabaseSeeder
                 ProductBarcode = "SN-ASM-2026-002",
                 Quantity = 1,
                 AssemblyDate = null,
-                Status = "InProgress",
+                Status = (int)FieldAssemblyStatusEnum.InProgress,
                 TechnicianId = technician?.Id,
                 SupervisorId = supervisor?.Id,
                 Verified = false,
@@ -982,7 +982,7 @@ public static class DatabaseSeeder
                 IssueType = "Component Defect",
                 Description = "RAM connector latch on chassis was slightly misaligned during casing assembly.",
                 Severity = "Medium",
-                Status = "Resolved",
+                Status = (int)IssueStatusEnum.Resolved,
                 ReportedBy = reporter?.Id,
                 ReportedAt = DateTime.UtcNow.AddDays(-1),
                 ResolvedBy = resolver?.Id,
@@ -997,7 +997,7 @@ public static class DatabaseSeeder
                 IssueType = "Delivery Delay",
                 Description = "Traffic congestion on highway caused 30-minute delay in load request delivery.",
                 Severity = "Low",
-                Status = "Open",
+                Status = (int)IssueStatusEnum.Open,
                 ReportedBy = reporter?.Id,
                 ReportedAt = DateTime.UtcNow,
                 ResolvedBy = null,

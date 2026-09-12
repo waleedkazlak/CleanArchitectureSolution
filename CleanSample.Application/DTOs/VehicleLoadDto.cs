@@ -1,5 +1,4 @@
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class VehicleLoadDto
 {
     public long Id { get; set; }
@@ -17,7 +16,8 @@ public class VehicleLoadDto
     public string? VehicleNumber { get; set; }
     public string? PlateNumber { get; set; }
     public DateTime LoadDate { get; set; }
-    public string Status { get; set; } = "Loaded";
+    public int Status { get; set; }
+    public string? StatusName { get; set; }
     public string? Notes { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

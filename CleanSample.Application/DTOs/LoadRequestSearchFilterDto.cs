@@ -1,7 +1,4 @@
-using CleanSample.Domain.Enums;
-
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class LoadRequestSearchFilterDto
 {
     public int PageNumber { get; set; } = 1;
@@ -13,7 +10,7 @@ public class LoadRequestSearchFilterDto
     public int? RequestedBy { get; set; }
     public int? DriverId { get; set; }
     public int? VehicleId { get; set; }
-    public LoadRequestStatus? Status { get; set; }
+    public int? Status { get; set; }
     public bool? Verified { get; set; }
     public bool? WithoutFieldJobs { get; set; }
     public DateTime? FromDate { get; set; }

@@ -1,5 +1,4 @@
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class UpdateVehicleLoadItemDto
 {
     public long Id { get; set; }
@@ -11,6 +10,6 @@ public class UpdateVehicleLoadItemDto
     public int? DriverId { get; set; }
     public int? VehicleId { get; set; }
     public DateTime? LoadDate { get; set; }
-    public string? Status { get; set; }
+    public int? Status { get; set; }
     public string? Notes { get; set; }
 }

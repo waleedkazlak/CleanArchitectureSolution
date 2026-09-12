@@ -1,4 +1,5 @@
 using CleanSample.Application.DTOs.Dashboard;
+using CleanSample.Domain.Enums;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -36,15 +37,17 @@ public class GetIssuesDashboardSummaryQueryHandler : IRequestHandler<GetIssuesDa
         return new IssuesDashboardSummaryDto
         {
             TotalIssues = totalIssues,
-            OpenIssues = issueStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Open", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            InProgressIssues = issueStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "InProgress", StringComparison.OrdinalIgnoreCase) || string.Equals(x.Status, "In Progress", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            ResolvedIssues = issueStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Resolved", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            ClosedIssues = issueStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
+            OpenIssues = issueStatusCounts.FirstOrDefault(x => x.Status == (int)IssueStatusEnum.Open)?.Count ?? 0,
+            InProgressIssues = issueStatusCounts.FirstOrDefault(x => x.Status == (int)IssueStatusEnum.InProgress)?.Count ?? 0,
+            ResolvedIssues = issueStatusCounts.FirstOrDefault(x => x.Status == (int)IssueStatusEnum.Resolved)?.Count ?? 0,
+            ClosedIssues = issueStatusCounts.FirstOrDefault(x => x.Status == (int)IssueStatusEnum.Closed)?.Count ?? 0,
             CriticalIssues = issueSeverityCounts.FirstOrDefault(x => string.Equals(x.Severity, "Critical", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
             HighSeverityIssues = issueSeverityCounts.FirstOrDefault(x => string.Equals(x.Severity, "High", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
             MediumSeverityIssues = issueSeverityCounts.FirstOrDefault(x => string.Equals(x.Severity, "Medium", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
             LowSeverityIssues = issueSeverityCounts.FirstOrDefault(x => string.Equals(x.Severity, "Low", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            ByStatus = issueStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count),
+            ByStatus = issueStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(IssueStatusEnum), x.Status) ? ((IssueStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count),
             BySeverity = issueSeverityCounts.Where(x => !string.IsNullOrEmpty(x.Severity)).ToDictionary(x => x.Severity, x => x.Count)
         };
     }

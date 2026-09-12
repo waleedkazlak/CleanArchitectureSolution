@@ -1,3 +1,5 @@
+using CleanSample.Domain.Enums;
+
 namespace CleanSample.Domain.Entities;
 
 public class FieldJob : BaseEntity<long>
@@ -22,7 +24,8 @@ public class FieldJob : BaseEntity<long>
     public DateTime? StartDate { get; set; }
     public DateTime? CompletionDate { get; set; }
 
-    public string Status { get; set; } = "Scheduled";
+    public int Status { get; set; } = (int)FieldJobStatusEnum.Scheduled;
+    public FieldJobStatus? FieldJobStatus { get; set; }
 
     public bool Verified { get; set; } = false;
 

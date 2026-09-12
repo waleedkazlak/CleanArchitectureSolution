@@ -29,7 +29,7 @@ public class CreateIssueCommandHandler : IRequestHandler<CreateIssueCommand, lon
             IssueType = request.IssueType,
             Description = request.Description,
             Severity = string.IsNullOrWhiteSpace(request.Severity) ? "Medium" : request.Severity,
-            Status = string.IsNullOrWhiteSpace(request.Status) ? "Open" : request.Status,
+            Status = request.Status,
             ReportedBy = request.ReportedBy,
             ReportedAt = request.ReportedAt ?? DateTime.UtcNow,
             ResolvedBy = request.ResolvedBy,

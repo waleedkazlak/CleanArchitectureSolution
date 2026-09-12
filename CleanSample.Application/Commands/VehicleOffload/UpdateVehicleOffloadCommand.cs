@@ -12,7 +12,7 @@ public class UpdateVehicleOffloadCommand : IRequest<bool>
     public int DriverId { get; set; }
     public string? Barcode { get; set; }
     public DateTime? OffloadDate { get; set; }
-    public string? Status { get; set; }
+    public int? Status { get; set; }
     public bool Verified { get; set; } = false;
     public int? VerifiedBy { get; set; }
     public DateTime? VerifiedAt { get; set; }

@@ -101,7 +101,6 @@ public class CreateLoadRequestLineCommandHandler : IRequestHandler<CreateLoadReq
                             PartId = bom.PartId,
                             RequiredQuantity = item.Quantity * bom.Quantity,
                             LoadedQuantity = 0,
-                            Status = "Pending",
                             CreatedAt = DateTime.UtcNow
                         });
                     }
@@ -149,7 +148,6 @@ public class CreateLoadRequestLineCommandHandler : IRequestHandler<CreateLoadReq
                         PartId = bom.PartId,
                         RequiredQuantity = item.Quantity * bom.Quantity,
                         LoadedQuantity = 0,
-                        Status = "Pending",
                         CreatedAt = DateTime.UtcNow
                     });
                 }
@@ -206,7 +204,6 @@ public class CreateLoadRequestLineCommandHandler : IRequestHandler<CreateLoadReq
                         PartName = lrp.Part?.Name,
                         RequiredQuantity = lrp.RequiredQuantity,
                         LoadedQuantity = lrp.LoadedQuantity,
-                        Status = lrp.Status,
                         CreatedAt = lrp.CreatedAt,
                         UpdatedAt = lrp.UpdatedAt
                     }).ToList() ?? new List<LoadRequestPartDto>()

@@ -10,7 +10,7 @@ public class IssueSearchFilterDto
     public long? FieldAssemblyId { get; set; }
     public string? IssueType { get; set; }
     public string? Severity { get; set; }
-    public string? Status { get; set; }
+    public int? Status { get; set; }
     public int? ReportedBy { get; set; }
     public int? ResolvedBy { get; set; }
     public DateTime? FromDate { get; set; }

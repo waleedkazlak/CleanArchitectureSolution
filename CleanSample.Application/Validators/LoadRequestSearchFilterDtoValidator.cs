@@ -48,8 +48,8 @@ public class LoadRequestSearchFilterDtoValidator : AbstractValidator<LoadRequest
             .When(x => x.VehicleId.HasValue);
 
         RuleFor(x => x.Status)
-            .IsInEnum().WithMessage("Status must be a valid LoadRequestStatus value.")
-            .When(x => x.Status.HasValue);
+            .Must(s => !s.HasValue || Enum.IsDefined(typeof(Domain.Enums.LoadRequestStatusEnum), s.Value))
+            .WithMessage("Status must be a valid LoadRequestStatus value.");
 
         RuleFor(x => x.SortBy)
             .Must(sortBy => _validSortFields.Contains(sortBy, StringComparer.OrdinalIgnoreCase))

@@ -40,27 +40,19 @@ public class CreateVehicleLoadsCommandHandler : IRequestHandler<CreateVehicleLoa
                 DriverId = item.DriverId,
                 VehicleId = item.VehicleId,
                 LoadDate = item.LoadDate ?? DateTime.UtcNow,
-                Status = string.IsNullOrWhiteSpace(item.Status) ? "Loaded" : item.Status,
+                Status = item.Status ?? (int)Domain.Enums.VehicleLoadStatusEnum.Good,
                 Notes = item.Notes,
                 CreatedAt = DateTime.UtcNow
             };
 
             newLoads.Add(load);
 
-            // Update LoadRequestPart LoadedQuantity and Status if matching part exists
+            // Update LoadRequestPart LoadedQuantity if matching part exists
             var relatedParts = await _unitOfWork.LoadRequestParts.GetByLoadRequestIdAsync(item.LoadRequestId);
             var lrp = relatedParts.FirstOrDefault(p => p.PartId == item.PartId);
             if (lrp != null)
             {
                 lrp.LoadedQuantity += item.Quantity;
-                if (lrp.LoadedQuantity >= lrp.RequiredQuantity)
-                {
-                    lrp.Status = "Completed";
-                }
-                else if (lrp.LoadedQuantity > 0)
-                {
-                    lrp.Status = "PartiallyLoaded";
-                }
                 await _unitOfWork.LoadRequestParts.UpdateAsync(lrp);
             }
         }
@@ -95,6 +87,7 @@ public class CreateVehicleLoadsCommandHandler : IRequestHandler<CreateVehicleLoa
                     PlateNumber = fullLoad.Vehicle?.PlateNumber,
                     LoadDate = fullLoad.LoadDate,
                     Status = fullLoad.Status,
+                    StatusName = fullLoad.VehicleLoadStatus?.Name,
                     Notes = fullLoad.Notes,
                     CreatedAt = fullLoad.CreatedAt,
                     UpdatedAt = fullLoad.UpdatedAt

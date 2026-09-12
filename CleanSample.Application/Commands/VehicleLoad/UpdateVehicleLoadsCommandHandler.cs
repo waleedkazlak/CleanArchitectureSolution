@@ -51,9 +51,9 @@ public class UpdateVehicleLoadsCommandHandler : IRequestHandler<UpdateVehicleLoa
             {
                 existingLoad.LoadDate = item.LoadDate.Value;
             }
-            if (!string.IsNullOrWhiteSpace(item.Status))
+            if (item.Status.HasValue)
             {
-                existingLoad.Status = item.Status;
+                existingLoad.Status = item.Status.Value;
             }
             existingLoad.Notes = item.Notes;
             existingLoad.UpdatedAt = DateTime.UtcNow;
@@ -66,18 +66,6 @@ public class UpdateVehicleLoadsCommandHandler : IRequestHandler<UpdateVehicleLoa
                 if (lrp != null)
                 {
                     lrp.LoadedQuantity = Math.Max(0, lrp.LoadedQuantity - oldQuantity + item.Quantity);
-                    if (lrp.LoadedQuantity >= lrp.RequiredQuantity)
-                    {
-                        lrp.Status = "Completed";
-                    }
-                    else if (lrp.LoadedQuantity > 0)
-                    {
-                        lrp.Status = "PartiallyLoaded";
-                    }
-                    else
-                    {
-                        lrp.Status = "Pending";
-                    }
                     await _unitOfWork.LoadRequestParts.UpdateAsync(lrp);
                 }
             }
@@ -89,8 +77,6 @@ public class UpdateVehicleLoadsCommandHandler : IRequestHandler<UpdateVehicleLoa
                 if (oldLrp != null)
                 {
                     oldLrp.LoadedQuantity = Math.Max(0, oldLrp.LoadedQuantity - oldQuantity);
-                    oldLrp.Status = oldLrp.LoadedQuantity >= oldLrp.RequiredQuantity ? "Completed" :
-                                    oldLrp.LoadedQuantity > 0 ? "PartiallyLoaded" : "Pending";
                     await _unitOfWork.LoadRequestParts.UpdateAsync(oldLrp);
                 }
 
@@ -100,8 +86,6 @@ public class UpdateVehicleLoadsCommandHandler : IRequestHandler<UpdateVehicleLoa
                 if (newLrp != null)
                 {
                     newLrp.LoadedQuantity += item.Quantity;
-                    newLrp.Status = newLrp.LoadedQuantity >= newLrp.RequiredQuantity ? "Completed" :
-                                    newLrp.LoadedQuantity > 0 ? "PartiallyLoaded" : "Pending";
                     await _unitOfWork.LoadRequestParts.UpdateAsync(newLrp);
                 }
             }
@@ -138,6 +122,7 @@ public class UpdateVehicleLoadsCommandHandler : IRequestHandler<UpdateVehicleLoa
                     PlateNumber = fullLoad.Vehicle?.PlateNumber,
                     LoadDate = fullLoad.LoadDate,
                     Status = fullLoad.Status,
+                    StatusName = fullLoad.VehicleLoadStatus?.Name,
                     Notes = fullLoad.Notes,
                     CreatedAt = fullLoad.CreatedAt,
                     UpdatedAt = fullLoad.UpdatedAt

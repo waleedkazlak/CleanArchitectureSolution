@@ -31,12 +31,14 @@ public class GetDashboardMetricsQueryHandler : IRequestHandler<GetDashboardMetri
         var ordersSummary = new OrdersDashboardSummaryDto
         {
             TotalOrders = orderCountsByStatus.Sum(x => x.Count),
-            DraftOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Draft", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            PendingOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Pending", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            ProcessingOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Processing", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            CompletedOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            CancelledOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            StatusCounts = orderCountsByStatus.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count)
+            DraftOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Draft)?.Count ?? 0,
+            PendingOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Pending)?.Count ?? 0,
+            ProcessingOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Processing)?.Count ?? 0,
+            CompletedOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Completed)?.Count ?? 0,
+            CancelledOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Cancelled)?.Count ?? 0,
+            StatusCounts = orderCountsByStatus.ToDictionary(
+                x => Enum.IsDefined(typeof(OrderStatusEnum), x.Status) ? ((OrderStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count)
         };
 
         // 2. Load Requests Summary
@@ -53,14 +55,16 @@ public class GetDashboardMetricsQueryHandler : IRequestHandler<GetDashboardMetri
         var loadRequestsSummary = new LoadRequestsDashboardSummaryDto
         {
             TotalLoadRequests = totalLoadRequests,
-            NewLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.New)?.Count ?? 0,
-            LoadingLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.Loading)?.Count ?? 0,
-            OffloadedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.Offloaded)?.Count ?? 0,
-            CompletedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.Completed)?.Count ?? 0,
-            CancelledLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == LoadRequestStatus.Cancelled)?.Count ?? 0,
+            NewLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.New)?.Count ?? 0,
+            LoadingLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Loading)?.Count ?? 0,
+            OffloadedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Offloaded)?.Count ?? 0,
+            CompletedLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Completed)?.Count ?? 0,
+            CancelledLoadRequests = lrStatusCounts.FirstOrDefault(x => x.Status == (int)LoadRequestStatusEnum.Cancelled)?.Count ?? 0,
             VerifiedLoadRequests = lrVerifiedCount,
             UnverifiedLoadRequests = totalLoadRequests - lrVerifiedCount,
-            StatusCounts = lrStatusCounts.ToDictionary(x => x.Status.ToString(), x => x.Count)
+            StatusCounts = lrStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(LoadRequestStatusEnum), x.Status) ? ((LoadRequestStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count)
         };
 
         // 3. Issues Summary
@@ -79,15 +83,17 @@ public class GetDashboardMetricsQueryHandler : IRequestHandler<GetDashboardMetri
         var issuesSummary = new IssuesDashboardSummaryDto
         {
             TotalIssues = totalIssues,
-            OpenIssues = issueStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Open", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            InProgressIssues = issueStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "InProgress", StringComparison.OrdinalIgnoreCase) || string.Equals(x.Status, "In Progress", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            ResolvedIssues = issueStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Resolved", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            ClosedIssues = issueStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
+            OpenIssues = issueStatusCounts.FirstOrDefault(x => x.Status == (int)IssueStatusEnum.Open)?.Count ?? 0,
+            InProgressIssues = issueStatusCounts.FirstOrDefault(x => x.Status == (int)IssueStatusEnum.InProgress)?.Count ?? 0,
+            ResolvedIssues = issueStatusCounts.FirstOrDefault(x => x.Status == (int)IssueStatusEnum.Resolved)?.Count ?? 0,
+            ClosedIssues = issueStatusCounts.FirstOrDefault(x => x.Status == (int)IssueStatusEnum.Closed)?.Count ?? 0,
             CriticalIssues = issueSeverityCounts.FirstOrDefault(x => string.Equals(x.Severity, "Critical", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
             HighSeverityIssues = issueSeverityCounts.FirstOrDefault(x => string.Equals(x.Severity, "High", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
             MediumSeverityIssues = issueSeverityCounts.FirstOrDefault(x => string.Equals(x.Severity, "Medium", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
             LowSeverityIssues = issueSeverityCounts.FirstOrDefault(x => string.Equals(x.Severity, "Low", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            ByStatus = issueStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count),
+            ByStatus = issueStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(IssueStatusEnum), x.Status) ? ((IssueStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count),
             BySeverity = issueSeverityCounts.Where(x => !string.IsNullOrEmpty(x.Severity)).ToDictionary(x => x.Severity, x => x.Count)
         };
 
@@ -117,8 +123,12 @@ public class GetDashboardMetricsQueryHandler : IRequestHandler<GetDashboardMetri
             TotalOffloadedPartsCount = totalOffloads,
             VerifiedOffloads = verifiedOffloads,
             UnverifiedOffloads = totalOffloads - verifiedOffloads,
-            LoadsByStatus = loadStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count),
-            OffloadsByStatus = offloadStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count)
+            LoadsByStatus = loadStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(VehicleLoadStatusEnum), x.Status) ? ((VehicleLoadStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count),
+            OffloadsByStatus = offloadStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(VehicleOffloadStatusEnum), x.Status) ? ((VehicleOffloadStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count)
         };
 
         // 5. Field Operations Summary
@@ -144,19 +154,24 @@ public class GetDashboardMetricsQueryHandler : IRequestHandler<GetDashboardMetri
         var fieldOpsSummary = new FieldOperationsDashboardSummaryDto
         {
             TotalJobs = totalJobs,
-            ScheduledJobs = jobStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Scheduled", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            InProgressJobs = jobStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "InProgress", StringComparison.OrdinalIgnoreCase) || string.Equals(x.Status, "In Progress", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            CompletedJobs = jobStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
+            ScheduledJobs = jobStatusCounts.FirstOrDefault(x => x.Status == (int)FieldJobStatusEnum.Scheduled)?.Count ?? 0,
+            InProgressJobs = jobStatusCounts.FirstOrDefault(x => x.Status == (int)FieldJobStatusEnum.InProgress)?.Count ?? 0,
+            CompletedJobs = jobStatusCounts.FirstOrDefault(x => x.Status == (int)FieldJobStatusEnum.Completed)?.Count ?? 0,
             VerifiedJobs = verifiedJobs,
             UnverifiedJobs = totalJobs - verifiedJobs,
             TotalAssemblies = totalAssemblies,
             TotalAssembledQuantity = totalAssembledQty,
-            PendingAssemblies = assemblyStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Pending", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            CompletedAssemblies = assemblyStatusCounts.FirstOrDefault(x => string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
+            InProgressAssemblies = assemblyStatusCounts.FirstOrDefault(x => x.Status == (int)FieldAssemblyStatusEnum.InProgress)?.Count ?? 0,
+            CompletedAssemblies = assemblyStatusCounts.FirstOrDefault(x => x.Status == (int)FieldAssemblyStatusEnum.Completed)?.Count ?? 0,
+            CancelledAssemblies = assemblyStatusCounts.FirstOrDefault(x => x.Status == (int)FieldAssemblyStatusEnum.Cancelled)?.Count ?? 0,
             VerifiedAssemblies = verifiedAssemblies,
             UnverifiedAssemblies = totalAssemblies - verifiedAssemblies,
-            JobsByStatus = jobStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count),
-            AssembliesByStatus = assemblyStatusCounts.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count)
+            JobsByStatus = jobStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(FieldJobStatusEnum), x.Status) ? ((FieldJobStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count),
+            AssembliesByStatus = assemblyStatusCounts.ToDictionary(
+                x => Enum.IsDefined(typeof(FieldAssemblyStatusEnum), x.Status) ? ((FieldAssemblyStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count)
         };
 
         return new DashboardMetricsDto

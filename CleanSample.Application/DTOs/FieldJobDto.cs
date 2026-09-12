@@ -1,5 +1,4 @@
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class FieldJobDto
 {
     public long Id { get; set; }
@@ -15,7 +14,8 @@ public class FieldJobDto
     public DateTime? ScheduledDate { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? CompletionDate { get; set; }
-    public string Status { get; set; } = "Scheduled";
+    public int Status { get; set; }
+    public string? StatusName { get; set; }
     public bool Verified { get; set; } = false;
     public DateTime? VerifiedAt { get; set; }
     public string? Notes { get; set; }

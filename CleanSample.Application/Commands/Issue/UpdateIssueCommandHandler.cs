@@ -35,10 +35,7 @@ public class UpdateIssueCommandHandler : IRequestHandler<UpdateIssueCommand, boo
         {
             existingIssue.Severity = request.Severity;
         }
-        if (!string.IsNullOrWhiteSpace(request.Status))
-        {
-            existingIssue.Status = request.Status;
-        }
+        existingIssue.Status = request.Status;
         existingIssue.ReportedBy = request.ReportedBy;
         if (request.ReportedAt.HasValue)
         {

@@ -1,5 +1,4 @@
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class VehicleOffloadSearchFilterDto
 {
     public int PageNumber { get; set; } = 1;
@@ -10,7 +9,7 @@ public class VehicleOffloadSearchFilterDto
     public int? VehicleId { get; set; }
     public int? DriverId { get; set; }
     public string? Barcode { get; set; }
-    public string? Status { get; set; }
+    public int? Status { get; set; }
     public bool? Verified { get; set; }
     public int? VerifiedBy { get; set; }
     public DateTime? FromDate { get; set; }

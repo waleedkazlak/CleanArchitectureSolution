@@ -1,3 +1,5 @@
+using CleanSample.Domain.Enums;
+
 namespace CleanSample.Domain.Entities;
 
 public class FieldAssembly : BaseEntity<long>
@@ -14,7 +16,8 @@ public class FieldAssembly : BaseEntity<long>
 
     public DateTime? AssemblyDate { get; set; }
 
-    public string Status { get; set; } = "Pending";
+    public int Status { get; set; } = (int)FieldAssemblyStatusEnum.InProgress;
+    public FieldAssemblyStatus? FieldAssemblyStatus { get; set; }
 
     public int? TechnicianId { get; set; }
     public User? Technician { get; set; }

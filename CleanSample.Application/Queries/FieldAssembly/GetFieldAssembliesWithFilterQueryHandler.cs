@@ -38,7 +38,7 @@ public class GetFieldAssembliesWithFilterQueryHandler : IRequestHandler<GetField
                 (fa.Technician != null && fa.Technician.FullName.ToLower().Contains(searchTermLower)) ||
                 (fa.Supervisor != null && fa.Supervisor.FullName.ToLower().Contains(searchTermLower)) ||
                 (fa.Notes != null && fa.Notes.ToLower().Contains(searchTermLower)) ||
-                fa.Status.ToLower().Contains(searchTermLower)
+                (fa.FieldAssemblyStatus != null && fa.FieldAssemblyStatus.Name.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
@@ -68,10 +68,9 @@ public class GetFieldAssembliesWithFilterQueryHandler : IRequestHandler<GetField
             assemblies = assemblies.Where(fa => fa.SupervisorId == filter.SupervisorId.Value).ToList();
         }
 
-        if (!string.IsNullOrWhiteSpace(filter.Status))
+        if (filter.Status.HasValue)
         {
-            var statusLower = filter.Status.ToLower();
-            assemblies = assemblies.Where(fa => fa.Status.ToLower().Contains(statusLower)).ToList();
+            assemblies = assemblies.Where(fa => fa.Status == filter.Status.Value).ToList();
         }
 
         if (filter.Verified.HasValue)
@@ -108,6 +107,7 @@ public class GetFieldAssembliesWithFilterQueryHandler : IRequestHandler<GetField
             Quantity = fa.Quantity,
             AssemblyDate = fa.AssemblyDate,
             Status = fa.Status,
+            StatusName = fa.FieldAssemblyStatus?.Name,
             TechnicianId = fa.TechnicianId,
             TechnicianName = fa.Technician?.FullName,
             SupervisorId = fa.SupervisorId,

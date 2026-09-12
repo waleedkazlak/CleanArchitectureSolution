@@ -34,7 +34,7 @@ public class GetOrdersWithFilterQueryHandler : IRequestHandler<GetOrdersWithFilt
             var searchTermLower = filter.SearchTerm.ToLower();
             orders = orders.Where(o =>
                 (o.Client != null && o.Client.Name.ToLower().Contains(searchTermLower)) ||
-                o.Status.ToLower().Contains(searchTermLower) ||
+                (o.OrderStatus != null && o.OrderStatus.Name.ToLower().Contains(searchTermLower)) ||
                 (o.Notes != null && o.Notes.ToLower().Contains(searchTermLower))
             ).ToList();
         }
@@ -44,10 +44,9 @@ public class GetOrdersWithFilterQueryHandler : IRequestHandler<GetOrdersWithFilt
             orders = orders.Where(o => o.ClientId == filter.ClientId.Value).ToList();
         }
 
-        if (!string.IsNullOrWhiteSpace(filter.Status))
+        if (filter.Status.HasValue)
         {
-            var statusLower = filter.Status.ToLower();
-            orders = orders.Where(o => o.Status.ToLower().Contains(statusLower)).ToList();
+            orders = orders.Where(o => o.Status == filter.Status.Value).ToList();
         }
 
         if (filter.FromDate.HasValue)
@@ -77,6 +76,7 @@ public class GetOrdersWithFilterQueryHandler : IRequestHandler<GetOrdersWithFilt
             OrderDate = o.OrderDate,
             RequiredDate = o.RequiredDate,
             Status = o.Status,
+            StatusName = o.OrderStatus?.Name,
             Notes = o.Notes,
             CreatedAt = o.CreatedAt,
             UpdatedAt = o.UpdatedAt,

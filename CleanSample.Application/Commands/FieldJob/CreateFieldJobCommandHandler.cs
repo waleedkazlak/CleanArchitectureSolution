@@ -30,7 +30,7 @@ public class CreateFieldJobCommandHandler : IRequestHandler<CreateFieldJobComman
             ScheduledDate = request.ScheduledDate,
             StartDate = request.StartDate,
             CompletionDate = request.CompletionDate,
-            Status = string.IsNullOrWhiteSpace(request.Status) ? "Scheduled" : request.Status,
+            Status = request.Status == 0 ? (int)Domain.Enums.FieldJobStatusEnum.Scheduled : request.Status,
             Verified = request.Verified,
             VerifiedAt = request.Verified ? (request.VerifiedAt ?? DateTime.UtcNow) : null,
             Notes = request.Notes,

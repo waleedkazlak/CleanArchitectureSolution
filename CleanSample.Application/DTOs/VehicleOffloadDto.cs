@@ -1,5 +1,4 @@
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class VehicleOffloadDto
 {
     public long Id { get; set; }
@@ -14,7 +13,8 @@ public class VehicleOffloadDto
     public string? DriverName { get; set; }
     public string? Barcode { get; set; }
     public DateTime OffloadDate { get; set; }
-    public string Status { get; set; } = "Offloading";
+    public int Status { get; set; }
+    public string? StatusName { get; set; }
     public bool Verified { get; set; } = false;
     public int? VerifiedBy { get; set; }
     public string? VerifierName { get; set; }

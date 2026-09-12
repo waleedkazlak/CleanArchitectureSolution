@@ -1,5 +1,4 @@
-namespace CleanSample.Application.DTOs;
-
+﻿namespace CleanSample.Application.DTOs;
 public class IssueDto
 {
     public long Id { get; set; }
@@ -9,7 +8,8 @@ public class IssueDto
     public string IssueType { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Severity { get; set; } = "Medium";
-    public string Status { get; set; } = "Open";
+    public int Status { get; set; }
+    public string? StatusName { get; set; }
     public int? ReportedBy { get; set; }
     public string? ReportedByName { get; set; }
     public DateTime ReportedAt { get; set; }

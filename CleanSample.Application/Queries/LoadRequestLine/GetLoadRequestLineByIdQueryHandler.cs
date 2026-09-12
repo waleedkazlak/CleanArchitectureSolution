@@ -42,7 +42,6 @@ public class GetLoadRequestLineByIdQueryHandler : IRequestHandler<GetLoadRequest
                 PartName = lrp.Part?.Name,
                 RequiredQuantity = lrp.RequiredQuantity,
                 LoadedQuantity = lrp.LoadedQuantity,
-                Status = lrp.Status,
                 CreatedAt = lrp.CreatedAt,
                 UpdatedAt = lrp.UpdatedAt
             }).ToList() ?? new List<LoadRequestPartDto>()

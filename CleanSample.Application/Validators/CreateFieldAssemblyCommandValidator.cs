@@ -28,7 +28,8 @@ public class CreateFieldAssemblyCommandValidator : AbstractValidator<CreateField
                 .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
 
             RuleFor(x => x.Status)
-                .MaximumLength(50).WithMessage("Status cannot exceed 50 characters.");
+                .Must(s => Enum.IsDefined(typeof(CleanSample.Domain.Enums.FieldAssemblyStatusEnum), s))
+                .WithMessage("Valid Status is required (1 = InProgress, 2 = Completed, 3 = Cancelled).");
 
             RuleFor(x => x.TechnicianId)
                 .GreaterThan(0).WithMessage("Technician user ID must be greater than 0.")
@@ -61,7 +62,8 @@ public class CreateFieldAssemblyItemDtoValidator : AbstractValidator<CreateField
             .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
 
         RuleFor(x => x.Status)
-            .MaximumLength(50).WithMessage("Status cannot exceed 50 characters.");
+            .Must(s => !s.HasValue || Enum.IsDefined(typeof(CleanSample.Domain.Enums.FieldAssemblyStatusEnum), s.Value))
+            .WithMessage("Status must be a valid value (1 = InProgress, 2 = Completed, 3 = Cancelled).");
 
         RuleFor(x => x.TechnicianId)
             .GreaterThan(0).WithMessage("Technician user ID must be greater than 0.")

@@ -16,6 +16,4 @@ public class LoadRequestPart : BaseEntity<long>
 
     public decimal RequiredQuantity { get; set; }
     public decimal LoadedQuantity { get; set; } = 0;
-
-    public string Status { get; set; } = "Pending";
 }

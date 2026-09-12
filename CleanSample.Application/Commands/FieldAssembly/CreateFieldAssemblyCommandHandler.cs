@@ -68,7 +68,10 @@ public class CreateFieldAssemblyCommandHandler : IRequestHandler<CreateFieldAsse
                 existing.ProductBarcode = item.ProductBarcode;
                 existing.Quantity = item.Quantity;
                 existing.AssemblyDate = item.AssemblyDate;
-                existing.Status = string.IsNullOrWhiteSpace(item.Status) ? existing.Status : item.Status;
+                if (item.Status.HasValue)
+                {
+                    existing.Status = item.Status.Value;
+                }
                 existing.TechnicianId = item.TechnicianId;
                 existing.SupervisorId = item.SupervisorId;
                 existing.Verified = item.Verified;
@@ -88,7 +91,7 @@ public class CreateFieldAssemblyCommandHandler : IRequestHandler<CreateFieldAsse
                     ProductBarcode = item.ProductBarcode,
                     Quantity = item.Quantity,
                     AssemblyDate = item.AssemblyDate,
-                    Status = string.IsNullOrWhiteSpace(item.Status) ? "Pending" : item.Status,
+                    Status = item.Status ?? (int)Domain.Enums.FieldAssemblyStatusEnum.InProgress,
                     TechnicianId = item.TechnicianId,
                     SupervisorId = item.SupervisorId,
                     Verified = item.Verified,

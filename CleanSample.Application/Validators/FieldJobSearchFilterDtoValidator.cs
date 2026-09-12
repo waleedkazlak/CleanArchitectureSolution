@@ -44,8 +44,8 @@ public class FieldJobSearchFilterDtoValidator : AbstractValidator<FieldJobSearch
             .When(x => x.SupervisorId.HasValue);
 
         RuleFor(x => x.Status)
-            .MaximumLength(50).WithMessage("Status cannot exceed 50 characters")
-            .When(x => !string.IsNullOrWhiteSpace(x.Status));
+            .Must(s => !s.HasValue || Enum.IsDefined(typeof(Domain.Enums.FieldJobStatusEnum), s.Value))
+            .WithMessage("Status must be a valid FieldJobStatus value.");
 
         RuleFor(x => x.SortBy)
             .Must(sortBy => _validSortFields.Contains(sortBy, StringComparer.OrdinalIgnoreCase))

@@ -23,7 +23,8 @@ public class CreateVehicleOffloadCommandValidator : AbstractValidator<CreateVehi
             .MaximumLength(100).WithMessage("Barcode cannot exceed 100 characters.");
 
         RuleFor(x => x.Status)
-            .MaximumLength(50).WithMessage("Status cannot exceed 50 characters.");
+            .Must(s => Enum.IsDefined(typeof(Domain.Enums.VehicleOffloadStatusEnum), s))
+            .WithMessage("Status must be a valid VehicleOffloadStatus value.");
 
         RuleFor(x => x.VerifiedBy)
             .GreaterThan(0).WithMessage("VerifiedBy user ID must be greater than 0.")

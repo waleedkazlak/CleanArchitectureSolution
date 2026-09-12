@@ -38,7 +38,7 @@ public class GetFieldJobsWithFilterQueryHandler : IRequestHandler<GetFieldJobsWi
                 (fj.Technician != null && fj.Technician.FullName.ToLower().Contains(searchTermLower)) ||
                 (fj.Supervisor != null && fj.Supervisor.FullName.ToLower().Contains(searchTermLower)) ||
                 (fj.Notes != null && fj.Notes.ToLower().Contains(searchTermLower)) ||
-                fj.Status.ToLower().Contains(searchTermLower)
+                (fj.FieldJobStatus != null && fj.FieldJobStatus.Name.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
@@ -67,10 +67,9 @@ public class GetFieldJobsWithFilterQueryHandler : IRequestHandler<GetFieldJobsWi
             jobs = jobs.Where(fj => fj.SupervisorId == filter.SupervisorId.Value).ToList();
         }
 
-        if (!string.IsNullOrWhiteSpace(filter.Status))
+        if (filter.Status.HasValue)
         {
-            var statusLower = filter.Status.ToLower();
-            jobs = jobs.Where(fj => fj.Status.ToLower().Contains(statusLower)).ToList();
+            jobs = jobs.Where(fj => fj.Status == filter.Status.Value).ToList();
         }
 
         if (filter.Verified.HasValue)
@@ -113,6 +112,7 @@ public class GetFieldJobsWithFilterQueryHandler : IRequestHandler<GetFieldJobsWi
             StartDate = fj.StartDate,
             CompletionDate = fj.CompletionDate,
             Status = fj.Status,
+            StatusName = fj.FieldJobStatus?.Name,
             Verified = fj.Verified,
             VerifiedAt = fj.VerifiedAt,
             Notes = fj.Notes,

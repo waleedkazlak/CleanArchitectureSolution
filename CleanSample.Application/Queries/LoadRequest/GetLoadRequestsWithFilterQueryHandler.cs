@@ -130,6 +130,7 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
             RequestDate = p.RequestDate,
             ExecutionDate = p.ExecutionDate,
             Status = p.Status,
+            StatusName = p.LoadRequestStatus?.Name,
             DestinationAddress = p.DestinationAddress,
             DestinationCity = p.DestinationCity,
             Description = p.Description,
@@ -162,7 +163,6 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
                     PartName = lrp.Part?.Name,
                     RequiredQuantity = lrp.RequiredQuantity,
                     LoadedQuantity = lrp.LoadedQuantity,
-                    Status = lrp.Status,
                     CreatedAt = lrp.CreatedAt,
                     UpdatedAt = lrp.UpdatedAt
                 }).ToList() ?? new List<LoadRequestPartDto>()
@@ -179,7 +179,6 @@ public class GetLoadRequestsWithFilterQueryHandler : IRequestHandler<GetLoadRequ
                 PartName = lrp.Part?.Name,
                 RequiredQuantity = lrp.RequiredQuantity,
                 LoadedQuantity = lrp.LoadedQuantity,
-                Status = lrp.Status,
                 CreatedAt = lrp.CreatedAt,
                 UpdatedAt = lrp.UpdatedAt
             }).ToList() ?? new List<LoadRequestPartDto>()

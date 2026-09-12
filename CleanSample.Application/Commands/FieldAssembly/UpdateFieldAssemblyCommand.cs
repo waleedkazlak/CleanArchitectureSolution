@@ -10,7 +10,7 @@ public class UpdateFieldAssemblyCommand : IRequest<bool>
     public string? ProductBarcode { get; set; }
     public int Quantity { get; set; }
     public DateTime? AssemblyDate { get; set; }
-    public string Status { get; set; } = "Pending";
+    public int Status { get; set; }
     public int? TechnicianId { get; set; }
     public int? SupervisorId { get; set; }
     public bool Verified { get; set; } = false;

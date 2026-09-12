@@ -122,7 +122,6 @@ public class LoadRequestBOMService : ILoadRequestBOMService
                         PartId = bom.PartId,
                         RequiredQuantity = line.Quantity * bom.Quantity,
                         LoadedQuantity = 0,
-                        Status = "Pending",
                         CreatedAt = DateTime.UtcNow
                     };
 

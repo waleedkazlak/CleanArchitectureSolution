@@ -1,4 +1,5 @@
 using CleanSample.Application.DTOs.Dashboard;
+using CleanSample.Domain.Enums;
 using CleanSample.Domain.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,12 +30,14 @@ public class GetOrdersDashboardSummaryQueryHandler : IRequestHandler<GetOrdersDa
         return new OrdersDashboardSummaryDto
         {
             TotalOrders = orderCountsByStatus.Sum(x => x.Count),
-            DraftOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Draft", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            PendingOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Pending", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            ProcessingOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Processing", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            CompletedOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            CancelledOrders = orderCountsByStatus.FirstOrDefault(x => string.Equals(x.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))?.Count ?? 0,
-            StatusCounts = orderCountsByStatus.Where(x => !string.IsNullOrEmpty(x.Status)).ToDictionary(x => x.Status, x => x.Count)
+            DraftOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Draft)?.Count ?? 0,
+            PendingOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Pending)?.Count ?? 0,
+            ProcessingOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Processing)?.Count ?? 0,
+            CompletedOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Completed)?.Count ?? 0,
+            CancelledOrders = orderCountsByStatus.FirstOrDefault(x => x.Status == (int)OrderStatusEnum.Cancelled)?.Count ?? 0,
+            StatusCounts = orderCountsByStatus.ToDictionary(
+                x => Enum.IsDefined(typeof(OrderStatusEnum), x.Status) ? ((OrderStatusEnum)x.Status).ToString() : x.Status.ToString(),
+                x => x.Count)
         };
     }
 }

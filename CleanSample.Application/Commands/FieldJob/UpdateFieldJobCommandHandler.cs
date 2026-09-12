@@ -34,10 +34,7 @@ public class UpdateFieldJobCommandHandler : IRequestHandler<UpdateFieldJobComman
         existingJob.ScheduledDate = request.ScheduledDate;
         existingJob.StartDate = request.StartDate;
         existingJob.CompletionDate = request.CompletionDate;
-        if (!string.IsNullOrWhiteSpace(request.Status))
-        {
-            existingJob.Status = request.Status;
-        }
+        existingJob.Status = request.Status;
         existingJob.Verified = request.Verified;
         existingJob.VerifiedAt = request.Verified ? (request.VerifiedAt ?? DateTime.UtcNow) : null;
         existingJob.Notes = request.Notes;
