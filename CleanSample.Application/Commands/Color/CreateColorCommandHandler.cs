@@ -14,9 +14,13 @@ public class CreateColorCommandHandler : IRequestHandler<CreateColorCommand, int
 
     public async Task<int> Handle(CreateColorCommand request, CancellationToken cancellationToken)
     {
+        var nameEn = !string.IsNullOrWhiteSpace(request.NameEn) ? request.NameEn : (request.Name ?? string.Empty);
+        var nameAr = request.NameAr;
+
         var color = new CleanSample.Domain.Entities.Color
         {
-            Name = request.Name,
+            NameEn = nameEn,
+            NameAr = nameAr,
             Code = request.Code
         };
 

@@ -14,10 +14,17 @@ public class CreateDesignCommandHandler : IRequestHandler<CreateDesignCommand, i
 
     public async Task<int> Handle(CreateDesignCommand request, CancellationToken cancellationToken)
     {
+        var nameEn = !string.IsNullOrWhiteSpace(request.NameEn) ? request.NameEn : (request.Name ?? string.Empty);
+        var nameAr = request.NameAr;
+        var descEn = !string.IsNullOrWhiteSpace(request.DescriptionEn) ? request.DescriptionEn : request.Description;
+        var descAr = request.DescriptionAr;
+
         var design = new CleanSample.Domain.Entities.Design
         {
-            Name = request.Name,
-            Description = request.Description
+            NameEn = nameEn,
+            NameAr = nameAr,
+            DescriptionEn = descEn,
+            DescriptionAr = descAr
         };
 
         var designId = await _unitOfWork.Designs.AddAsync(design);

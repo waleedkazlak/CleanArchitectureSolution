@@ -34,9 +34,11 @@ public class GetPartsWithFilterQueryHandler : IRequestHandler<GetPartsWithFilter
             var searchTermLower = filter.SearchTerm.ToLower();
             parts = parts.Where(p =>
                 p.Code.ToLower().Contains(searchTermLower) ||
-                p.Name.ToLower().Contains(searchTermLower) ||
+                p.NameEn.ToLower().Contains(searchTermLower) ||
+                (p.NameAr != null && p.NameAr.ToLower().Contains(searchTermLower)) ||
                 (p.Barcode != null && p.Barcode.ToLower().Contains(searchTermLower)) ||
-                (p.Description != null && p.Description.ToLower().Contains(searchTermLower))
+                (p.DescriptionEn != null && p.DescriptionEn.ToLower().Contains(searchTermLower)) ||
+                (p.DescriptionAr != null && p.DescriptionAr.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
@@ -49,7 +51,10 @@ public class GetPartsWithFilterQueryHandler : IRequestHandler<GetPartsWithFilter
         if (!string.IsNullOrWhiteSpace(filter.Name))
         {
             var nameLower = filter.Name.ToLower();
-            parts = parts.Where(p => p.Name.ToLower().Contains(nameLower)).ToList();
+            parts = parts.Where(p => 
+                p.NameEn.ToLower().Contains(nameLower) ||
+                (p.NameAr != null && p.NameAr.ToLower().Contains(nameLower))
+            ).ToList();
         }
 
         if (!string.IsNullOrWhiteSpace(filter.Barcode))
@@ -76,8 +81,12 @@ public class GetPartsWithFilterQueryHandler : IRequestHandler<GetPartsWithFilter
         {
             Id = p.Id,
             Code = p.Code,
-            Name = p.Name,
-            Description = p.Description,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(p.NameEn, p.NameAr) ?? p.NameEn,
+            NameEn = p.NameEn,
+            NameAr = p.NameAr,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(p.DescriptionEn, p.DescriptionAr),
+            DescriptionEn = p.DescriptionEn,
+            DescriptionAr = p.DescriptionAr,
             Barcode = p.Barcode,
             IsActive = p.IsActive,
             CreatedAt = p.CreatedAt,

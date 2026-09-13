@@ -20,8 +20,22 @@ public class UpdateDesignCommandHandler : IRequestHandler<UpdateDesignCommand, b
             return false;
         }
 
-        design.Name = request.Name;
-        design.Description = request.Description;
+        if (!string.IsNullOrWhiteSpace(request.NameEn))
+            design.NameEn = request.NameEn;
+        else if (!string.IsNullOrWhiteSpace(request.Name))
+            design.NameEn = request.Name;
+
+        if (request.NameAr != null)
+            design.NameAr = request.NameAr;
+
+        if (!string.IsNullOrWhiteSpace(request.DescriptionEn))
+            design.DescriptionEn = request.DescriptionEn;
+        else if (request.Description != null)
+            design.DescriptionEn = request.Description;
+
+        if (request.DescriptionAr != null)
+            design.DescriptionAr = request.DescriptionAr;
+
         design.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.Designs.UpdateAsync(design);

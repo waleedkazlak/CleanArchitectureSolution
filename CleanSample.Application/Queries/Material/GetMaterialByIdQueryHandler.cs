@@ -24,8 +24,12 @@ public class GetMaterialByIdQueryHandler : IRequestHandler<GetMaterialByIdQuery,
         return new MaterialDto
         {
             Id = material.Id,
-            Name = material.Name,
-            Description = material.Description,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(material.NameEn, material.NameAr) ?? material.NameEn,
+            NameEn = material.NameEn,
+            NameAr = material.NameAr,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(material.DescriptionEn, material.DescriptionAr),
+            DescriptionEn = material.DescriptionEn,
+            DescriptionAr = material.DescriptionAr,
             CreatedAt = material.CreatedAt,
             UpdatedAt = material.UpdatedAt
         };

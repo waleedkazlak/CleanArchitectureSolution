@@ -30,9 +30,23 @@ public class User : BaseEntity
     }
 
     /// <summary>
-    /// User's full name
+    /// User's full name in English
     /// </summary>
-    public string FullName { get; set; } = null!;
+    public string FullNameEn { get; set; } = null!;
+
+    /// <summary>
+    /// User's full name in Arabic
+    /// </summary>
+    public string? FullNameAr { get; set; }
+
+    /// <summary>
+    /// User's full name (fallback / compatibility)
+    /// </summary>
+    public string FullName
+    {
+        get => FullNameEn;
+        set => FullNameEn = value;
+    }
 
     /// <summary>
     /// Email address
@@ -53,6 +67,11 @@ public class User : BaseEntity
     /// Password salt key
     /// </summary>
     public string PasswordSalt { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Preferred language code ('en', 'ar')
+    /// </summary>
+    public string PreferredLanguage { get; set; } = "en";
 
     /// <summary>
     /// Whether the user is active

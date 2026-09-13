@@ -24,7 +24,12 @@ public class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, RoleDto
         return new RoleDto
         {
             Id = role.Id,
-            Name = role.Name,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(role.NameEn, role.NameAr) ?? role.NameEn,
+            NameEn = role.NameEn,
+            NameAr = role.NameAr,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(role.DescriptionEn, role.DescriptionAr),
+            DescriptionEn = role.DescriptionEn,
+            DescriptionAr = role.DescriptionAr,
             CreatedAt = role.CreatedAt,
             UpdatedAt = role.UpdatedAt
         };

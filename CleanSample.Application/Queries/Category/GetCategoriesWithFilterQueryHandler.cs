@@ -33,8 +33,10 @@ public class GetCategoriesWithFilterQueryHandler : IRequestHandler<GetCategories
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             categories = categories.Where(c =>
-                c.Name.ToLower().Contains(searchTermLower) ||
-                (c.Description != null && c.Description.ToLower().Contains(searchTermLower))
+                c.NameEn.ToLower().Contains(searchTermLower) ||
+                (c.NameAr != null && c.NameAr.ToLower().Contains(searchTermLower)) ||
+                (c.DescriptionEn != null && c.DescriptionEn.ToLower().Contains(searchTermLower)) ||
+                (c.DescriptionAr != null && c.DescriptionAr.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
@@ -50,8 +52,12 @@ public class GetCategoriesWithFilterQueryHandler : IRequestHandler<GetCategories
         var categoryDtos = paginatedCategories.Select(c => new CategoryDto
         {
             Id = c.Id,
-            Name = c.Name,
-            Description = c.Description,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(c.NameEn, c.NameAr) ?? c.NameEn,
+            NameEn = c.NameEn,
+            NameAr = c.NameAr,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(c.DescriptionEn, c.DescriptionAr),
+            DescriptionEn = c.DescriptionEn,
+            DescriptionAr = c.DescriptionAr,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt
         }).ToList();

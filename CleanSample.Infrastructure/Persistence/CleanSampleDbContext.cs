@@ -185,9 +185,21 @@ public class CleanSampleDbContext : DbContext
                 .HasConstraintName("FK_Products_Designs")
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(e => e.Name)
+            entity.Property(e => e.NameEn)
                 .IsRequired()
                 .HasMaxLength(200);
+
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.DescriptionEn)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(1000);
+
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
 
             entity.Property(e => e.Barcode)
                 .HasMaxLength(100);
@@ -195,9 +207,6 @@ public class CleanSampleDbContext : DbContext
             entity.HasIndex(e => e.Barcode)
                 .IsUnique()
                 .HasDatabaseName("UQ_Products_Barcode");
-
-            entity.Property(e => e.Description)
-                .HasMaxLength(1000);
 
             entity.Property(e => e.PictureUrl)
                 .HasMaxLength(500);
@@ -236,9 +245,14 @@ public class CleanSampleDbContext : DbContext
                 .IsUnique()
                 .HasDatabaseName("UQ_Users_UserName");
 
-            entity.Property(e => e.FullName)
+            entity.Property(e => e.FullNameEn)
                 .IsRequired()
                 .HasMaxLength(200);
+
+            entity.Property(e => e.FullNameAr)
+                .HasMaxLength(200);
+
+            entity.Ignore(e => e.FullName);
 
             entity.Property(e => e.Email)
                 .HasMaxLength(250);
@@ -255,6 +269,11 @@ public class CleanSampleDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(250)
                 .HasDefaultValue(string.Empty);
+
+            entity.Property(e => e.PreferredLanguage)
+                .IsRequired()
+                .HasMaxLength(10)
+                .HasDefaultValue("en");
 
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
@@ -317,16 +336,25 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("CategoryId");
 
-            entity.Property(e => e.Name)
+            entity.Property(e => e.NameEn)
                 .IsRequired()
                 .HasMaxLength(150);
 
-            entity.HasIndex(e => e.Name)
-                .IsUnique()
-                .HasDatabaseName("UQ_Categories_Name");
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(150);
 
-            entity.Property(e => e.Description)
+            entity.Property(e => e.DescriptionEn)
                 .HasMaxLength(500);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(500);
+
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
+
+            entity.HasIndex(e => e.NameEn)
+                .IsUnique()
+                .HasDatabaseName("UQ_Categories_NameEn");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
@@ -343,13 +371,18 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("ColorId");
 
-            entity.Property(e => e.Name)
+            entity.Property(e => e.NameEn)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            entity.HasIndex(e => e.Name)
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(100);
+
+            entity.Ignore(e => e.Name);
+
+            entity.HasIndex(e => e.NameEn)
                 .IsUnique()
-                .HasDatabaseName("UQ_Colors_Name");
+                .HasDatabaseName("UQ_Colors_NameEn");
 
             entity.Property(e => e.Code)
                 .HasMaxLength(50);
@@ -369,16 +402,25 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("MaterialId");
 
-            entity.Property(e => e.Name)
+            entity.Property(e => e.NameEn)
                 .IsRequired()
                 .HasMaxLength(150);
 
-            entity.HasIndex(e => e.Name)
-                .IsUnique()
-                .HasDatabaseName("UQ_Materials_Name");
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(150);
 
-            entity.Property(e => e.Description)
+            entity.Property(e => e.DescriptionEn)
                 .HasMaxLength(500);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(500);
+
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
+
+            entity.HasIndex(e => e.NameEn)
+                .IsUnique()
+                .HasDatabaseName("UQ_Materials_NameEn");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
@@ -395,16 +437,25 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("DesignId");
 
-            entity.Property(e => e.Name)
+            entity.Property(e => e.NameEn)
                 .IsRequired()
                 .HasMaxLength(150);
 
-            entity.HasIndex(e => e.Name)
-                .IsUnique()
-                .HasDatabaseName("UQ_Designs_Name");
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(150);
 
-            entity.Property(e => e.Description)
+            entity.Property(e => e.DescriptionEn)
                 .HasMaxLength(500);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(500);
+
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
+
+            entity.HasIndex(e => e.NameEn)
+                .IsUnique()
+                .HasDatabaseName("UQ_Designs_NameEn");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
@@ -429,12 +480,21 @@ public class CleanSampleDbContext : DbContext
                 .IsUnique()
                 .HasDatabaseName("UQ_Parts_Code");
 
-            entity.Property(e => e.Name)
+            entity.Property(e => e.NameEn)
                 .IsRequired()
                 .HasMaxLength(200);
 
-            entity.Property(e => e.Description)
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.DescriptionEn)
                 .HasMaxLength(1000);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(1000);
+
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
 
             entity.Property(e => e.Barcode)
                 .HasMaxLength(100);
@@ -594,18 +654,22 @@ public class CleanSampleDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("OrderStatusId").ValueGeneratedNever();
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.NameAr).HasMaxLength(50);
+            entity.Property(e => e.DescriptionEn).HasMaxLength(250);
+            entity.Property(e => e.DescriptionAr).HasMaxLength(250);
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
             entity.ToTable("OrderStatuses");
 
             entity.HasData(
-                new OrderStatus { Id = (int)OrderStatusEnum.Draft, Name = "Draft", Description = "Draft order created", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new OrderStatus { Id = (int)OrderStatusEnum.Pending, Name = "Pending", Description = "Order pending approval", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new OrderStatus { Id = (int)OrderStatusEnum.Approved, Name = "Approved", Description = "Order approved by sales manager", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new OrderStatus { Id = (int)OrderStatusEnum.Processing, Name = "Processing", Description = "Load requests placed for order", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new OrderStatus { Id = (int)OrderStatusEnum.Completed, Name = "Completed", Description = "All load requests fulfilled and order completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new OrderStatus { Id = (int)OrderStatusEnum.Cancelled, Name = "Cancelled", Description = "Order cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+                new OrderStatus { Id = (int)OrderStatusEnum.Draft, NameEn = "Draft", NameAr = "مسودة", DescriptionEn = "Draft order created", DescriptionAr = "تم إنشاء أمر طلب مسودة", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Pending, NameEn = "Pending", NameAr = "قيد الانتظار", DescriptionEn = "Order pending approval", DescriptionAr = "أمر الطلب بانتظار الموافقة", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Approved, NameEn = "Approved", NameAr = "معتمد", DescriptionEn = "Order approved by sales manager", DescriptionAr = "تم اعتماد أمر الطلب من مدير المبيعات", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Processing, NameEn = "Processing", NameAr = "قيد المعالجة", DescriptionEn = "Load requests placed for order", DescriptionAr = "تم إنشاء طلبات التحميل لأمر الطلب", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Completed, NameEn = "Completed", NameAr = "مكتمل", DescriptionEn = "All load requests fulfilled and order completed", DescriptionAr = "تم تنفيذ جميع طلبات التحميل واكتمال أمر الطلب", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new OrderStatus { Id = (int)OrderStatusEnum.Cancelled, NameEn = "Cancelled", NameAr = "ملغي", DescriptionEn = "Order cancelled", DescriptionAr = "تم إلغاء أمر الطلب", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
             );
         });
 
@@ -705,18 +769,22 @@ public class CleanSampleDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("LoadRequestStatusId").ValueGeneratedNever();
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.NameAr).HasMaxLength(50);
+            entity.Property(e => e.DescriptionEn).HasMaxLength(250);
+            entity.Property(e => e.DescriptionAr).HasMaxLength(250);
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
             entity.ToTable("LoadRequestStatuses");
 
             entity.HasData(
-                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.New, Name = "New", Description = "New load request created", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Loaded, Name = "Loaded", Description = "Loading completed in good condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Offloaded, Name = "Offloaded", Description = "Offloaded in good condition at destination", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Completed, Name = "Completed", Description = "All field assemblies completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Blocked, Name = "Blocked", Description = "Blocked due to damaged or missing parts during loading/offloading", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Cancelled, Name = "Cancelled", Description = "Load request cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.New, NameEn = "New", NameAr = "جديد", DescriptionEn = "New load request created", DescriptionAr = "تم إنشاء طلب تحميل جديد", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Loaded, NameEn = "Loaded", NameAr = "تم التحميل", DescriptionEn = "Loading completed in good condition", DescriptionAr = "اكتمل التحميل بحالة جيدة", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Offloaded, NameEn = "Offloaded", NameAr = "تم التنزيل", DescriptionEn = "Offloaded in good condition at destination", DescriptionAr = "تم تنزيل الشحنة بحالة جيدة في الوجهة", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Completed, NameEn = "Completed", NameAr = "مكتمل", DescriptionEn = "All field assemblies completed", DescriptionAr = "اكتملت جميع أعمال التركيب الميداني", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Blocked, NameEn = "Blocked", NameAr = "محظور / معلق", DescriptionEn = "Blocked due to damaged or missing parts during loading/offloading", DescriptionAr = "معلق بسبب قطع تالفة أو مفقودة أثناء التحميل/التنزيل", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new LoadRequestStatus { Id = (int)LoadRequestStatusEnum.Cancelled, NameEn = "Cancelled", NameAr = "ملغي", DescriptionEn = "Load request cancelled", DescriptionAr = "تم إلغاء طلب التحميل", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
             );
         });
 
@@ -932,15 +1000,19 @@ public class CleanSampleDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("VehicleLoadStatusId").ValueGeneratedNever();
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.NameAr).HasMaxLength(50);
+            entity.Property(e => e.DescriptionEn).HasMaxLength(250);
+            entity.Property(e => e.DescriptionAr).HasMaxLength(250);
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
             entity.ToTable("VehicleLoadStatuses");
 
             entity.HasData(
-                new VehicleLoadStatus { Id = (int)VehicleLoadStatusEnum.Good, Name = "Good", Description = "Loaded in good condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new VehicleLoadStatus { Id = (int)VehicleLoadStatusEnum.Damaged, Name = "Damaged", Description = "Loaded in damaged condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new VehicleLoadStatus { Id = (int)VehicleLoadStatusEnum.Missing, Name = "Missing", Description = "Missing items during load", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+                new VehicleLoadStatus { Id = (int)VehicleLoadStatusEnum.Good, NameEn = "Good", NameAr = "سليم", DescriptionEn = "Loaded in good condition", DescriptionAr = "تم التحميل بحالة سليمة وجيدة", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new VehicleLoadStatus { Id = (int)VehicleLoadStatusEnum.Damaged, NameEn = "Damaged", NameAr = "تالف", DescriptionEn = "Loaded in damaged condition", DescriptionAr = "تم التحميل مع وجود تلف", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new VehicleLoadStatus { Id = (int)VehicleLoadStatusEnum.Missing, NameEn = "Missing", NameAr = "مفقود", DescriptionEn = "Missing items during load", DescriptionAr = "عناصر مفقودة أثناء التحميل", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
             );
         });
 
@@ -1040,15 +1112,19 @@ public class CleanSampleDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("VehicleOffloadStatusId").ValueGeneratedNever();
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.NameAr).HasMaxLength(50);
+            entity.Property(e => e.DescriptionEn).HasMaxLength(250);
+            entity.Property(e => e.DescriptionAr).HasMaxLength(250);
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
             entity.ToTable("VehicleOffloadStatuses");
 
             entity.HasData(
-                new VehicleOffloadStatus { Id = (int)VehicleOffloadStatusEnum.Good, Name = "Good", Description = "Offloaded in good condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new VehicleOffloadStatus { Id = (int)VehicleOffloadStatusEnum.Damaged, Name = "Damaged", Description = "Offloaded in damaged condition", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new VehicleOffloadStatus { Id = (int)VehicleOffloadStatusEnum.Missing, Name = "Missing", Description = "Missing items during offload", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+                new VehicleOffloadStatus { Id = (int)VehicleOffloadStatusEnum.Good, NameEn = "Good", NameAr = "سليم", DescriptionEn = "Offloaded in good condition", DescriptionAr = "تم التنزيل بحالة سليمة وجيدة", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new VehicleOffloadStatus { Id = (int)VehicleOffloadStatusEnum.Damaged, NameEn = "Damaged", NameAr = "تالف", DescriptionEn = "Offloaded in damaged condition", DescriptionAr = "تم التنزيل مع وجود تلف", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new VehicleOffloadStatus { Id = (int)VehicleOffloadStatusEnum.Missing, NameEn = "Missing", NameAr = "مفقود", DescriptionEn = "Missing items during offload", DescriptionAr = "عناصر مفقودة أثناء التنزيل", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
             );
         });
 
@@ -1151,16 +1227,20 @@ public class CleanSampleDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("FieldJobStatusId").ValueGeneratedNever();
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.NameAr).HasMaxLength(50);
+            entity.Property(e => e.DescriptionEn).HasMaxLength(250);
+            entity.Property(e => e.DescriptionAr).HasMaxLength(250);
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
             entity.ToTable("FieldJobStatuses");
 
             entity.HasData(
-                new FieldJobStatus { Id = (int)FieldJobStatusEnum.Scheduled, Name = "Scheduled", Description = "Field job scheduled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new FieldJobStatus { Id = (int)FieldJobStatusEnum.InProgress, Name = "InProgress", Description = "Field job in progress", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new FieldJobStatus { Id = (int)FieldJobStatusEnum.Completed, Name = "Completed", Description = "Field job completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new FieldJobStatus { Id = (int)FieldJobStatusEnum.Cancelled, Name = "Cancelled", Description = "Field job cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+                new FieldJobStatus { Id = (int)FieldJobStatusEnum.Scheduled, NameEn = "Scheduled", NameAr = "مجدول", DescriptionEn = "Field job scheduled", DescriptionAr = "تمت جدولة المهمة الميدانية", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldJobStatus { Id = (int)FieldJobStatusEnum.InProgress, NameEn = "InProgress", NameAr = "قيد التنفيذ", DescriptionEn = "Field job in progress", DescriptionAr = "المهمة الميدانية قيد التنفيذ", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldJobStatus { Id = (int)FieldJobStatusEnum.Completed, NameEn = "Completed", NameAr = "مكتمل", DescriptionEn = "Field job completed", DescriptionAr = "تم اكتمال المهمة الميدانية بنجاح", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldJobStatus { Id = (int)FieldJobStatusEnum.Cancelled, NameEn = "Cancelled", NameAr = "ملغي", DescriptionEn = "Field job cancelled", DescriptionAr = "تم إلغاء المهمة الميدانية", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
             );
         });
 
@@ -1254,15 +1334,19 @@ public class CleanSampleDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("FieldAssemblyStatusId").ValueGeneratedNever();
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.NameAr).HasMaxLength(50);
+            entity.Property(e => e.DescriptionEn).HasMaxLength(250);
+            entity.Property(e => e.DescriptionAr).HasMaxLength(250);
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
             entity.ToTable("FieldAssemblyStatuses");
 
             entity.HasData(
-                new FieldAssemblyStatus { Id = (int)FieldAssemblyStatusEnum.InProgress, Name = "InProgress", Description = "Assembly in progress", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new FieldAssemblyStatus { Id = (int)FieldAssemblyStatusEnum.Completed, Name = "Completed", Description = "Assembly completed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new FieldAssemblyStatus { Id = (int)FieldAssemblyStatusEnum.Cancelled, Name = "Cancelled", Description = "Assembly cancelled", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+                new FieldAssemblyStatus { Id = (int)FieldAssemblyStatusEnum.InProgress, NameEn = "InProgress", NameAr = "قيد التنفيذ", DescriptionEn = "Assembly in progress", DescriptionAr = "أعمال التركيب قيد التنفيذ", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldAssemblyStatus { Id = (int)FieldAssemblyStatusEnum.Completed, NameEn = "Completed", NameAr = "مكتمل", DescriptionEn = "Assembly completed", DescriptionAr = "تم اكتمال أعمال التركيب", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new FieldAssemblyStatus { Id = (int)FieldAssemblyStatusEnum.Cancelled, NameEn = "Cancelled", NameAr = "ملغي", DescriptionEn = "Assembly cancelled", DescriptionAr = "تم إلغاء أعمال التركيب", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
             );
         });
 
@@ -1357,16 +1441,20 @@ public class CleanSampleDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("IssueStatusId").ValueGeneratedNever();
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.NameAr).HasMaxLength(50);
+            entity.Property(e => e.DescriptionEn).HasMaxLength(250);
+            entity.Property(e => e.DescriptionAr).HasMaxLength(250);
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
             entity.ToTable("IssueStatuses");
 
             entity.HasData(
-                new IssueStatus { Id = (int)IssueStatusEnum.Open, Name = "Open", Description = "Issue open and unresolved", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new IssueStatus { Id = (int)IssueStatusEnum.InProgress, Name = "InProgress", Description = "Issue in progress of investigation/fixing", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new IssueStatus { Id = (int)IssueStatusEnum.Resolved, Name = "Resolved", Description = "Issue resolved", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                new IssueStatus { Id = (int)IssueStatusEnum.Closed, Name = "Closed", Description = "Issue closed", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+                new IssueStatus { Id = (int)IssueStatusEnum.Open, NameEn = "Open", NameAr = "مفتوح", DescriptionEn = "Issue open and unresolved", DescriptionAr = "المشكلة مفتوحة وغير محلولة", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new IssueStatus { Id = (int)IssueStatusEnum.InProgress, NameEn = "InProgress", NameAr = "قيد المعالجة", DescriptionEn = "Issue in progress of investigation/fixing", DescriptionAr = "المشكلة قيد الفحص والحل", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new IssueStatus { Id = (int)IssueStatusEnum.Resolved, NameEn = "Resolved", NameAr = "تم الحل", DescriptionEn = "Issue resolved", DescriptionAr = "تم حل المشكلة", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new IssueStatus { Id = (int)IssueStatusEnum.Closed, NameEn = "Closed", NameAr = "مغلق", DescriptionEn = "Issue closed", DescriptionAr = "تم إغلاق المشكلة", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
             );
         });
 
@@ -1466,13 +1554,25 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("RoleId");
 
-            entity.Property(e => e.Name)
+            entity.Property(e => e.NameEn)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            entity.HasIndex(e => e.Name)
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.DescriptionEn)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(500);
+
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
+
+            entity.HasIndex(e => e.NameEn)
                 .IsUnique()
-                .HasDatabaseName("UQ_Roles_Name");
+                .HasDatabaseName("UQ_Roles_NameEn");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
@@ -1488,9 +1588,21 @@ public class CleanSampleDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnName("ScreenId");
 
-            entity.Property(e => e.Name)
+            entity.Property(e => e.NameEn)
                 .IsRequired()
                 .HasMaxLength(100);
+
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.DescriptionEn)
+                .HasMaxLength(250);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(250);
+
+            entity.Ignore(e => e.Name);
+            entity.Ignore(e => e.Description);
 
             entity.Property(e => e.Code)
                 .IsRequired()
@@ -1498,9 +1610,6 @@ public class CleanSampleDbContext : DbContext
 
             entity.Property(e => e.Module)
                 .HasMaxLength(50);
-
-            entity.Property(e => e.Description)
-                .HasMaxLength(250);
 
             entity.Property(e => e.IsActive)
                 .IsRequired()
@@ -1510,9 +1619,9 @@ public class CleanSampleDbContext : DbContext
                 .IsUnique()
                 .HasDatabaseName("UQ_Screens_Code");
 
-            entity.HasIndex(e => e.Name)
+            entity.HasIndex(e => e.NameEn)
                 .IsUnique()
-                .HasDatabaseName("UQ_Screens_Name");
+                .HasDatabaseName("UQ_Screens_NameEn");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");

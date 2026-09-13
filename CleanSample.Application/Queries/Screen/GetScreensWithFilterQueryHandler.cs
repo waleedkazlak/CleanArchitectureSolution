@@ -26,7 +26,8 @@ public class GetScreensWithFilterQueryHandler : IRequestHandler<GetScreensWithFi
         if (!string.IsNullOrWhiteSpace(request.Filter.SearchTerm))
         {
             var search = request.Filter.SearchTerm.Trim().ToLowerInvariant();
-            query = query.Where(s => s.Name.ToLowerInvariant().Contains(search) ||
+            query = query.Where(s => s.NameEn.ToLowerInvariant().Contains(search) ||
+                                     (s.NameAr != null && s.NameAr.ToLowerInvariant().Contains(search)) ||
                                      s.Code.ToLowerInvariant().Contains(search) ||
                                      (s.Module != null && s.Module.ToLowerInvariant().Contains(search)));
         }
@@ -51,11 +52,11 @@ public class GetScreensWithFilterQueryHandler : IRequestHandler<GetScreensWithFi
         // Sorting
         query = request.Filter.SortBy?.ToLowerInvariant() switch
         {
-            "name" => request.Filter.SortDirection?.ToLowerInvariant() == "desc" ? query.OrderByDescending(s => s.Name) : query.OrderBy(s => s.Name),
+            "name" => request.Filter.SortDirection?.ToLowerInvariant() == "desc" ? query.OrderByDescending(s => s.NameEn) : query.OrderBy(s => s.NameEn),
             "code" => request.Filter.SortDirection?.ToLowerInvariant() == "desc" ? query.OrderByDescending(s => s.Code) : query.OrderBy(s => s.Code),
             "module" => request.Filter.SortDirection?.ToLowerInvariant() == "desc" ? query.OrderByDescending(s => s.Module) : query.OrderBy(s => s.Module),
             "createdat" => request.Filter.SortDirection?.ToLowerInvariant() == "desc" ? query.OrderByDescending(s => s.CreatedAt) : query.OrderBy(s => s.CreatedAt),
-            _ => query.OrderBy(s => s.Module).ThenBy(s => s.Name)
+            _ => query.OrderBy(s => s.Module).ThenBy(s => s.NameEn)
         };
 
         var pageNumber = request.Filter.PageNumber > 0 ? request.Filter.PageNumber : 1;

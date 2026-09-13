@@ -20,8 +20,22 @@ public class UpdateMaterialCommandHandler : IRequestHandler<UpdateMaterialComman
             return false;
         }
 
-        material.Name = request.Name;
-        material.Description = request.Description;
+        if (!string.IsNullOrWhiteSpace(request.NameEn))
+            material.NameEn = request.NameEn;
+        else if (!string.IsNullOrWhiteSpace(request.Name))
+            material.NameEn = request.Name;
+
+        if (request.NameAr != null)
+            material.NameAr = request.NameAr;
+
+        if (!string.IsNullOrWhiteSpace(request.DescriptionEn))
+            material.DescriptionEn = request.DescriptionEn;
+        else if (request.Description != null)
+            material.DescriptionEn = request.Description;
+
+        if (request.DescriptionAr != null)
+            material.DescriptionAr = request.DescriptionAr;
+
         material.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.Materials.UpdateAsync(material);

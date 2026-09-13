@@ -26,18 +26,25 @@ public class CreateScreenCommandHandler : IRequestHandler<CreateScreenCommand, i
             throw new InvalidOperationException($"Screen with code '{request.Code}' already exists.");
         }
 
-        var existingName = await _unitOfWork.Screens.GetByNameAsync(request.Name, cancellationToken);
+        var nameEn = !string.IsNullOrWhiteSpace(request.NameEn) ? request.NameEn : (request.Name ?? string.Empty);
+        var nameAr = request.NameAr;
+        var descEn = !string.IsNullOrWhiteSpace(request.DescriptionEn) ? request.DescriptionEn : request.Description;
+        var descAr = request.DescriptionAr;
+
+        var existingName = await _unitOfWork.Screens.GetByNameAsync(nameEn, cancellationToken);
         if (existingName != null)
         {
-            throw new InvalidOperationException($"Screen with name '{request.Name}' already exists.");
+            throw new InvalidOperationException($"Screen with name '{nameEn}' already exists.");
         }
 
         var screen = new Domain.Entities.Screen
         {
-            Name = request.Name,
+            NameEn = nameEn,
+            NameAr = nameAr,
             Code = request.Code.ToUpperInvariant(),
             Module = request.Module,
-            Description = request.Description,
+            DescriptionEn = descEn,
+            DescriptionAr = descAr,
             IsActive = request.IsActive,
             CreatedAt = DateTime.UtcNow
         };

@@ -70,4 +70,9 @@ public class UserInfoDto
     /// Role identifier
     /// </summary>
     public int? RoleId { get; set; }
+
+    /// <summary>
+    /// User's preferred language code ('en', 'ar')
+    /// </summary>
+    public string PreferredLanguage { get; set; } = "en";
 }

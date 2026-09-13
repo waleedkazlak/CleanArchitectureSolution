@@ -31,16 +31,37 @@ public class UpdateScreenCommandHandler : IRequestHandler<UpdateScreenCommand, b
             throw new InvalidOperationException($"Screen with code '{request.Code}' already exists.");
         }
 
-        var existingName = await _unitOfWork.Screens.GetByNameAsync(request.Name, cancellationToken);
-        if (existingName != null && existingName.Id != request.Id)
+        var nameEn = !string.IsNullOrWhiteSpace(request.NameEn) ? request.NameEn : (request.Name ?? string.Empty);
+        var nameAr = request.NameAr;
+        var descEn = !string.IsNullOrWhiteSpace(request.DescriptionEn) ? request.DescriptionEn : request.Description;
+        var descAr = request.DescriptionAr;
+
+        if (!string.IsNullOrWhiteSpace(nameEn))
         {
-            throw new InvalidOperationException($"Screen with name '{request.Name}' already exists.");
+            var existingName = await _unitOfWork.Screens.GetByNameAsync(nameEn, cancellationToken);
+            if (existingName != null && existingName.Id != request.Id)
+            {
+                throw new InvalidOperationException($"Screen with name '{nameEn}' already exists.");
+            }
+            screen.NameEn = nameEn;
         }
 
-        screen.Name = request.Name;
+        if (nameAr != null)
+        {
+            screen.NameAr = nameAr;
+        }
+
         screen.Code = request.Code.ToUpperInvariant();
         screen.Module = request.Module;
-        screen.Description = request.Description;
+
+        if (!string.IsNullOrWhiteSpace(descEn))
+            screen.DescriptionEn = descEn;
+        else if (request.Description != null)
+            screen.DescriptionEn = request.Description;
+
+        if (descAr != null)
+            screen.DescriptionAr = descAr;
+
         screen.IsActive = request.IsActive;
         screen.UpdatedAt = DateTime.UtcNow;
 

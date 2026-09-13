@@ -33,8 +33,10 @@ public class GetMaterialsWithFilterQueryHandler : IRequestHandler<GetMaterialsWi
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             materials = materials.Where(m =>
-                m.Name.ToLower().Contains(searchTermLower) ||
-                (m.Description != null && m.Description.ToLower().Contains(searchTermLower))
+                m.NameEn.ToLower().Contains(searchTermLower) ||
+                (m.NameAr != null && m.NameAr.ToLower().Contains(searchTermLower)) ||
+                (m.DescriptionEn != null && m.DescriptionEn.ToLower().Contains(searchTermLower)) ||
+                (m.DescriptionAr != null && m.DescriptionAr.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
@@ -50,8 +52,12 @@ public class GetMaterialsWithFilterQueryHandler : IRequestHandler<GetMaterialsWi
         var materialDtos = paginatedMaterials.Select(m => new MaterialDto
         {
             Id = m.Id,
-            Name = m.Name,
-            Description = m.Description,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(m.NameEn, m.NameAr) ?? m.NameEn,
+            NameEn = m.NameEn,
+            NameAr = m.NameAr,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(m.DescriptionEn, m.DescriptionAr),
+            DescriptionEn = m.DescriptionEn,
+            DescriptionAr = m.DescriptionAr,
             CreatedAt = m.CreatedAt,
             UpdatedAt = m.UpdatedAt
         }).ToList();

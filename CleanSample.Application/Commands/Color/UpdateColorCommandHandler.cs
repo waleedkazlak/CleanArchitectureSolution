@@ -20,7 +20,14 @@ public class UpdateColorCommandHandler : IRequestHandler<UpdateColorCommand, boo
             return false;
         }
 
-        color.Name = request.Name;
+        if (!string.IsNullOrWhiteSpace(request.NameEn))
+            color.NameEn = request.NameEn;
+        else if (!string.IsNullOrWhiteSpace(request.Name))
+            color.NameEn = request.Name;
+
+        if (request.NameAr != null)
+            color.NameAr = request.NameAr;
+
         color.Code = request.Code;
         color.UpdatedAt = DateTime.UtcNow;
 

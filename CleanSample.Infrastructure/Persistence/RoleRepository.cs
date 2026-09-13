@@ -20,7 +20,7 @@ public class RoleRepository : IRoleRepository
 
     public async Task<Role?> GetByNameAsync(string name)
     {
-        return await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == name.ToLower());
+        return await _context.Roles.FirstOrDefaultAsync(r => r.NameEn.ToLower() == name.ToLower() || (r.NameAr != null && r.NameAr.ToLower() == name.ToLower()));
     }
 
     public async Task<IEnumerable<Role>> GetAllAsync()

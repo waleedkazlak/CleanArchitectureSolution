@@ -149,7 +149,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
 
             var uniquePermissions = permissionsList.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
-            // Generate JWT token with role and screen permissions
+            // Generate JWT token with role, screen permissions, and preferred language
             var token = await _authenticationService.GenerateTokenAsync(
                 user.Id,
                 user.UserName,
@@ -157,7 +157,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
                 user.FullName,
                 roleName,
                 user.RoleId,
-                uniquePermissions);
+                uniquePermissions,
+                user.PreferredLanguage ?? "en");
 
             _logger.LogInformation("Login successful for user: {Username} with role: {Role} and {Count} permissions",
                 request.Request.Username, roleName, uniquePermissions.Count);
@@ -176,7 +177,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
                     Email = user.Email ?? string.Empty,
                     FullName = user.FullName,
                     Role = roleName,
-                    RoleId = user.RoleId
+                    RoleId = user.RoleId,
+                    PreferredLanguage = user.PreferredLanguage ?? "en"
                 }
             };
 

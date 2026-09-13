@@ -257,4 +257,119 @@ public class UsersController : ControllerBase
         return Ok(new APIBaseResponse<bool>()
             .SetSuccess(true, "User status toggled successfully"));
     }
+
+    /// <summary>
+    /// Get current logged in user profile
+    /// </summary>
+    /// <returns>Current user details</returns>
+    [HttpGet("me")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<APIBaseResponse<UserDto>>> GetCurrentUser()
+    {
+        var username = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return Unauthorized(new APIBaseResponse<UserDto>().SetError(401, "User is not authenticated"));
+        }
+
+        var filter = new UserSearchFilterDto { SearchTerm = username, PageSize = 5 };
+        var query = new GetUsersWithFilterQuery(filter);
+        var result = await _mediator.Send(query);
+        var user = result.Items.FirstOrDefault(u => u.UserName.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+        if (user == null)
+        {
+            return NotFound(new APIBaseResponse<UserDto>().SetError(404, "User profile not found"));
+        }
+
+        return Ok(new APIBaseResponse<UserDto>().SetSuccess(user, "User profile retrieved successfully"));
+    }
+
+    /// <summary>
+    /// Update user preferred language by User ID
+    /// </summary>
+    /// <param name="id">User ID</param>
+    /// <param name="language">Preferred language code ('en' or 'ar')</param>
+    /// <returns>Success status</returns>
+    [HttpPatch("{id}/preferred-language")]
+    [HttpPut("{id}/preferred-language")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<APIBaseResponse<bool>>> UpdatePreferredLanguage(
+        [FromRoute] int id,
+        [FromBody] UpdatePreferredLanguageDto? dto = null,
+        [FromQuery] string? language = null)
+    {
+        var targetLang = dto?.ResolvedLanguage ?? language;
+        if (string.IsNullOrWhiteSpace(targetLang) || targetLang.ToLower() is not ("en" or "ar"))
+        {
+            return BadRequest(new APIBaseResponse<bool>().SetError(400, "Language must be 'en' or 'ar'"));
+        }
+
+        var command = new UpdateUserPreferredLanguageCommand
+        {
+            Id = id,
+            PreferredLanguage = targetLang.Trim().ToLower()
+        };
+
+        var result = await _mediator.Send(command);
+        if (!result)
+        {
+            return NotFound(new APIBaseResponse<bool>().SetError(404, $"User with id {id} not found"));
+        }
+
+        return Ok(new APIBaseResponse<bool>().SetSuccess(true, $"Preferred language updated to {targetLang}"));
+    }
+
+    /// <summary>
+    /// Update current logged-in user's preferred language
+    /// </summary>
+    /// <param name="dto">Preferred language payload ('en' or 'ar')</param>
+    /// <param name="language">Preferred language code ('en' or 'ar') via query param fallback</param>
+    /// <returns>Success status</returns>
+    [HttpPut("me/preferred-language")]
+    [HttpPatch("me/preferred-language")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<APIBaseResponse<bool>>> UpdateMyPreferredLanguage(
+        [FromBody] UpdatePreferredLanguageDto? dto = null,
+        [FromQuery] string? language = null)
+    {
+        var username = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return Unauthorized(new APIBaseResponse<bool>().SetError(401, "User is not authenticated"));
+        }
+
+        var targetLang = dto?.ResolvedLanguage ?? language;
+        if (string.IsNullOrWhiteSpace(targetLang) || targetLang.ToLower() is not ("en" or "ar"))
+        {
+            return BadRequest(new APIBaseResponse<bool>().SetError(400, "Language must be 'en' or 'ar'"));
+        }
+
+        var filter = new UserSearchFilterDto { SearchTerm = username, PageSize = 5 };
+        var query = new GetUsersWithFilterQuery(filter);
+        var result = await _mediator.Send(query);
+        var user = result.Items.FirstOrDefault(u => u.UserName.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+        if (user == null)
+        {
+            return NotFound(new APIBaseResponse<bool>().SetError(404, "User profile not found"));
+        }
+
+        var command = new UpdateUserPreferredLanguageCommand
+        {
+            Id = user.Id,
+            PreferredLanguage = targetLang.Trim().ToLower()
+        };
+
+        var updateResult = await _mediator.Send(command);
+        return Ok(new APIBaseResponse<bool>().SetSuccess(updateResult, $"Preferred language updated to {targetLang}"));
+    }
 }

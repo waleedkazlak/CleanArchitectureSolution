@@ -24,8 +24,12 @@ public class GetDesignByIdQueryHandler : IRequestHandler<GetDesignByIdQuery, Des
         return new DesignDto
         {
             Id = design.Id,
-            Name = design.Name,
-            Description = design.Description,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(design.NameEn, design.NameAr) ?? design.NameEn,
+            NameEn = design.NameEn,
+            NameAr = design.NameAr,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(design.DescriptionEn, design.DescriptionAr),
+            DescriptionEn = design.DescriptionEn,
+            DescriptionAr = design.DescriptionAr,
             CreatedAt = design.CreatedAt,
             UpdatedAt = design.UpdatedAt
         };

@@ -24,8 +24,12 @@ public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery,
         return new CategoryDto
         {
             Id = category.Id,
-            Name = category.Name,
-            Description = category.Description,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(category.NameEn, category.NameAr) ?? category.NameEn,
+            NameEn = category.NameEn,
+            NameAr = category.NameAr,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(category.DescriptionEn, category.DescriptionAr),
+            DescriptionEn = category.DescriptionEn,
+            DescriptionAr = category.DescriptionAr,
             CreatedAt = category.CreatedAt,
             UpdatedAt = category.UpdatedAt
         };

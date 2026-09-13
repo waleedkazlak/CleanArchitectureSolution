@@ -13,15 +13,22 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 
     public async Task<int> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
+        var nameEn = !string.IsNullOrWhiteSpace(request.NameEn) ? request.NameEn : (request.Name ?? string.Empty);
+        var nameAr = request.NameAr;
+        var descEn = !string.IsNullOrWhiteSpace(request.DescriptionEn) ? request.DescriptionEn : request.Description;
+        var descAr = request.DescriptionAr;
+
         var product = new CleanSample.Domain.Entities.Product
         {
             CategoryId = request.CategoryId,
             ColorId = request.ColorId,
             MaterialId = request.MaterialId,
             DesignId = request.DesignId,
-            Name = request.Name,
+            NameEn = nameEn,
+            NameAr = nameAr,
+            DescriptionEn = descEn,
+            DescriptionAr = descAr,
             Barcode = request.Barcode,
-            Description = request.Description,
             PictureUrl = request.PictureUrl,
             IsActive = request.IsActive
         };

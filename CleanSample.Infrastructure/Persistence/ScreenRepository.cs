@@ -28,14 +28,14 @@ public class ScreenRepository : IScreenRepository
     public async Task<Screen?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         return await _context.Screens
-            .FirstOrDefaultAsync(s => s.Name == name, cancellationToken);
+            .FirstOrDefaultAsync(s => s.NameEn.ToLower() == name.ToLower() || (s.NameAr != null && s.NameAr.ToLower() == name.ToLower()), cancellationToken);
     }
 
     public async Task<IReadOnlyList<Screen>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Screens
             .OrderBy(s => s.Module)
-            .ThenBy(s => s.Name)
+            .ThenBy(s => s.NameEn)
             .ToListAsync(cancellationToken);
     }
 
@@ -44,7 +44,7 @@ public class ScreenRepository : IScreenRepository
         return await _context.Screens
             .Where(s => s.IsActive)
             .OrderBy(s => s.Module)
-            .ThenBy(s => s.Name)
+            .ThenBy(s => s.NameEn)
             .ToListAsync(cancellationToken);
     }
 

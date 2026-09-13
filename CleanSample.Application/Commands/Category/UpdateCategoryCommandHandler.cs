@@ -20,8 +20,22 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
             return false;
         }
 
-        category.Name = request.Name;
-        category.Description = request.Description;
+        if (!string.IsNullOrWhiteSpace(request.NameEn))
+            category.NameEn = request.NameEn;
+        else if (!string.IsNullOrWhiteSpace(request.Name))
+            category.NameEn = request.Name;
+
+        if (request.NameAr != null)
+            category.NameAr = request.NameAr;
+
+        if (!string.IsNullOrWhiteSpace(request.DescriptionEn))
+            category.DescriptionEn = request.DescriptionEn;
+        else if (request.Description != null)
+            category.DescriptionEn = request.Description;
+
+        if (request.DescriptionAr != null)
+            category.DescriptionAr = request.DescriptionAr;
+
         category.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.Categories.UpdateAsync(category);

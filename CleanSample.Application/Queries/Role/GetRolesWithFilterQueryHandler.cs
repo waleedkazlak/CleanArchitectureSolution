@@ -32,7 +32,12 @@ public class GetRolesWithFilterQueryHandler : IRequestHandler<GetRolesWithFilter
         if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
         {
             var searchTermLower = filter.SearchTerm.ToLower();
-            roles = roles.Where(r => r.Name.ToLower().Contains(searchTermLower)).ToList();
+            roles = roles.Where(r => 
+                r.NameEn.ToLower().Contains(searchTermLower) ||
+                (r.NameAr != null && r.NameAr.ToLower().Contains(searchTermLower)) ||
+                (r.DescriptionEn != null && r.DescriptionEn.ToLower().Contains(searchTermLower)) ||
+                (r.DescriptionAr != null && r.DescriptionAr.ToLower().Contains(searchTermLower))
+            ).ToList();
         }
 
         roles = ApplySort(roles.ToList(), filter.SortBy, filter.SortDirection);
@@ -47,7 +52,12 @@ public class GetRolesWithFilterQueryHandler : IRequestHandler<GetRolesWithFilter
         var roleDtos = paginatedRoles.Select(r => new RoleDto
         {
             Id = r.Id,
-            Name = r.Name,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(r.NameEn, r.NameAr) ?? r.NameEn,
+            NameEn = r.NameEn,
+            NameAr = r.NameAr,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(r.DescriptionEn, r.DescriptionAr),
+            DescriptionEn = r.DescriptionEn,
+            DescriptionAr = r.DescriptionAr,
             CreatedAt = r.CreatedAt,
             UpdatedAt = r.UpdatedAt
         }).ToList();

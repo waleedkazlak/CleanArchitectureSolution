@@ -21,9 +21,23 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
         product.ColorId = request.ColorId;
         product.MaterialId = request.MaterialId;
         product.DesignId = request.DesignId;
-        product.Name = request.Name;
+        if (!string.IsNullOrWhiteSpace(request.NameEn))
+            product.NameEn = request.NameEn;
+        else if (!string.IsNullOrWhiteSpace(request.Name))
+            product.NameEn = request.Name;
+
+        if (request.NameAr != null)
+            product.NameAr = request.NameAr;
+
+        if (!string.IsNullOrWhiteSpace(request.DescriptionEn))
+            product.DescriptionEn = request.DescriptionEn;
+        else if (request.Description != null)
+            product.DescriptionEn = request.Description;
+
+        if (request.DescriptionAr != null)
+            product.DescriptionAr = request.DescriptionAr;
+
         product.Barcode = request.Barcode;
-        product.Description = request.Description;
         product.PictureUrl = request.PictureUrl;
         product.IsActive = request.IsActive;
         product.UpdatedAt = DateTime.UtcNow;

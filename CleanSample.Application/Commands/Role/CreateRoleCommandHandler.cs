@@ -14,9 +14,17 @@ public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, int>
 
     public async Task<int> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
     {
+        var nameEn = !string.IsNullOrWhiteSpace(request.NameEn) ? request.NameEn : (request.Name ?? string.Empty);
+        var nameAr = request.NameAr;
+        var descEn = !string.IsNullOrWhiteSpace(request.DescriptionEn) ? request.DescriptionEn : request.Description;
+        var descAr = request.DescriptionAr;
+
         var role = new CleanSample.Domain.Entities.Role
         {
-            Name = request.Name
+            NameEn = nameEn,
+            NameAr = nameAr,
+            DescriptionEn = descEn,
+            DescriptionAr = descAr
         };
 
         var roleId = await _unitOfWork.Roles.AddAsync(role);

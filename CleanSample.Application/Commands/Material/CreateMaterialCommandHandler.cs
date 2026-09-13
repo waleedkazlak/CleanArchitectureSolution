@@ -14,10 +14,17 @@ public class CreateMaterialCommandHandler : IRequestHandler<CreateMaterialComman
 
     public async Task<int> Handle(CreateMaterialCommand request, CancellationToken cancellationToken)
     {
+        var nameEn = !string.IsNullOrWhiteSpace(request.NameEn) ? request.NameEn : (request.Name ?? string.Empty);
+        var nameAr = request.NameAr;
+        var descEn = !string.IsNullOrWhiteSpace(request.DescriptionEn) ? request.DescriptionEn : request.Description;
+        var descAr = request.DescriptionAr;
+
         var material = new CleanSample.Domain.Entities.Material
         {
-            Name = request.Name,
-            Description = request.Description
+            NameEn = nameEn,
+            NameAr = nameAr,
+            DescriptionEn = descEn,
+            DescriptionAr = descAr
         };
 
         var materialId = await _unitOfWork.Materials.AddAsync(material);

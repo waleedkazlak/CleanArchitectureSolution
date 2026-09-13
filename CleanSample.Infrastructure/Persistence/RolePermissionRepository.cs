@@ -44,7 +44,7 @@ public class RolePermissionRepository : IRolePermissionRepository
             .Include(rp => rp.Screen)
             .Where(rp => rp.RoleId == roleId)
             .OrderBy(rp => rp.Screen.Module)
-            .ThenBy(rp => rp.Screen.Name)
+            .ThenBy(rp => rp.Screen.NameEn)
             .ToListAsync(cancellationToken);
     }
 

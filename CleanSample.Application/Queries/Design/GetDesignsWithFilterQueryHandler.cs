@@ -33,8 +33,10 @@ public class GetDesignsWithFilterQueryHandler : IRequestHandler<GetDesignsWithFi
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             designs = designs.Where(d =>
-                d.Name.ToLower().Contains(searchTermLower) ||
-                (d.Description != null && d.Description.ToLower().Contains(searchTermLower))
+                d.NameEn.ToLower().Contains(searchTermLower) ||
+                (d.NameAr != null && d.NameAr.ToLower().Contains(searchTermLower)) ||
+                (d.DescriptionEn != null && d.DescriptionEn.ToLower().Contains(searchTermLower)) ||
+                (d.DescriptionAr != null && d.DescriptionAr.ToLower().Contains(searchTermLower))
             ).ToList();
         }
 
@@ -50,8 +52,12 @@ public class GetDesignsWithFilterQueryHandler : IRequestHandler<GetDesignsWithFi
         var designDtos = paginatedDesigns.Select(d => new DesignDto
         {
             Id = d.Id,
-            Name = d.Name,
-            Description = d.Description,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(d.NameEn, d.NameAr) ?? d.NameEn,
+            NameEn = d.NameEn,
+            NameAr = d.NameAr,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(d.DescriptionEn, d.DescriptionAr),
+            DescriptionEn = d.DescriptionEn,
+            DescriptionAr = d.DescriptionAr,
             CreatedAt = d.CreatedAt,
             UpdatedAt = d.UpdatedAt
         }).ToList();

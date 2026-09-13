@@ -1,4 +1,5 @@
-using CleanSample.Application.DTOs;
+﻿using CleanSample.Application.DTOs;
+using CleanSample.Application.Helpers;
 using CleanSample.Domain.Enums;
 using MediatR;
 
@@ -24,61 +25,61 @@ public class StatusLookupQueryHandlers :
     IRequestHandler<GetFieldAssemblyStatusesLookupQuery, List<StatusLookupDto>>,
     IRequestHandler<GetIssueStatusesLookupQuery, List<StatusLookupDto>>
 {
-    private static readonly Dictionary<OrderStatusEnum, string> OrderStatusDescriptions = new()
+    private static readonly Dictionary<OrderStatusEnum, (string NameEn, string NameAr, string DescEn, string DescAr)> OrderStatusMap = new()
     {
-        { OrderStatusEnum.Draft, "Order created in draft status" },
-        { OrderStatusEnum.Pending, "Order pending approval" },
-        { OrderStatusEnum.Approved, "Order approved by sales manager" },
-        { OrderStatusEnum.Processing, "Load requests placed for order" },
-        { OrderStatusEnum.Completed, "All load requests fulfilled and order completed" },
-        { OrderStatusEnum.Cancelled, "Order has been cancelled" }
+        { OrderStatusEnum.Draft, ("Draft", "مسودة", "Order created in draft status", "طلب تم إنشاؤه بحالة مسودة") },
+        { OrderStatusEnum.Pending, ("Pending", "قيد الانتظار", "Order pending approval", "طلب بانتظار الاعتماد") },
+        { OrderStatusEnum.Approved, ("Approved", "معتمد", "Order approved by sales manager", "طلب معتمد من مدير المبيعات") },
+        { OrderStatusEnum.Processing, ("Processing", "قيد المعالجة", "Load requests placed for order", "تم إنشاء طلبات تحميل للطلب") },
+        { OrderStatusEnum.Completed, ("Completed", "مكتمل", "All load requests fulfilled and order completed", "تم تلبية جميع طلبات التحميل واكتمال الطلب") },
+        { OrderStatusEnum.Cancelled, ("Cancelled", "ملغي", "Order has been cancelled", "تم إلغاء الطلب") }
     };
 
-    private static readonly Dictionary<LoadRequestStatusEnum, string> LoadRequestStatusDescriptions = new()
+    private static readonly Dictionary<LoadRequestStatusEnum, (string NameEn, string NameAr, string DescEn, string DescAr)> LoadRequestStatusMap = new()
     {
-        { LoadRequestStatusEnum.New, "Load request newly created" },
-        { LoadRequestStatusEnum.Loaded, "Loading completed in good condition" },
-        { LoadRequestStatusEnum.Offloaded, "Offloaded in good condition at destination" },
-        { LoadRequestStatusEnum.Completed, "All field assemblies completed" },
-        { LoadRequestStatusEnum.Blocked, "Blocked due to damaged or missing parts during loading/offloading" },
-        { LoadRequestStatusEnum.Cancelled, "Load request has been cancelled" }
+        { LoadRequestStatusEnum.New, ("New", "جديد", "Load request newly created", "طلب تحميل جديد") },
+        { LoadRequestStatusEnum.Loaded, ("Loaded", "تم التحميل", "Loading completed in good condition", "اكتمل التحميل بحالة جيدة") },
+        { LoadRequestStatusEnum.Offloaded, ("Offloaded", "تم التنزيل", "Offloaded in good condition at destination", "تم التنزيل بحالة جيدة في الوجهة") },
+        { LoadRequestStatusEnum.Completed, ("Completed", "مكتمل", "All field assemblies completed", "اكتملت جميع أعمال التجميع الميداني") },
+        { LoadRequestStatusEnum.Blocked, ("Blocked", "محظور", "Blocked due to damaged or missing parts during loading/offloading", "محظور لوجود قطع تالفة أو مفقودة أثناء التحميل/التنزيل") },
+        { LoadRequestStatusEnum.Cancelled, ("Cancelled", "ملغي", "Load request has been cancelled", "تم إلغاء طلب التحميل") }
     };
 
-    private static readonly Dictionary<VehicleLoadStatusEnum, string> VehicleLoadStatusDescriptions = new()
+    private static readonly Dictionary<VehicleLoadStatusEnum, (string NameEn, string NameAr, string DescEn, string DescAr)> VehicleLoadStatusMap = new()
     {
-        { VehicleLoadStatusEnum.Good, "Loaded items in good condition" },
-        { VehicleLoadStatusEnum.Damaged, "Loaded items with damage" },
-        { VehicleLoadStatusEnum.Missing, "Expected items missing during load" }
+        { VehicleLoadStatusEnum.Good, ("Good", "سليم", "Loaded items in good condition", "العناصر المحملة بحالة سليمة") },
+        { VehicleLoadStatusEnum.Damaged, ("Damaged", "تالف", "Loaded items with damage", "عناصر محملة بها تلف") },
+        { VehicleLoadStatusEnum.Missing, ("Missing", "مفقود", "Expected items missing during load", "عناصر متوقعة مفقودة أثناء التحميل") }
     };
 
-    private static readonly Dictionary<VehicleOffloadStatusEnum, string> VehicleOffloadStatusDescriptions = new()
+    private static readonly Dictionary<VehicleOffloadStatusEnum, (string NameEn, string NameAr, string DescEn, string DescAr)> VehicleOffloadStatusMap = new()
     {
-        { VehicleOffloadStatusEnum.Good, "Offloaded items in good condition" },
-        { VehicleOffloadStatusEnum.Damaged, "Offloaded items with damage" },
-        { VehicleOffloadStatusEnum.Missing, "Expected items missing during offload" }
+        { VehicleOffloadStatusEnum.Good, ("Good", "سليم", "Offloaded items in good condition", "العناصر المنزلة بحالة سليمة") },
+        { VehicleOffloadStatusEnum.Damaged, ("Damaged", "تالف", "Offloaded items with damage", "عناصر منزلة بها تلف") },
+        { VehicleOffloadStatusEnum.Missing, ("Missing", "مفقود", "Expected items missing during offload", "عناصر متوقعة مفقودة أثناء التنزيل") }
     };
 
-    private static readonly Dictionary<FieldJobStatusEnum, string> FieldJobStatusDescriptions = new()
+    private static readonly Dictionary<FieldJobStatusEnum, (string NameEn, string NameAr, string DescEn, string DescAr)> FieldJobStatusMap = new()
     {
-        { FieldJobStatusEnum.Scheduled, "Field job scheduled for execution" },
-        { FieldJobStatusEnum.InProgress, "Field job currently in progress" },
-        { FieldJobStatusEnum.Completed, "Field job completed" },
-        { FieldJobStatusEnum.Cancelled, "Field job cancelled" }
+        { FieldJobStatusEnum.Scheduled, ("Scheduled", "مجدول", "Field job scheduled for execution", "مهمة ميدانية مجدولة للتنفيذ") },
+        { FieldJobStatusEnum.InProgress, ("InProgress", "قيد التنفيذ", "Field job currently in progress", "مهمة ميدانية قيد التنفيذ حالياً") },
+        { FieldJobStatusEnum.Completed, ("Completed", "مكتمل", "Field job completed", "اكتملت المهمة الميدانية") },
+        { FieldJobStatusEnum.Cancelled, ("Cancelled", "ملغي", "Field job cancelled", "تم إلغاء المهمة الميدانية") }
     };
 
-    private static readonly Dictionary<FieldAssemblyStatusEnum, string> FieldAssemblyStatusDescriptions = new()
+    private static readonly Dictionary<FieldAssemblyStatusEnum, (string NameEn, string NameAr, string DescEn, string DescAr)> FieldAssemblyStatusMap = new()
     {
-        { FieldAssemblyStatusEnum.InProgress, "Assembly currently in progress" },
-        { FieldAssemblyStatusEnum.Completed, "Assembly successfully completed" },
-        { FieldAssemblyStatusEnum.Cancelled, "Assembly cancelled" }
+        { FieldAssemblyStatusEnum.InProgress, ("InProgress", "قيد التجميع", "Assembly currently in progress", "التجميع الميداني قيد التنفيذ حالياً") },
+        { FieldAssemblyStatusEnum.Completed, ("Completed", "مكتمل", "Assembly successfully completed", "اكتمل التجميع بنجاح") },
+        { FieldAssemblyStatusEnum.Cancelled, ("Cancelled", "ملغي", "Assembly cancelled", "تم إلغاء التجميع") }
     };
 
-    private static readonly Dictionary<IssueStatusEnum, string> IssueStatusDescriptions = new()
+    private static readonly Dictionary<IssueStatusEnum, (string NameEn, string NameAr, string DescEn, string DescAr)> IssueStatusMap = new()
     {
-        { IssueStatusEnum.Open, "Issue is open and pending review" },
-        { IssueStatusEnum.InProgress, "Issue is actively being investigated/resolved" },
-        { IssueStatusEnum.Resolved, "Issue resolution has been provided" },
-        { IssueStatusEnum.Closed, "Issue is verified and closed" }
+        { IssueStatusEnum.Open, ("Open", "مفتوح", "Issue is open and pending review", "البلاغ مفتوح وبانتظار المراجعة") },
+        { IssueStatusEnum.InProgress, ("InProgress", "قيد المعالجة", "Issue is actively being investigated/resolved", "البلاغ قيد المتابعة والمعالجة") },
+        { IssueStatusEnum.Resolved, ("Resolved", "تم الحل", "Issue resolution has been provided", "تم تقديم حل للبلاغ") },
+        { IssueStatusEnum.Closed, ("Closed", "مغلق", "Issue is verified and closed", "تم التحقق وإغلاق البلاغ") }
     };
 
     public Task<AllStatusesLookupDto> Handle(GetAllStatusesLookupQuery request, CancellationToken cancellationToken)
@@ -120,64 +121,120 @@ public class StatusLookupQueryHandlers :
 
     private static List<StatusLookupDto> GetOrderStatuses() =>
         Enum.GetValues<OrderStatusEnum>()
-            .Select(e => new StatusLookupDto
+            .Select(e =>
             {
-                Id = (int)e,
-                Name = e.ToString(),
-                Description = OrderStatusDescriptions.GetValueOrDefault(e, e.ToString())
+                var (nameEn, nameAr, descEn, descAr) = OrderStatusMap.GetValueOrDefault(e, (e.ToString(), e.ToString(), e.ToString(), e.ToString()));
+                return new StatusLookupDto
+                {
+                    Id = (int)e,
+                    Name = LocalizationHelper.Localize(nameEn, nameAr) ?? nameEn,
+                    Description = LocalizationHelper.Localize(descEn, descAr),
+                    NameEn = nameEn,
+                    NameAr = nameAr,
+                    DescriptionEn = descEn,
+                    DescriptionAr = descAr
+                };
             }).ToList();
 
     private static List<StatusLookupDto> GetLoadRequestStatuses() =>
         Enum.GetValues<LoadRequestStatusEnum>()
-            .Select(e => new StatusLookupDto
+            .Select(e =>
             {
-                Id = (int)e,
-                Name = e.ToString(),
-                Description = LoadRequestStatusDescriptions.GetValueOrDefault(e, e.ToString())
+                var (nameEn, nameAr, descEn, descAr) = LoadRequestStatusMap.GetValueOrDefault(e, (e.ToString(), e.ToString(), e.ToString(), e.ToString()));
+                return new StatusLookupDto
+                {
+                    Id = (int)e,
+                    Name = LocalizationHelper.Localize(nameEn, nameAr) ?? nameEn,
+                    Description = LocalizationHelper.Localize(descEn, descAr),
+                    NameEn = nameEn,
+                    NameAr = nameAr,
+                    DescriptionEn = descEn,
+                    DescriptionAr = descAr
+                };
             }).ToList();
 
     private static List<StatusLookupDto> GetVehicleLoadStatuses() =>
         Enum.GetValues<VehicleLoadStatusEnum>()
-            .Select(e => new StatusLookupDto
+            .Select(e =>
             {
-                Id = (int)e,
-                Name = e.ToString(),
-                Description = VehicleLoadStatusDescriptions.GetValueOrDefault(e, e.ToString())
+                var (nameEn, nameAr, descEn, descAr) = VehicleLoadStatusMap.GetValueOrDefault(e, (e.ToString(), e.ToString(), e.ToString(), e.ToString()));
+                return new StatusLookupDto
+                {
+                    Id = (int)e,
+                    Name = LocalizationHelper.Localize(nameEn, nameAr) ?? nameEn,
+                    Description = LocalizationHelper.Localize(descEn, descAr),
+                    NameEn = nameEn,
+                    NameAr = nameAr,
+                    DescriptionEn = descEn,
+                    DescriptionAr = descAr
+                };
             }).ToList();
 
     private static List<StatusLookupDto> GetVehicleOffloadStatuses() =>
         Enum.GetValues<VehicleOffloadStatusEnum>()
-            .Select(e => new StatusLookupDto
+            .Select(e =>
             {
-                Id = (int)e,
-                Name = e.ToString(),
-                Description = VehicleOffloadStatusDescriptions.GetValueOrDefault(e, e.ToString())
+                var (nameEn, nameAr, descEn, descAr) = VehicleOffloadStatusMap.GetValueOrDefault(e, (e.ToString(), e.ToString(), e.ToString(), e.ToString()));
+                return new StatusLookupDto
+                {
+                    Id = (int)e,
+                    Name = LocalizationHelper.Localize(nameEn, nameAr) ?? nameEn,
+                    Description = LocalizationHelper.Localize(descEn, descAr),
+                    NameEn = nameEn,
+                    NameAr = nameAr,
+                    DescriptionEn = descEn,
+                    DescriptionAr = descAr
+                };
             }).ToList();
 
     private static List<StatusLookupDto> GetFieldJobStatuses() =>
         Enum.GetValues<FieldJobStatusEnum>()
-            .Select(e => new StatusLookupDto
+            .Select(e =>
             {
-                Id = (int)e,
-                Name = e.ToString(),
-                Description = FieldJobStatusDescriptions.GetValueOrDefault(e, e.ToString())
+                var (nameEn, nameAr, descEn, descAr) = FieldJobStatusMap.GetValueOrDefault(e, (e.ToString(), e.ToString(), e.ToString(), e.ToString()));
+                return new StatusLookupDto
+                {
+                    Id = (int)e,
+                    Name = LocalizationHelper.Localize(nameEn, nameAr) ?? nameEn,
+                    Description = LocalizationHelper.Localize(descEn, descAr),
+                    NameEn = nameEn,
+                    NameAr = nameAr,
+                    DescriptionEn = descEn,
+                    DescriptionAr = descAr
+                };
             }).ToList();
 
     private static List<StatusLookupDto> GetFieldAssemblyStatuses() =>
         Enum.GetValues<FieldAssemblyStatusEnum>()
-            .Select(e => new StatusLookupDto
+            .Select(e =>
             {
-                Id = (int)e,
-                Name = e.ToString(),
-                Description = FieldAssemblyStatusDescriptions.GetValueOrDefault(e, e.ToString())
+                var (nameEn, nameAr, descEn, descAr) = FieldAssemblyStatusMap.GetValueOrDefault(e, (e.ToString(), e.ToString(), e.ToString(), e.ToString()));
+                return new StatusLookupDto
+                {
+                    Id = (int)e,
+                    Name = LocalizationHelper.Localize(nameEn, nameAr) ?? nameEn,
+                    Description = LocalizationHelper.Localize(descEn, descAr),
+                    NameEn = nameEn,
+                    NameAr = nameAr,
+                    DescriptionEn = descEn,
+                    DescriptionAr = descAr
+                };
             }).ToList();
 
     private static List<StatusLookupDto> GetIssueStatuses() =>
         Enum.GetValues<IssueStatusEnum>()
-            .Select(e => new StatusLookupDto
+            .Select(e =>
             {
-                Id = (int)e,
-                Name = e.ToString(),
-                Description = IssueStatusDescriptions.GetValueOrDefault(e, e.ToString())
+                var (nameEn, nameAr, descEn, descAr) = IssueStatusMap.GetValueOrDefault(e, (e.ToString(), e.ToString(), e.ToString(), e.ToString()));
+                return new StatusLookupDto
+                {
+                    Id = (int)e,
+                    Name = LocalizationHelper.Localize(nameEn, nameAr) ?? nameEn,
+                    Description = LocalizationHelper.Localize(descEn, descAr),
+                    NameEn = nameEn,
+                    NameAr = nameAr,
+                    DescriptionEn = descEn,
+                    DescriptionAr = descAr
+                };
             }).ToList();
 }

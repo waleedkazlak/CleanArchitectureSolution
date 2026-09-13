@@ -34,15 +34,20 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
         var rawPassword = string.IsNullOrWhiteSpace(request.Password) ? "P@$$w0rd" : request.Password;
         var (hash, salt) = _authenticationService.HashPasswordWithSalt(rawPassword);
 
+        var fullNameEn = !string.IsNullOrWhiteSpace(request.FullNameEn) ? request.FullNameEn : request.FullName;
+        var preferredLanguage = !string.IsNullOrWhiteSpace(request.PreferredLanguage) ? request.PreferredLanguage : "en";
+
         var user = new Domain.Entities.User
         {
             RoleId = request.RoleId,
             UserName = request.UserName,
-            FullName = request.FullName,
+            FullNameEn = fullNameEn,
+            FullNameAr = request.FullNameAr,
             Email = request.Email,
             Mobile = request.Mobile,
             PasswordHash = hash,
             PasswordSalt = salt,
+            PreferredLanguage = preferredLanguage,
             IsActive = request.IsActive,
             CreatedAt = DateTime.UtcNow
         };

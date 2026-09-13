@@ -21,8 +21,23 @@ public class UpdatePartCommandHandler : IRequestHandler<UpdatePartCommand, bool>
         }
 
         part.Code = request.Code;
-        part.Name = request.Name;
-        part.Description = request.Description;
+
+        if (!string.IsNullOrWhiteSpace(request.NameEn))
+            part.NameEn = request.NameEn;
+        else if (!string.IsNullOrWhiteSpace(request.Name))
+            part.NameEn = request.Name;
+
+        if (request.NameAr != null)
+            part.NameAr = request.NameAr;
+
+        if (!string.IsNullOrWhiteSpace(request.DescriptionEn))
+            part.DescriptionEn = request.DescriptionEn;
+        else if (request.Description != null)
+            part.DescriptionEn = request.Description;
+
+        if (request.DescriptionAr != null)
+            part.DescriptionAr = request.DescriptionAr;
+
         part.Barcode = request.Barcode;
         part.IsActive = request.IsActive;
         part.UpdatedAt = DateTime.UtcNow;

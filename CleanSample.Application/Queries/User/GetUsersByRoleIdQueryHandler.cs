@@ -26,11 +26,14 @@ public class GetUsersByRoleIdQueryHandler : IRequestHandler<GetUsersByRoleIdQuer
         {
             Id = u.Id,
             RoleId = u.RoleId,
-            RoleName = u.Role?.Name,
+            RoleName = CleanSample.Application.Helpers.LocalizationHelper.Localize(u.Role?.NameEn, u.Role?.NameAr),
             UserName = u.UserName,
-            FullName = u.FullName,
+            FullName = CleanSample.Application.Helpers.LocalizationHelper.Localize(u.FullNameEn, u.FullNameAr) ?? u.FullNameEn,
+            FullNameEn = u.FullNameEn,
+            FullNameAr = u.FullNameAr,
             Email = u.Email,
             Mobile = u.Mobile,
+            PreferredLanguage = u.PreferredLanguage,
             IsActive = u.IsActive,
             CreatedAt = u.CreatedAt,
             UpdatedAt = u.UpdatedAt

@@ -220,6 +220,14 @@ catch (Exception ex)
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// Request Localization for Accept-Language headers ('en', 'ar')
+var supportedCultures = new[] { "en", "ar" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("en")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+app.UseRequestLocalization(localizationOptions);
+
 // Authentication and Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();

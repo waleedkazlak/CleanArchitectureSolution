@@ -14,11 +14,18 @@ public class CreatePartCommandHandler : IRequestHandler<CreatePartCommand, int>
 
     public async Task<int> Handle(CreatePartCommand request, CancellationToken cancellationToken)
     {
+        var nameEn = !string.IsNullOrWhiteSpace(request.NameEn) ? request.NameEn : (request.Name ?? string.Empty);
+        var nameAr = request.NameAr;
+        var descEn = !string.IsNullOrWhiteSpace(request.DescriptionEn) ? request.DescriptionEn : request.Description;
+        var descAr = request.DescriptionAr;
+
         var part = new CleanSample.Domain.Entities.Part
         {
             Code = request.Code,
-            Name = request.Name,
-            Description = request.Description,
+            NameEn = nameEn,
+            NameAr = nameAr,
+            DescriptionEn = descEn,
+            DescriptionAr = descAr,
             Barcode = request.Barcode,
             IsActive = request.IsActive
         };

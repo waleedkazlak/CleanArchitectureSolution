@@ -7,9 +7,15 @@ public class CreateScreenCommandValidator : AbstractValidator<CreateScreenComman
 {
     public CreateScreenCommandValidator()
     {
-        RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Screen name is required")
-            .MaximumLength(100).WithMessage("Screen name cannot exceed 100 characters");
+        RuleFor(x => x)
+            .Must(x => !string.IsNullOrWhiteSpace(x.NameEn) || !string.IsNullOrWhiteSpace(x.Name))
+            .WithMessage("Screen name is required");
+
+        RuleFor(x => x.NameEn)
+            .MaximumLength(100).WithMessage("Screen English name cannot exceed 100 characters");
+
+        RuleFor(x => x.NameAr)
+            .MaximumLength(100).WithMessage("Screen Arabic name cannot exceed 100 characters");
 
         RuleFor(x => x.Code)
             .NotEmpty().WithMessage("Screen code is required")
@@ -20,8 +26,16 @@ public class CreateScreenCommandValidator : AbstractValidator<CreateScreenComman
             .MaximumLength(50).WithMessage("Module name cannot exceed 50 characters")
             .When(x => !string.IsNullOrEmpty(x.Module));
 
+        RuleFor(x => x.DescriptionEn)
+            .MaximumLength(500).WithMessage("English description cannot exceed 500 characters")
+            .When(x => !string.IsNullOrEmpty(x.DescriptionEn));
+
+        RuleFor(x => x.DescriptionAr)
+            .MaximumLength(500).WithMessage("Arabic description cannot exceed 500 characters")
+            .When(x => !string.IsNullOrEmpty(x.DescriptionAr));
+
         RuleFor(x => x.Description)
-            .MaximumLength(250).WithMessage("Description cannot exceed 250 characters")
+            .MaximumLength(500).WithMessage("Description cannot exceed 500 characters")
             .When(x => !string.IsNullOrEmpty(x.Description));
     }
 }

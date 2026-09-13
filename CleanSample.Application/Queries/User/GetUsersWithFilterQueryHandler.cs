@@ -39,15 +39,22 @@ public class GetUsersWithFilterQueryHandler : IRequestHandler<GetUsersWithFilter
             users = users.Where(u => u.IsActive == filter.IsActive.Value);
         }
 
+        if (!string.IsNullOrWhiteSpace(filter.PreferredLanguage))
+        {
+            var lang = filter.PreferredLanguage.Trim().ToLower();
+            users = users.Where(u => u.PreferredLanguage.ToLower() == lang);
+        }
+
         if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             users = users.Where(u =>
                 u.UserName.ToLower().Contains(searchTermLower) ||
-                u.FullName.ToLower().Contains(searchTermLower) ||
+                u.FullNameEn.ToLower().Contains(searchTermLower) ||
+                (u.FullNameAr != null && u.FullNameAr.ToLower().Contains(searchTermLower)) ||
                 (u.Email != null && u.Email.ToLower().Contains(searchTermLower)) ||
                 (u.Mobile != null && u.Mobile.ToLower().Contains(searchTermLower)) ||
-                (u.Role != null && u.Role.Name.ToLower().Contains(searchTermLower))
+                (u.Role != null && (u.Role.NameEn.ToLower().Contains(searchTermLower) || (u.Role.NameAr != null && u.Role.NameAr.ToLower().Contains(searchTermLower))))
             );
         }
 
@@ -64,11 +71,14 @@ public class GetUsersWithFilterQueryHandler : IRequestHandler<GetUsersWithFilter
         {
             Id = u.Id,
             RoleId = u.RoleId,
-            RoleName = u.Role?.Name,
+            RoleName = CleanSample.Application.Helpers.LocalizationHelper.Localize(u.Role?.NameEn, u.Role?.NameAr),
             UserName = u.UserName,
-            FullName = u.FullName,
+            FullName = CleanSample.Application.Helpers.LocalizationHelper.Localize(u.FullNameEn, u.FullNameAr) ?? u.FullNameEn,
+            FullNameEn = u.FullNameEn,
+            FullNameAr = u.FullNameAr,
             Email = u.Email,
             Mobile = u.Mobile,
+            PreferredLanguage = u.PreferredLanguage,
             IsActive = u.IsActive,
             CreatedAt = u.CreatedAt,
             UpdatedAt = u.UpdatedAt

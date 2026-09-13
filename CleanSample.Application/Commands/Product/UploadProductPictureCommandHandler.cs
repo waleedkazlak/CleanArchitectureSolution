@@ -1,4 +1,4 @@
-﻿using CleanSample.Application.DTOs;
+using CleanSample.Application.DTOs;
 using CleanSample.Application.Services;
 using CleanSample.Domain.Entities;
 using CleanSample.Domain.Interfaces;
@@ -74,16 +74,20 @@ public class UploadProductPictureCommandHandler : IRequestHandler<UploadProductP
             {
                 Id = product.Id,
                 CategoryId = product.CategoryId,
-                CategoryName = product.Category?.Name,
+                CategoryName = CleanSample.Application.Helpers.LocalizationHelper.Localize(product.Category?.NameEn, product.Category?.NameAr),
                 ColorId = product.ColorId,
-                ColorName = product.Color?.Name,
+                ColorName = CleanSample.Application.Helpers.LocalizationHelper.Localize(product.Color?.NameEn, product.Color?.NameAr),
                 MaterialId = product.MaterialId,
-                MaterialName = product.Material?.Name,
+                MaterialName = CleanSample.Application.Helpers.LocalizationHelper.Localize(product.Material?.NameEn, product.Material?.NameAr),
                 DesignId = product.DesignId,
-                DesignName = product.Design?.Name,
-                Name = product.Name,
+                DesignName = CleanSample.Application.Helpers.LocalizationHelper.Localize(product.Design?.NameEn, product.Design?.NameAr),
+                Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(product.NameEn, product.NameAr) ?? product.NameEn,
+                NameEn = product.NameEn,
+                NameAr = product.NameAr,
                 Barcode = product.Barcode,
-                Description = product.Description,
+                Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(product.DescriptionEn, product.DescriptionAr),
+                DescriptionEn = product.DescriptionEn,
+                DescriptionAr = product.DescriptionAr,
                 PictureUrl = product.PictureUrl,
                 IsActive = product.IsActive,
                 CreatedAt = product.CreatedAt,

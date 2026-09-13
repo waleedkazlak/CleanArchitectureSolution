@@ -11,9 +11,15 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
             .NotEmpty().WithMessage("Username is required.")
             .MaximumLength(100).WithMessage("Username cannot exceed 100 characters.");
 
-        RuleFor(x => x.FullName)
-            .NotEmpty().WithMessage("Full name is required.")
-            .MaximumLength(200).WithMessage("Full name cannot exceed 200 characters.");
+        RuleFor(x => x)
+            .Must(x => !string.IsNullOrWhiteSpace(x.FullNameEn) || !string.IsNullOrWhiteSpace(x.FullName))
+            .WithMessage("Full name is required.");
+
+        RuleFor(x => x.FullNameEn)
+            .MaximumLength(200).WithMessage("Full name (English) cannot exceed 200 characters.");
+
+        RuleFor(x => x.FullNameAr)
+            .MaximumLength(200).WithMessage("Full name (Arabic) cannot exceed 200 characters.");
 
         RuleFor(x => x.Email)
             .EmailAddress().WithMessage("Invalid email address format.")
@@ -27,5 +33,10 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
         RuleFor(x => x.RoleId)
             .GreaterThan(0).WithMessage("RoleId must be greater than 0.")
             .When(x => x.RoleId.HasValue);
+
+        RuleFor(x => x.PreferredLanguage)
+            .Must(lang => string.IsNullOrWhiteSpace(lang) || lang.ToLower() is "en" or "ar")
+            .WithMessage("PreferredLanguage must be 'en' or 'ar'.")
+            .When(x => !string.IsNullOrWhiteSpace(x.PreferredLanguage));
     }
 }

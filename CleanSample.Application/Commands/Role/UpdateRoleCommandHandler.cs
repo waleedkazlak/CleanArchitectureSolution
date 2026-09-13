@@ -20,7 +20,22 @@ public class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, bool>
             return false;
         }
 
-        role.Name = request.Name;
+        if (!string.IsNullOrWhiteSpace(request.NameEn))
+            role.NameEn = request.NameEn;
+        else if (!string.IsNullOrWhiteSpace(request.Name))
+            role.NameEn = request.Name;
+
+        if (request.NameAr != null)
+            role.NameAr = request.NameAr;
+
+        if (!string.IsNullOrWhiteSpace(request.DescriptionEn))
+            role.DescriptionEn = request.DescriptionEn;
+        else if (request.Description != null)
+            role.DescriptionEn = request.Description;
+
+        if (request.DescriptionAr != null)
+            role.DescriptionAr = request.DescriptionAr;
+
         role.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.Roles.UpdateAsync(role);

@@ -39,9 +39,11 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             products = products.Where(p =>
-                p.Name.ToLower().Contains(searchTermLower) ||
+                p.NameEn.ToLower().Contains(searchTermLower) ||
+                (p.NameAr != null && p.NameAr.ToLower().Contains(searchTermLower)) ||
                 (p.Barcode != null && p.Barcode.ToLower().Contains(searchTermLower)) ||
-                (p.Description != null && p.Description.ToLower().Contains(searchTermLower))
+                (p.DescriptionEn != null && p.DescriptionEn.ToLower().Contains(searchTermLower)) ||
+                (p.DescriptionAr != null && p.DescriptionAr.ToLower().Contains(searchTermLower))
             ).ToList();
 
             _logger.LogInformation("Applied search filter '{SearchTerm}', found {Count} products", filter.SearchTerm, products.Count());
@@ -49,7 +51,11 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
 
         if (!string.IsNullOrWhiteSpace(filter.Name))
         {
-            products = products.Where(p => p.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+            var nameLower = filter.Name.ToLower();
+            products = products.Where(p => 
+                p.NameEn.ToLower().Contains(nameLower) || 
+                (p.NameAr != null && p.NameAr.ToLower().Contains(nameLower))
+            ).ToList();
         }
 
         if (!string.IsNullOrWhiteSpace(filter.Barcode))
@@ -101,16 +107,20 @@ public class GetProductsWithFilterQueryHandler : IRequestHandler<GetProductsWith
         {
             Id = p.Id,
             CategoryId = p.CategoryId,
-            CategoryName = p.Category?.Name,
+            CategoryName = CleanSample.Application.Helpers.LocalizationHelper.Localize(p.Category?.NameEn, p.Category?.NameAr),
             ColorId = p.ColorId,
-            ColorName = p.Color?.Name,
+            ColorName = CleanSample.Application.Helpers.LocalizationHelper.Localize(p.Color?.NameEn, p.Color?.NameAr),
             MaterialId = p.MaterialId,
-            MaterialName = p.Material?.Name,
+            MaterialName = CleanSample.Application.Helpers.LocalizationHelper.Localize(p.Material?.NameEn, p.Material?.NameAr),
             DesignId = p.DesignId,
-            DesignName = p.Design?.Name,
-            Name = p.Name,
+            DesignName = CleanSample.Application.Helpers.LocalizationHelper.Localize(p.Design?.NameEn, p.Design?.NameAr),
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(p.NameEn, p.NameAr) ?? p.NameEn,
+            NameEn = p.NameEn,
+            NameAr = p.NameAr,
             Barcode = p.Barcode,
-            Description = p.Description,
+            Description = CleanSample.Application.Helpers.LocalizationHelper.Localize(p.DescriptionEn, p.DescriptionAr),
+            DescriptionEn = p.DescriptionEn,
+            DescriptionAr = p.DescriptionAr,
             PictureUrl = p.PictureUrl,
             IsActive = p.IsActive,
             CreatedAt = p.CreatedAt,

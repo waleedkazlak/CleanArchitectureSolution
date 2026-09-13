@@ -13,9 +13,9 @@ namespace CleanSample.Application.Services;
 public interface IAuthenticationService
 {
     /// <summary>
-    /// Generates a JWT token for a user with role and permissions
+    /// Generates a JWT token for a user with role, permissions, and preferred language
     /// </summary>
-    Task<string> GenerateTokenAsync(int userId, string username, string email, string fullName, string role, int? roleId = null, IEnumerable<string>? permissions = null);
+    Task<string> GenerateTokenAsync(int userId, string username, string email, string fullName, string role, int? roleId = null, IEnumerable<string>? permissions = null, string? preferredLanguage = null);
 
     /// <summary>
     /// Validates a JWT token
@@ -71,7 +71,8 @@ public class AuthenticationService : IAuthenticationService
         string fullName,
         string role,
         int? roleId = null,
-        IEnumerable<string>? permissions = null)
+        IEnumerable<string>? permissions = null,
+        string? preferredLanguage = null)
     {
         try
         {
@@ -79,6 +80,8 @@ public class AuthenticationService : IAuthenticationService
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var lang = !string.IsNullOrWhiteSpace(preferredLanguage) ? preferredLanguage : "en";
 
             var claims = new List<System.Security.Claims.Claim>
             {
@@ -90,6 +93,9 @@ public class AuthenticationService : IAuthenticationService
                 new("FullName", fullName),
                 new(System.Security.Claims.ClaimTypes.Role, role),
                 new("role", role),
+                new("preferred_language", lang),
+                new("lang", lang),
+                new(System.Security.Claims.ClaimTypes.Locality, lang),
                 new("iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), System.Security.Claims.ClaimValueTypes.Integer64)
             };
 

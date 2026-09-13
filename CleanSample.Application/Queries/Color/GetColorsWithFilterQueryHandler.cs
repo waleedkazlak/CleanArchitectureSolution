@@ -33,7 +33,8 @@ public class GetColorsWithFilterQueryHandler : IRequestHandler<GetColorsWithFilt
         {
             var searchTermLower = filter.SearchTerm.ToLower();
             colors = colors.Where(c =>
-                c.Name.ToLower().Contains(searchTermLower) ||
+                c.NameEn.ToLower().Contains(searchTermLower) ||
+                (c.NameAr != null && c.NameAr.ToLower().Contains(searchTermLower)) ||
                 (c.Code != null && c.Code.ToLower().Contains(searchTermLower))
             ).ToList();
         }
@@ -50,7 +51,9 @@ public class GetColorsWithFilterQueryHandler : IRequestHandler<GetColorsWithFilt
         var colorDtos = paginatedColors.Select(c => new ColorDto
         {
             Id = c.Id,
-            Name = c.Name,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(c.NameEn, c.NameAr) ?? c.NameEn,
+            NameEn = c.NameEn,
+            NameAr = c.NameAr,
             Code = c.Code,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt

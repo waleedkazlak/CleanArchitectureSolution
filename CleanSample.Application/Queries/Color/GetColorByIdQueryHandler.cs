@@ -24,7 +24,9 @@ public class GetColorByIdQueryHandler : IRequestHandler<GetColorByIdQuery, Color
         return new ColorDto
         {
             Id = color.Id,
-            Name = color.Name,
+            Name = CleanSample.Application.Helpers.LocalizationHelper.Localize(color.NameEn, color.NameAr) ?? color.NameEn,
+            NameEn = color.NameEn,
+            NameAr = color.NameAr,
             Code = color.Code,
             CreatedAt = color.CreatedAt,
             UpdatedAt = color.UpdatedAt
